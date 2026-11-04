@@ -118,6 +118,11 @@ function renderComputedPanel() {
   const host = $('#computed-panel');
   const birth = state.raw.birth;
 
+  // A cached page can be older than the script running against it. Rather than
+  // throw from inside boot and leave the app with no event listeners at all,
+  // skip the part the markup cannot show. Everything else still works.
+  if (!host) return;
+
   if (!state.raw.computed || !birth) {
     host.hidden = true;
     host.textContent = '';
@@ -195,7 +200,9 @@ function recomputeWithBirth(birth) {
 /* --------------------------------------------------- calculate from birth */
 
 function renderBirth() {
-  renderBirthView($('#birth-host'), {
+  const host = $('#birth-host');
+  if (!host) return;
+  renderBirthView(host, {
     initial: state.raw.birth || {},
     onComputed: ({ lagna, placements, birth, result }) => {
       // The computed chart replaces whatever was on the board. Degrees come with
@@ -336,6 +343,7 @@ function onDegreeInput(p, raw) {
  */
 function renderDegreeEditors(house) {
   const host = $('#sheet-degrees');
+  if (!host) return;
   host.textContent = '';
   const occupants = state.chart.occupants(house);
   if (!occupants.length) return;
@@ -394,6 +402,7 @@ const DIGNITY_LABEL = {
  */
 function renderProvenanceCallout(edits) {
   const host = $('#confirm-provenance');
+  if (!host) return;
   host.textContent = '';
   const birth = state.raw.birth;
   if (!state.raw.computed || !birth) return;
@@ -1159,8 +1168,10 @@ async function boot() {
   $('#btn-settings').addEventListener('click', () => show('settings'));
   $('#btn-saved').addEventListener('click', () => show('saved'));
   $('#btn-open-saved').addEventListener('click', () => show('saved'));
-  $('#btn-open-birth').addEventListener('click', () => show('birth'));
-  $('#btn-birth-back').addEventListener('click', () => show('chart'));
+  // Optional chaining for the same reason as the guards above: an older
+  // cached page may not carry these buttons yet.
+  $('#btn-open-birth')?.addEventListener('click', () => show('birth'));
+  $('#btn-birth-back')?.addEventListener('click', () => show('chart'));
   $('#btn-save-chart').addEventListener('click', onSaveChart);
   $('#btn-export').addEventListener('click', downloadLibrary);
   $('#import-file').addEventListener('change', (ev) => {

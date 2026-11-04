@@ -44,6 +44,9 @@ jobs:
       - name: Check the chart-editing rules
         run: node scripts/test-edits.mjs
 
+      - name: Check the markup against the scripts
+        run: node scripts/test-dom.mjs
+
   deploy:
     needs: validate
     if: github.event_name != 'pull_request'

@@ -3,7 +3,7 @@
 //
 // Bump CACHE when shipping a change, or clients keep the old files.
 
-const CACHE = 'astrobot-v5';
+const CACHE = 'astrobot-v6';
 
 const SHELL = [
   './',
@@ -87,9 +87,34 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Shell files: serve the cached copy at once, and refresh it in the background
-  // so a deploy reaches the device on the next load. Cache-first without the
-  // revalidation would pin users to whatever version they first installed.
+  // The page itself is network-first.
+  //
+  // Serving the document from the cache lets the HTML and the scripts drift
+  // apart: a stale index.html can be handed to a page whose app.js is current,
+  // the new code looks for an element the old markup has not got, and the whole
+  // boot throws. That is not hypothetical - it happened on the first deploy
+  // after the kundali work, and bumping the cache name does not prevent it,
+  // because the install itself can race the CDN and cache the old page.
+  //
+  // One document per visit is a small price for never shipping a mismatched
+  // pair. Offline still works: the cached copy is the fallback.
+  if (request.mode === 'navigate' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => {
+          if (res.ok && res.type === 'basic') {
+            caches.open(CACHE).then((c) => c.put(request, res.clone()));
+          }
+          return res;
+        })
+        .catch(() => caches.match(request).then((hit) => hit || caches.match('index.html'))),
+    );
+    return;
+  }
+
+  // Everything else: serve the cached copy at once and refresh it in the
+  // background, so a deploy reaches the device on the next load. Cache-first
+  // without the revalidation would pin users to whatever they first installed.
   event.respondWith(
     caches.match(request).then((hit) => {
       const fresh = fetch(request)
