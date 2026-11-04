@@ -20,6 +20,7 @@
   <h1 class="brand">AstroBot</h1>
   <div class="topbar-meta">
     <span id="chart-label" class="chart-label">New chart</span>
+    <button id="btn-saved" class="icon-btn" type="button" aria-label="Saved kundalis and readings">&#9733;</button>
     <button id="btn-settings" class="icon-btn" type="button" aria-label="Settings">&#9881;</button>
   </div>
 </header>
@@ -53,6 +54,12 @@
       <label for="chart-name">Whose chart is this? (optional, stays on this device)</label>
       <input id="chart-name" type="text" autocomplete="off" placeholder="Name or label">
     </div>
+
+    <div class="row row-split">
+      <button id="btn-save-chart" class="btn btn-quiet" type="button">Save kundali</button>
+      <button id="btn-open-saved" class="btn btn-quiet" type="button">Saved</button>
+    </div>
+    <p id="chart-save-status" class="status" role="status"></p>
 
     <button id="btn-to-confirm" class="btn btn-primary btn-block" type="button">
       Check what I understood
@@ -137,12 +144,39 @@
     <p id="add-status" class="status" role="status"></p>
   </section>
 
-  <!-- 6. Settings ---------------------------------------------------------- -->
+  <!-- 6. Saved ------------------------------------------------------------- -->
+  <section class="view" id="view-saved" aria-labelledby="h-saved">
+    <h2 id="h-saved" class="view-title">Saved</h2>
+    <p class="hint">
+      Kept on this device. A saved kundali is the chart itself, reopened whenever
+      you like. A saved reading keeps the words it showed on the day it was taken,
+      so that as the knowledge base grows you can set an old reading beside a new
+      one instead of losing the first.
+    </p>
+
+    <h3 class="sub">Kundalis</h3>
+    <div id="saved-charts" class="saved-list"></div>
+
+    <h3 class="sub">Readings</h3>
+    <div id="saved-readings" class="saved-list"></div>
+
+    <h3 class="sub">Backup</h3>
+    <p class="hint small">
+      All of this lives in this browser alone. Clearing site data erases it, and it
+      does not follow you to another phone. Export now and then.
+    </p>
+    <div class="row row-split">
+      <button id="btn-export" class="btn btn-quiet" type="button">Export all</button>
+      <label class="btn btn-quiet file-btn" for="import-file">Import a file</label>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
+    </div>
+    <p id="saved-status" class="status" role="status"></p>
+    <p id="saved-usage" class="hint small"></p>
+  </section>
+
+  <!-- 7. Settings ---------------------------------------------------------- -->
   <section class="view" id="view-settings" aria-labelledby="h-settings">
     <h2 id="h-settings" class="view-title">Settings</h2>
-
-    <h3 class="sub">Saved charts</h3>
-    <div id="saved-charts" class="saved-charts"></div>
 
     <h3 class="sub">Sending knowledge to GitHub</h3>
     <p class="hint">

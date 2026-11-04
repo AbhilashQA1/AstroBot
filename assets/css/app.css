@@ -546,12 +546,12 @@ details > *:not(summary) { padding: 0 14px 14px; }
 
 /* --- queue and saved charts -------------------------------------------- */
 
-.add-queue, .saved-charts { display: grid; gap: 8px; margin: 0 0 16px; }
+.add-queue, .saved-list { display: grid; gap: 8px; margin: 0 0 16px; }
 
 .queue-item, .saved-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -559,8 +559,30 @@ details > *:not(summary) { padding: 0 14px 14px; }
   font-size: 0.85rem;
 }
 
-.queue-item span, .saved-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.queue-item .btn, .saved-item .btn { min-height: 34px; padding: 6px 10px; font-size: 0.78rem; }
+.queue-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* A saved row is a two-line label with its actions beneath. Three buttons and a
+   name do not fit on one line at phone width, and letting them share a line
+   pushes the last one off the screen, so the label always takes a full line. */
+.saved-item { flex-wrap: wrap; }
+.saved-main { flex: 1 1 100%; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.saved-title { font-weight: 620; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-sub {
+  font-size: 0.71rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queue-item .btn, .saved-item .btn { min-height: 34px; padding: 6px 9px; font-size: 0.75rem; }
+
+/* Save controls sitting above a reading. */
+.save-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 4px; }
+.saved-banner-title { margin: 0 0 4px; font-weight: 640; }
+
+/* A file input is invisible, so its label has to carry the button styling. */
+.file-btn { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 
 @media (min-width: 620px) {
   .roster { grid-template-columns: 1fr 1fr; }

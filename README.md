@@ -13,9 +13,13 @@ GitHub Pages. Bookmark it to your home screen and it works offline.
    stands; they are drawn and confirmed, and marked as carrying no classical rule.
 3. **Explain the chart** — a deterministic rules engine matches the chart against the
    knowledge base. Every sentence carries a citation to the classical source it came from.
-4. **Add knowledge from your phone** — paste something you found on social media; AstroBot
+4. **Save what matters** — keep a kundali to reopen later, and snapshot a reading as it
+   reads today. A saved reading stores its own text rather than recomputing, so when the
+   knowledge base grows you can set the old reading beside a new one instead of losing it.
+   Everything lives in the browser, so there is an export and an import.
+5. **Add knowledge from your phone** — paste something you found on social media; AstroBot
    files it to this repo as an issue.
-5. **Improve over time** — a GitHub Action has Claude reconcile new submissions into the
+6. **Improve over time** — a GitHub Action has Claude reconcile new submissions into the
    knowledge base and open a pull request, flagging any rule that contradicts what is
    already there so you can judge it yourself.
 
@@ -64,6 +68,15 @@ Run it before committing; CI runs it before every deploy.
 ```bash
 node scripts/read.mjs --lagna 5 --su 10 --mo 4 --ma 6 --me 10 --ju 9 --ve 11 --sa 3 --ra 1 --ke 7
 ```
+
+```bash
+node scripts/test-library.mjs
+```
+
+Checks the saved-kundali and saved-reading rules against a stub localStorage: that
+saving one chart twice updates it rather than duplicating it, that one chart can hold
+several readings taken at different times, and that an export re-imports without
+losing or doubling anything.
 
 Prints a full reading in the terminal — the fastest way to see what a new rule
 actually does to a chart.

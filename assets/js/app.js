@@ -4,38 +4,17 @@ import { ALL_BODY_KEYS, Chart, OUTER_KEYS, PLANET_KEYS, decodeChart, emptyChart,
 import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
 import { renderChart } from './chartview.js';
+import {
+  deleteChart, deleteReading, exportAll, getReading, importAll, listCharts, listReadings,
+  readingsForChart, renameChart, saveChart, saveReading, store, toView, usage, useEncoder,
+} from './library.js';
+
+useEncoder(encodeChart);
 
 const STORE = {
   chart: 'astrobot.chart',
-  charts: 'astrobot.charts',
   gh: 'astrobot.github',
   queue: 'astrobot.queue',
-};
-
-// Storage can be unavailable (private windows, blocked site data) and must never
-// take the app down with it.
-const store = {
-  get(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw === null ? fallback : JSON.parse(raw);
-    } catch {
-      return fallback;
-    }
-  },
-  set(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch {
-      return false;
-    }
-  },
-  remove(key) {
-    try {
-      localStorage.removeItem(key);
-    } catch { /* nothing to do */ }
-  },
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -48,6 +27,8 @@ const state = {
   selectedHouse: null,
   confirmed: false,
   reading: null,
+  readingView: null,
+  viewingReading: null,
 };
 
 function el(tag, attrs = {}, children = []) {
@@ -87,6 +68,7 @@ function show(view) {
   if (view === 'confirm') renderConfirm();
   if (view === 'reading') renderReading();
   if (view === 'library') renderLibrary();
+  if (view === 'saved') renderSaved();
   if (view === 'settings') renderSettings();
 }
 
@@ -97,6 +79,7 @@ function rebuild() {
   state.chart = new Chart(state.raw, state.kb.base);
   state.confirmed = false;
   state.reading = null;
+  state.readingView = null;
   store.set(STORE.chart, state.raw);
   renderChartView();
 }
@@ -340,20 +323,116 @@ function citeChip(c) {
 
 function findingNode(f, { showName = false } = {}) {
   const parts = [];
-  if (showName && f.rule.name) parts.push(el('p', { class: 'finding-name', text: f.rule.name }));
-  parts.push(el('p', { text: f.rule.says }));
+  if (showName && f.name) parts.push(el('p', { class: 'finding-name', text: f.name }));
+  parts.push(el('p', { text: f.says }));
   parts.push(el('div', { class: 'finding-meta' }, [
     ...f.citations.map(citeChip),
-    f.rule.tradition !== 'parashari' ? el('span', { class: 'cite', text: f.rule.tradition }) : null,
-    f.rule.status === 'disputed' ? el('span', { class: 'cite is-unverified', text: 'disputed' }) : null,
+    f.tradition !== 'parashari' ? el('span', { class: 'cite', text: f.tradition }) : null,
+    f.status === 'disputed' ? el('span', { class: 'cite is-unverified', text: 'disputed' }) : null,
   ]));
-  if (f.rule.note) parts.push(el('p', { class: 'finding-note', text: f.rule.note }));
-  return el('div', { class: `finding is-${f.rule.polarity}` }, parts);
+  if (f.note) parts.push(el('p', { class: 'finding-note', text: f.note }));
+  return el('div', { class: `finding is-${f.polarity}` }, parts);
+}
+
+/**
+ * Build the reading from the plain view model. A live reading and one restored
+ * from the library both come through here, so a saved reading renders exactly
+ * as it did on the day it was taken.
+ */
+function readingNodes(view) {
+  const out = [];
+
+  out.push(el('div', { class: 'derived-list' }, view.derived.map((d) => el('p', { text: d.text }))));
+
+  if (view.missing.length) {
+    out.push(el('div', { class: 'callout', text:
+      `${view.missing.join(', ')} ${view.missing.length === 1 ? 'is' : 'are'} not placed, so anything ` +
+      'depending on them is absent from this reading rather than ruled out.' }));
+  }
+
+  if (view.combinations.length) {
+    out.push(el('section', { class: 'reading-section' }, [
+      el('h3', { text: `Combinations (${view.combinations.length})` }),
+      ...view.combinations.map((f) => findingNode(f, { showName: true })),
+    ]));
+  }
+
+  for (const section of view.sections) {
+    out.push(el('section', { class: 'reading-section' }, [
+      el('h3', { text: section.title }),
+      ...section.findings.map((f) => findingNode(f)),
+    ]));
+  }
+
+  if (view.unsectioned.length) {
+    out.push(el('section', { class: 'reading-section' }, [
+      el('h3', { text: 'Also' }),
+      ...view.unsectioned.map((f) => findingNode(f)),
+    ]));
+  }
+
+  const { pairs, disputed } = view.conflicts;
+  if (pairs.length || disputed.length) {
+    const nodes = [];
+    for (const { a, b, reason } of pairs) {
+      nodes.push(el('div', { class: 'conflict' }, [
+        el('div', { class: 'conflict-side' }, [
+          el('p', { text: a.says }),
+          el('div', { class: 'finding-meta' }, a.citations.map(citeChip)),
+        ]),
+        el('p', { class: 'conflict-versus', text: reason === 'stated' ? 'against' : 'pulls against' }),
+        el('div', { class: 'conflict-side' }, [
+          el('p', { text: b.says }),
+          el('div', { class: 'finding-meta' }, b.citations.map(citeChip)),
+        ]),
+      ]));
+    }
+    for (const f of disputed) {
+      nodes.push(el('div', { class: 'conflict' }, [
+        el('div', { class: 'conflict-side' }, [
+          el('p', { text: f.says }),
+          el('div', { class: 'finding-meta' }, [...f.citations.map(citeChip), el('span', { class: 'cite is-unverified', text: 'disputed' })]),
+        ]),
+      ]));
+    }
+    out.push(el('section', { class: 'reading-section' }, [
+      el('h3', { text: 'Where the sources differ' }),
+      el('p', { class: 'hint small', text: 'AstroBot does not pick a winner. Both readings are shown with their sources.' }),
+      ...nodes,
+    ]));
+  }
+
+  out.push(el('details', {}, [
+    el('summary', { text: `Matched ${view.stats.matched} of ${view.stats.ofTotal} rules` }),
+    el('div', {}, [
+      el('p', { class: 'hint small', text:
+        'A rule matches only when its exact condition is present in the chart, so most of the ' +
+        `knowledge base stays silent for any one chart. Chart code: ${view.chartCode || 'unknown'}` }),
+      ...(view.broken.length
+        ? [el('p', { class: 'hint small', text: `${view.broken.length} rule(s) could not be evaluated: ${view.broken.join(', ')}` })]
+        : []),
+    ]),
+  ]));
+
+  return out;
+}
+
+function currentView() {
+  if (!state.readingView) {
+    state.reading = state.reading || compose(state.chart, state.kb);
+    state.readingView = toView(state.reading, state.chart, state.raw);
+  }
+  return state.readingView;
 }
 
 function renderReading() {
   const host = $('#reading-host');
   host.textContent = '';
+
+  if (state.viewingReading) {
+    renderSavedReading(host, state.viewingReading);
+    return;
+  }
 
   if (!state.chart || state.chart.placed.length === 0) {
     host.append(el('div', { class: 'empty', text: 'Enter a chart first, then confirm it.' }));
@@ -368,81 +447,49 @@ function renderReading() {
     return;
   }
 
-  const reading = state.reading || (state.reading = compose(state.chart, state.kb));
+  const view = currentView();
+  const code = view.chartCode;
+  const earlier = readingsForChart(code);
 
-  host.append(el('div', { class: 'derived-list' },
-    reading.derived.map((d) => el('p', { text: d.text }))));
-
-  if (state.chart.missing.length) {
-    host.append(el('div', { class: 'callout', text:
-      `${state.chart.missing.map((p) => state.chart.planet(p).en).join(', ')} ` +
-      `${state.chart.missing.length === 1 ? 'is' : 'are'} not placed, so anything depending on ` +
-      'them is absent from this reading rather than ruled out.' }));
-  }
-
-  if (reading.combinations.length) {
-    host.append(el('section', { class: 'reading-section' }, [
-      el('h3', { text: `Combinations (${reading.combinations.length})` }),
-      ...reading.combinations.map((f) => findingNode(f, { showName: true })),
-    ]));
-  }
-
-  for (const section of reading.sections) {
-    host.append(el('section', { class: 'reading-section' }, [
-      el('h3', { text: section.title }),
-      ...section.findings.map((f) => findingNode(f)),
-    ]));
-  }
-
-  if (reading.unsectioned.length) {
-    host.append(el('section', { class: 'reading-section' }, [
-      el('h3', { text: 'Also' }),
-      ...reading.unsectioned.map((f) => findingNode(f)),
-    ]));
-  }
-
-  const { pairs, disputed } = reading.conflicts;
-  if (pairs.length || disputed.length) {
-    const nodes = [];
-    for (const { a, b, reason } of pairs) {
-      nodes.push(el('div', { class: 'conflict' }, [
-        el('div', { class: 'conflict-side' }, [
-          el('p', { text: a.rule.says }),
-          el('div', { class: 'finding-meta' }, a.citations.map(citeChip)),
-        ]),
-        el('p', { class: 'conflict-versus', text: reason === 'stated' ? 'against' : 'pulls against' }),
-        el('div', { class: 'conflict-side' }, [
-          el('p', { text: b.rule.says }),
-          el('div', { class: 'finding-meta' }, b.citations.map(citeChip)),
-        ]),
-      ]));
-    }
-    for (const f of disputed) {
-      nodes.push(el('div', { class: 'conflict' }, [
-        el('div', { class: 'conflict-side' }, [
-          el('p', { text: f.rule.says }),
-          el('div', { class: 'finding-meta' }, [...f.citations.map(citeChip), el('span', { class: 'cite is-unverified', text: 'disputed' })]),
-        ]),
-      ]));
-    }
-    host.append(el('section', { class: 'reading-section' }, [
-      el('h3', { text: 'Where the sources differ' }),
-      el('p', { class: 'hint small', text: 'AstroBot does not pick a winner. Both readings are shown with their sources.' }),
-      ...nodes,
-    ]));
-  }
-
-  host.append(el('details', {}, [
-    el('summary', { text: `Matched ${reading.stats.matched} of ${reading.stats.ofTotal} rules` }),
-    el('div', {}, [
-      el('p', { class: 'hint small', text:
-        'A rule matches only when its exact condition is present in the chart, so most of the ' +
-        'knowledge base stays silent for any one chart. Chart code: ' + encodeChart(state.raw) }),
-      ...(reading.broken.length
-        ? [el('p', { class: 'hint small', text: `${reading.broken.length} rule(s) could not be evaluated: ${reading.broken.map((b) => b.id).join(', ')}` })]
-        : []),
-    ]),
+  host.append(el('div', { class: 'save-bar' }, [
+    el('button', { class: 'btn btn-primary', type: 'button', onclick: onSaveReading }, 'Save this reading'),
+    el('button', { class: 'btn btn-quiet', type: 'button', onclick: () => show('saved') }, 'Saved'),
+    earlier.length
+      ? el('span', { class: 'pill', text: `${earlier.length} earlier of this chart` })
+      : null,
   ]));
+  host.append(el('p', { id: 'reading-status', class: 'status' }));
+
+  for (const node of readingNodes(view)) host.append(node);
+}
+
+function onSaveReading() {
+  const view = currentView();
+  const title = state.raw.name?.trim() || `${view.lagnaRashi} lagna`;
+  const { ok } = saveReading({
+    title,
+    chartCode: view.chartCode,
+    view,
+    kbUpdated: state.kb.updated,
+    kbRules: state.kb.rules.length,
+  });
+
+  const node = $('#reading-status');
+  if (!node) return;
+  if (ok) {
+    node.textContent = `Saved as "${title}". It keeps the text exactly as it reads now, so a later reading can be compared with it.`;
+    node.className = 'status is-good';
+    renderReading();
+    // Re-rendering clears the message, so put it back on the fresh node.
+    const again = $('#reading-status');
+    if (again) {
+      again.textContent = `Saved as "${title}".`;
+      again.className = 'status is-good';
+    }
+  } else {
+    node.textContent = 'This browser would not store the reading. Export your library or delete a few saved items.';
+    node.className = 'status is-bad';
+  }
 }
 
 /* ------------------------------------------------------------- knowledge */
@@ -641,6 +688,202 @@ async function sendOne(index) {
   }
 }
 
+/* ----------------------------------------------------------------- saved */
+
+function when(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return 'unknown date';
+  return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function setSavedStatus(message, tone = '') {
+  const node = $('#chart-save-status');
+  if (!node) return;
+  node.textContent = message;
+  node.className = `status${tone ? ` is-${tone}` : ''}`;
+}
+
+function openSavedChart(row) {
+  const loaded = decodeChart(row.code);
+  if (!loaded) return;
+  loaded.name = row.name === 'Untitled' ? '' : row.name;
+  state.raw = loaded;
+  state.viewingReading = null;
+  rebuild();
+  show('chart');
+}
+
+function onSaveChart() {
+  if (!state.chart.placed.length) return setSavedStatus('Place at least one planet first.', 'bad');
+  const name = ($('#chart-name').value || '').trim();
+  const { ok, updated } = saveChart({ name, code: encodeChart(state.raw) });
+  if (!ok) return setSavedStatus('This browser would not store the chart.', 'bad');
+  return setSavedStatus(
+    updated
+      ? `Updated "${name || 'Untitled'}" in your saved kundalis.`
+      : `Saved "${name || 'Untitled'}". Open it again from Saved.`,
+    'good',
+  );
+}
+
+function viewSavedReading(id) {
+  const row = getReading(id);
+  if (!row) return;
+  state.viewingReading = row;
+  show('reading');
+}
+
+function renderSavedReading(host, row) {
+  const now = state.kb.rules.length;
+  const then = row.kbRules || 0;
+  const driftNote = !then
+    ? 'The size of the knowledge base at the time was not recorded.'
+    : then === now
+      ? `The knowledge base is the same size now (${now} rules), so a fresh reading would most likely match.`
+      : `The knowledge base held ${then} rules then and holds ${now} now, so a fresh reading may differ.`;
+
+  host.append(el('div', { class: 'callout' }, [
+    el('p', { class: 'saved-banner-title', text: `Saved reading — ${row.title}` }),
+    el('p', { class: 'hint small', text: `Taken ${when(row.savedAt)}. This is the text as it read that day, not a fresh reading. ${driftNote}` }),
+    el('div', { class: 'row' }, [
+      el('button', {
+        class: 'btn btn-primary',
+        type: 'button',
+        onclick: () => {
+          const loaded = decodeChart(row.chartCode);
+          if (!loaded) return;
+          loaded.name = row.title;
+          state.raw = loaded;
+          state.viewingReading = null;
+          rebuild();
+          state.confirmed = true;
+          show('reading');
+        },
+      }, 'Read this chart again now'),
+      el('button', {
+        class: 'btn btn-quiet',
+        type: 'button',
+        onclick: () => { state.viewingReading = null; show('saved'); },
+      }, 'Back to Saved'),
+    ]),
+  ]));
+
+  for (const node of readingNodes(row.view)) host.append(node);
+}
+
+function setLibraryStatus(message, tone = '') {
+  const node = $('#saved-status');
+  if (!node) return;
+  node.textContent = message;
+  node.className = `status${tone ? ` is-${tone}` : ''}`;
+}
+
+function downloadLibrary() {
+  const stamp = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([JSON.stringify(exportAll(), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href: url, download: `astrobot-library-${stamp}.json` });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setLibraryStatus('Exported. Keep the file somewhere safe: clearing site data wipes the copy in this browser.', 'good');
+}
+
+async function onImportFile(file) {
+  if (!file) return;
+  try {
+    const parsed = JSON.parse(await file.text());
+    const result = importAll(parsed);
+    if (!result.ok) {
+      setLibraryStatus(`Could not import: ${result.reason}.`, 'bad');
+      return;
+    }
+    renderSaved();
+    setLibraryStatus(
+      `Imported ${result.addedCharts} kundali(s) and ${result.addedReadings} reading(s). Anything already here was kept.`,
+      'good',
+    );
+  } catch (err) {
+    setLibraryStatus(`That file could not be read as JSON: ${err.message}`, 'bad');
+  }
+}
+
+function renderSaved() {
+  const charts = listCharts();
+  const readings = listReadings();
+
+  const chartHost = $('#saved-charts');
+  chartHost.textContent = '';
+  if (!charts.length) {
+    chartHost.append(el('p', { class: 'hint small', text: 'No kundalis saved yet. Enter a chart and tap Save chart.' }));
+  }
+  for (const row of charts) {
+    const mine = readingsForChart(row.code).length;
+    chartHost.append(el('div', { class: 'saved-item' }, [
+      el('div', { class: 'saved-main' }, [
+        el('span', { class: 'saved-title', text: row.name || 'Untitled' }),
+        el('span', {
+          class: 'saved-sub',
+          text: `${when(row.savedAt)} \u00b7 ${row.code}${mine ? ` \u00b7 ${mine} saved reading${mine === 1 ? '' : 's'}` : ''}`,
+        }),
+      ]),
+      el('button', { class: 'btn btn-quiet', type: 'button', onclick: () => openSavedChart(row) }, 'Open'),
+      el('button', {
+        class: 'btn btn-quiet',
+        type: 'button',
+        onclick: () => {
+          const name = prompt('Name for this kundali', row.name || '');
+          if (name === null) return;
+          renameChart(row.id, name.trim() || 'Untitled');
+          renderSaved();
+        },
+      }, 'Rename'),
+      el('button', {
+        class: 'btn btn-quiet',
+        type: 'button',
+        onclick: () => {
+          if (!confirm(`Delete the kundali "${row.name || 'Untitled'}"? Saved readings of it are kept.`)) return;
+          deleteChart(row.id);
+          renderSaved();
+        },
+      }, 'Delete'),
+    ]));
+  }
+
+  const readingHost = $('#saved-readings');
+  readingHost.textContent = '';
+  if (!readings.length) {
+    readingHost.append(el('p', { class: 'hint small', text: 'No readings saved yet. Open a reading and tap Save this reading.' }));
+  }
+  for (const row of readings) {
+    readingHost.append(el('div', { class: 'saved-item' }, [
+      el('div', { class: 'saved-main' }, [
+        el('span', { class: 'saved-title', text: row.title }),
+        el('span', {
+          class: 'saved-sub',
+          text: `${when(row.savedAt)} \u00b7 ${row.view?.stats?.matched ?? '?'} findings \u00b7 ${row.kbRules || '?'} rules at the time`,
+        }),
+      ]),
+      el('button', { class: 'btn btn-quiet', type: 'button', onclick: () => viewSavedReading(row.id) }, 'View'),
+      el('button', {
+        class: 'btn btn-quiet',
+        type: 'button',
+        onclick: () => {
+          if (!confirm(`Delete the saved reading "${row.title}"?`)) return;
+          deleteReading(row.id);
+          renderSaved();
+        },
+      }, 'Delete'),
+    ]));
+  }
+
+  const bytes = usage();
+  $('#saved-usage').textContent = charts.length || readings.length
+    ? `${charts.length} kundali(s), ${readings.length} reading(s), about ${Math.max(1, Math.round(bytes / 1024))} KB on this device.`
+    : '';
+}
+
 /* -------------------------------------------------------------- settings */
 
 function renderSettings() {
@@ -648,32 +891,6 @@ function renderSettings() {
   $('#gh-repo').value = gh.repo || '';
   $('#gh-token').value = gh.token ? '•'.repeat(12) : '';
   $('#gh-status').textContent = gh.token ? 'A token is stored on this device.' : 'No token stored.';
-
-  const host = $('#saved-charts');
-  host.textContent = '';
-  const charts = store.get(STORE.charts, []);
-  if (!charts.length) {
-    host.append(el('p', { class: 'hint small', text: 'No charts saved yet. Save one from the Chart tab.' }));
-  }
-  for (const [i, c] of charts.entries()) {
-    host.append(el('div', { class: 'saved-item' }, [
-      el('span', { text: `${c.name || 'Untitled'} — ${c.code}` }),
-      el('button', { class: 'btn btn-quiet', type: 'button', onclick: () => {
-        const loaded = decodeChart(c.code);
-        if (!loaded) return;
-        loaded.name = c.name;
-        state.raw = loaded;
-        rebuild();
-        show('chart');
-      } }, 'Open'),
-      el('button', { class: 'btn btn-quiet', type: 'button', onclick: () => {
-        const next = store.get(STORE.charts, []);
-        next.splice(i, 1);
-        store.set(STORE.charts, next);
-        renderSettings();
-      } }, 'Delete'),
-    ]));
-  }
 
   $('#about-text').textContent =
     `${state.kb.rules.length} rules, knowledge base updated ${state.kb.updated}. ` +
@@ -709,8 +926,21 @@ async function boot() {
   state.chart = new Chart(state.raw, state.kb.base);
   renderChartView();
 
-  $$('.tab').forEach((tab) => tab.addEventListener('click', () => show(tab.dataset.view)));
+  $$('.tab').forEach((tab) => tab.addEventListener('click', () => {
+    // Moving around the app leaves a snapshot behind; only the Reading tab keeps
+    // showing one, so coming back to it after a detour is not surprising.
+    if (tab.dataset.view !== 'reading') state.viewingReading = null;
+    show(tab.dataset.view);
+  }));
   $('#btn-settings').addEventListener('click', () => show('settings'));
+  $('#btn-saved').addEventListener('click', () => show('saved'));
+  $('#btn-open-saved').addEventListener('click', () => show('saved'));
+  $('#btn-save-chart').addEventListener('click', onSaveChart);
+  $('#btn-export').addEventListener('click', downloadLibrary);
+  $('#import-file').addEventListener('change', (ev) => {
+    onImportFile(ev.target.files?.[0]);
+    ev.target.value = '';
+  });
 
   lagnaSelect.addEventListener('change', () => {
     state.raw.lagna = Number(lagnaSelect.value);
@@ -735,23 +965,14 @@ async function boot() {
     rebuild();
   });
 
-  $('#btn-to-confirm').addEventListener('click', () => {
-    if (state.raw.name) {
-      const charts = store.get(STORE.charts, []);
-      const code = encodeChart(state.raw);
-      if (!charts.some((c) => c.code === code)) {
-        charts.unshift({ name: state.raw.name, code, at: new Date().toISOString() });
-        store.set(STORE.charts, charts.slice(0, 40));
-      }
-    }
-    show('confirm');
-  });
+  $('#btn-to-confirm').addEventListener('click', () => show('confirm'));
 
   $('#btn-back-to-chart').addEventListener('click', () => show('chart'));
 
   $('#btn-to-reading').addEventListener('click', () => {
     state.confirmed = true;
     state.reading = null;
+    state.readingView = null;
     show('reading');
   });
 

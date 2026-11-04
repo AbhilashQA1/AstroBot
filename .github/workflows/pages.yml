@@ -28,6 +28,9 @@ jobs:
       - name: Validate the knowledge base
         run: node scripts/validate.mjs
 
+      - name: Check the saved-library rules
+        run: node scripts/test-library.mjs
+
   deploy:
     needs: validate
     runs-on: ubuntu-latest

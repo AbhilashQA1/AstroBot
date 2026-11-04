@@ -6,6 +6,7 @@
   "description": "Vedic chart reader for GitHub Pages: a rules engine over a cited knowledge base.",
   "scripts": {
     "validate": "node scripts/validate.mjs",
+    "test:library": "node scripts/test-library.mjs",
     "read": "node scripts/read.mjs",
     "ingest": "node scripts/ingest.mjs",
     "serve": "python -m http.server 8080"
