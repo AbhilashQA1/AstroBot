@@ -9,11 +9,12 @@
     "test:library": "node scripts/test-library.mjs",
     "test:astro": "node scripts/test-astro.mjs",
     "test:edits": "node scripts/test-edits.mjs",
-    "test": "node scripts/validate.mjs && node scripts/test-library.mjs && node scripts/test-astro.mjs && node scripts/test-edits.mjs",
+    "test": "node scripts/validate.mjs && node scripts/test-library.mjs && node scripts/test-astro.mjs && node scripts/test-edits.mjs && node scripts/test-dom.mjs",
     "kundali": "node scripts/kundali.mjs",
     "read": "node scripts/read.mjs",
     "ingest": "node scripts/ingest.mjs",
-    "serve": "python -m http.server 8080"
+    "serve": "python -m http.server 8080",
+    "test:dom": "node scripts/test-dom.mjs"
   },
   "license": "MIT"
 }
