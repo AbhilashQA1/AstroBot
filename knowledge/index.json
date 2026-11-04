@@ -19,6 +19,7 @@
     "rules/planet-in-house/ke.json",
     "rules/lord-in-house/general.json",
     "rules/yogas.json",
+    "rules/combustion.json",
     "rules/conjunctions.json",
     "rules/aspects.json"
   ]

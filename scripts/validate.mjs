@@ -7,7 +7,7 @@ import { SECTIONS, evaluate } from '../assets/js/engine.js';
 
 const POLARITIES = new Set(['favourable', 'difficult', 'mixed', 'neutral']);
 const STATUSES = new Set(['active', 'disputed', 'retired']);
-const FAMILIES = new Set(['planet-in-house', 'planet-in-sign', 'lord-in-house', 'yoga', 'conjunction', 'aspect']);
+const FAMILIES = new Set(['planet-in-house', 'planet-in-sign', 'lord-in-house', 'yoga', 'conjunction', 'aspect', 'combustion']);
 const KNOWN_THEMES = new Set(SECTIONS.flatMap((s) => s.themes));
 
 const errors = [];
@@ -66,6 +66,7 @@ function planetsMentioned(cond) {
     for (const v of [
       c.planetInHouse?.planet, c.planetInSign?.planet, c.dignity?.planet, c.dignityAny?.planet,
       c.inHouseClass?.planet, c.retrograde, c.aspect?.from, c.aspect?.to, c.aspectsHouse?.from,
+      c.combust, c.notCombust,
     ]) if (typeof v === 'string') found.add(v);
     for (const v of [c.relativeHouse?.from, c.relativeHouse?.to, c.planetsInRelativeHouse?.from]) {
       if (typeof v === 'string' && v !== 'lagna') found.add(v);

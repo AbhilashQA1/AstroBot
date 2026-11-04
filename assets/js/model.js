@@ -150,6 +150,55 @@ export class Chart {
   }
 
   /**
+   * Sidereal longitude in the zodiac, 0-360, or null when no degree was given.
+   *
+   * Reconstructed from the Lagna, the house and the degree within the sign,
+   * which is everything a saved chart already holds - so nothing new has to be
+   * stored for this, and charts saved before it existed still work.
+   */
+  siderealLongitude(p) {
+    const h = this.houseOf(p);
+    const deg = this.degreeOf(p);
+    if (h === null || deg === null) return null;
+    return (this.signOfHouse(h) - 1) * 30 + deg;
+  }
+
+  /**
+   * Combustion (asta): a graha too near the Sun is burnt and loses much of its
+   * power to give its own results.
+   *
+   * Measured in degrees of longitude and never in houses. Roughly a quarter of
+   * combust cases fall in the sign next to the Sun's, and a third or more of
+   * same-sign cases are not combust at all, so a house-based shortcut would be
+   * wrong in both directions.
+   *
+   * Returns `na` for bodies combustion does not apply to, and `unknown` when
+   * the chart was entered by hand and carries no degrees - which is honest,
+   * and different from saying a planet is clear.
+   */
+  combustion(p) {
+    const orbs = this.planet(p)?.combustion;
+    if (!orbs) return { state: 'na' };
+
+    const sun = this.siderealLongitude('su');
+    const own = this.siderealLongitude(p);
+    if (sun === null || own === null) return { state: 'unknown' };
+
+    const orb = this.isRetrograde(p) && typeof orbs.retroOrb === 'number' ? orbs.retroOrb : orbs.orb;
+    const separation = Math.abs(((own - sun + 180) % 360 + 360) % 360 - 180);
+    return {
+      state: separation <= orb ? 'combust' : 'clear',
+      separation: Math.round(separation * 100) / 100,
+      orb,
+    };
+  }
+
+  /** Grahas currently burnt, in canonical order. */
+  get combust() {
+    return this.placed.filter((p) => this.combustion(p).state === 'combust');
+  }
+
+  /**
    * Dignity of a planet by sign. Without a degree, moolatrikona cannot be
    * distinguished from own sign, so own sign is reported and the caller is told
    * the distinction was unavailable.
@@ -297,6 +346,8 @@ export class Chart {
         house: h,
         rashi: s === null ? null : this.rashi(s),
         dignity: this.dignity(p),
+        combustion: this.combustion(p),
+        longitude: this.siderealLongitude(p),
         retro: this.isRetrograde(p),
         retroState: this.retroState(p),
         degree: this.degreeOf(p),

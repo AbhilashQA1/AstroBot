@@ -19,6 +19,14 @@ const DIGNITY_FACTOR = {
   unplaced: 0,
 };
 
+// A burnt graha keeps its place in the chart but loses much of its power to
+// deliver its own significations, so its rules are weighted down rather than
+// removed. Not a veto: several authorities hold that a combust planet in its
+// own sign resists, and the malefic side of a burnt malefic is often said to
+// survive intact, so suppressing the rule outright would overstate a doctrine
+// that is not settled.
+const COMBUSTION_FACTOR = 0.6;
+
 export const SECTIONS = [
   { key: 'self', title: 'Self and temperament', themes: ['self', 'mind', 'health', 'courage'] },
   { key: 'learning', title: 'Mind, learning and children', themes: ['intellect', 'children', 'art'] },
@@ -95,6 +103,12 @@ function test(cond, chart) {
   }
 
   if (cond.retrograde) return chart.isRetrograde(cond.retrograde);
+
+  // Only true when the chart actually carries degrees. A chart entered by hand
+  // reports `unknown`, which is not a match - absence of evidence is not
+  // evidence that a planet is clear of the Sun.
+  if (cond.combust) return chart.combustion(cond.combust).state === 'combust';
+  if (cond.notCombust) return chart.combustion(cond.notCombust).state === 'clear';
 
   if (Number.isInteger(cond.emptyHouse)) return chart.occupants(cond.emptyHouse).length === 0;
 
@@ -196,10 +210,13 @@ export function evaluate(chart, kb) {
     const p = weightingPlanet(rule);
     const dignity = p ? chart.dignity(p) : null;
     const dignityFactor = dignity ? (DIGNITY_FACTOR[dignity.state] ?? 1) : 1;
+    const burnt = p ? chart.combustion(p) : null;
+    const combustionFactor = burnt?.state === 'combust' ? COMBUSTION_FACTOR : 1;
     const weight =
       authorityWeight(rule, sourcesFile) *
       rule.confidence *
       dignityFactor *
+      combustionFactor *
       contextFactor(rule, chart);
 
     findings.push({
@@ -207,6 +224,7 @@ export function evaluate(chart, kb) {
       subject: subjectOf(rule),
       weight: Number(weight.toFixed(4)),
       dignity,
+      combustion: burnt,
       citations: citations(rule, sourcesFile),
     });
   }
@@ -270,6 +288,29 @@ export function derived(chart) {
       text:
         `Directional strength: ${digbala.map((p) => `${chart.planet(p).en} in the ${ordinal(chart.houseOf(p))}`).join(', ')}. ` +
         'A planet standing in its own quarter of the chart gives its results at full force, whatever else is said about it below.',
+    });
+  }
+
+  const burnt = chart.combust;
+  if (burnt.length) {
+    const phrases = burnt.map((p) => {
+      const c = chart.combustion(p);
+      return `${chart.planet(p).en} at ${c.separation}\u00b0 from the Sun, inside its ${c.orb}\u00b0 orb`;
+    });
+    out.push({
+      kind: 'combustion',
+      text:
+        `Combust: ${phrases.join('; ')}. A burnt graha holds its place but gives its own results weakly, ` +
+        'so everything said about it below is weighted down.',
+    });
+  } else if (chart.placed.some((p) => chart.combustion(p).state === 'unknown')
+      && nearTheSun(chart).length) {
+    out.push({
+      kind: 'combustion',
+      text:
+        `${nearTheSun(chart).map((p) => chart.planet(p).en).join(', ')} ${nearTheSun(chart).length === 1 ? 'sits' : 'sit'} ` +
+        'close enough to the Sun that combustion is possible, but this chart carries no degrees, so it cannot be judged. ' +
+        'Calculating the chart from birth details would settle it.',
     });
   }
 
@@ -361,6 +402,22 @@ export function compose(chart, kb) {
       combinations: combos.length,
     },
   };
+}
+
+/**
+ * Grahas in the Sun's house or either neighbour, where combustion is at least
+ * possible. Used only to decide whether a chart without degrees is worth
+ * warning about, so that the warning does not appear on every chart.
+ */
+function nearTheSun(chart) {
+  const sunHouse = chart.houseOf('su');
+  if (sunHouse === null) return [];
+  const adjacent = [wrap12(sunHouse - 1), sunHouse, wrap12(sunHouse + 1)];
+  return chart.placed.filter((p) => {
+    if (chart.combustion(p).state !== 'unknown') return false;
+    const h = chart.houseOf(p);
+    return h !== null && adjacent.includes(h);
+  });
 }
 
 export function ordinal(n) {

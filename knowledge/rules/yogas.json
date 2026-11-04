@@ -15,7 +15,15 @@
       "says": "The Sun and Mercury together put intelligence at the centre of the identity: articulate, quick to read a situation, and usually recognised for it.",
       "themes": ["intellect", "self", "status"], "polarity": "favourable", "confidence": 0.85,
       "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }],
-      "note": "Mercury very close to the Sun is combust, which some authorities say cancels this yoga. AstroBot cannot judge combustion without degrees." },
+      "note": "Mercury very close to the Sun is combust, which some authorities say cancels this yoga outright. Where the chart carries degrees AstroBot works that out and shows the opposing reading under Where the sources differ; a chart entered by hand has no degrees, so there the question stays open." },
+
+    { "id": "yog.budha-aditya.burnt", "name": "Budha-Aditya with Mercury combust",
+      "when": { "all": [{ "conjunct": ["su", "me"] }, { "combust": "me" }] },
+      "says": "Mercury is close enough to the Sun to be burnt, and a substantial line of authority holds that this cancels Budha-Aditya outright rather than merely weakening it: the intelligence is there, but it is not recognised, and speaking at the wrong moment costs more than staying quiet would have.",
+      "themes": ["intellect", "self", "status"], "polarity": "difficult", "confidence": 0.7,
+      "status": "disputed", "conflictsWith": ["yog.budha-aditya"],
+      "sources": [{ "key": "bphs", "locus": "on the avasthas of the grahas and combustion" }, { "key": "jataka-parijata", "locus": "on the Sun and Mercury together" }],
+      "note": "Mercury shares the Sun's sign in about half of all charts and is burnt in roughly two thirds of those, so this disagreement touches around a third of charts. AstroBot shows both readings rather than choosing, which is what the sources themselves do." },
 
     { "id": "yog.chandra-mangala", "name": "Chandra-Mangala yoga",
       "when": { "conjunct": ["mo", "ma"] },
