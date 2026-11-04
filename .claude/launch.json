@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8099"],
       "port": 8099
+    },
+    {
+      "name": "astrobot-worktree",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8100"],
+      "port": 8100
     }
   ]
 }

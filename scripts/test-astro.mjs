@@ -183,6 +183,28 @@ const RASHI = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', '
   const direct = computeKundali({ year: 2024, month: 5, day: 20, hour: 12, minute: 0, latitude: 0, longitude: 0, zone: 'UTC' });
   check('Mercury retrograde on 2024-04-10', retro.bodies.me.retro === true);
   check('Mercury direct on 2024-05-20', direct.bodies.me.retro === false);
+
+  // A station is where retrograde detection is most fragile: the longitude is
+  // barely moving, so a comparison window that is too wide or too narrow gets
+  // the sign wrong. Venus turned direct on 13 September 1991 at 141.007 deg,
+  // after a retrograde of about 43 days - the canonical length, which is what
+  // makes this a useful anchor rather than just a remembered date.
+  const venus = (m, d) => computeKundali({
+    year: 1991, month: m, day: d, hour: 12, minute: 0,
+    latitude: 0, longitude: 0, zone: 'UTC',
+  }).bodies.ve;
+
+  check('Venus retrograde two days before its station', venus(9, 11).retro === true);
+  check('Venus direct the day after its station', venus(9, 14).retro === false);
+  check('Venus retrograde mid-period', venus(8, 23).retro === true);
+  check('Venus direct well before the period', venus(7, 20).retro === false);
+  check('Venus direct well after the period', venus(10, 5).retro === false);
+
+  // The station is a minimum in longitude, so both neighbours sit above it.
+  const atStation = venus(9, 13).tropical;
+  check('the station is a turning point',
+    venus(9, 11).tropical > atStation && venus(9, 15).tropical > atStation,
+    `station ${atStation.toFixed(4)}`);
 }
 
 // --- 8. Every body lands in a legal place ----------------------------------

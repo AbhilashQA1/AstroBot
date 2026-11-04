@@ -37,6 +37,10 @@
       each square is the rashi it holds.
     </p>
 
+    <button id="btn-open-birth" class="btn btn-quiet btn-block" type="button">
+      Calculate it from birth details instead
+    </button>
+
     <div class="field">
       <label for="lagna">Lagna (rising rashi)</label>
       <select id="lagna"></select>
@@ -63,6 +67,15 @@
 
     <button id="btn-to-confirm" class="btn btn-primary btn-block" type="button">
       Check what I understood
+    </button>
+  </section>
+
+  <!-- 1b. Calculate from birth details -------------------------------------- -->
+  <section class="view" id="view-birth" aria-labelledby="h-birth">
+    <h2 id="h-birth" class="view-title">Calculate a kundali</h2>
+    <div id="birth-host"></div>
+    <button id="btn-birth-back" class="btn btn-quiet btn-block" type="button">
+      Back to the chart
     </button>
   </section>
 

@@ -588,3 +588,50 @@ details > *:not(summary) { padding: 0 14px 14px; }
   .roster { grid-template-columns: 1fr 1fr; }
   .roster-row { grid-template-columns: auto 1fr auto; }
 }
+
+/* --- birth details ------------------------------------------------------ */
+
+.place-results { display: grid; gap: 6px; margin-top: 8px; }
+
+.place-hit {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.place-hit:active { transform: scale(0.99); }
+.place-hit strong { font-weight: 620; }
+.place-hit span { margin-left: auto; font-size: 0.74rem; color: var(--ink-faint); }
+
+.checkline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+
+.checkline input[type='checkbox'] {
+  width: 20px;
+  min-height: 20px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+input[type='date'],
+input[type='time'] { min-height: var(--tap); }
+
+input:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -78,6 +78,23 @@ Before standard time, a zone carries one local mean time taken from its referenc
 city — a birth in Ulm resolves to Berlin's, and a birth in Delhi before 1906 to
 Madras's. Where the real offset is known, pass `--offset` in minutes.
 
+In the app, **Calculate it from birth details instead** on the Chart screen opens
+the same calculation: name, date, time and place, with a searchable list of 7,260
+Indian towns and cities. Villages GeoNames has never sized are missing, so
+coordinates can be entered directly. A computed chart goes to the confirmation
+screen like any other — the arithmetic can be right while the birth certificate
+is wrong.
+
+The place list is fetched the first time that screen is opened, not at start-up,
+so anyone who only enters charts by hand never downloads it. Rebuild it with:
+
+```bash
+curl -o IN.zip https://download.geonames.org/export/dump/IN.zip
+curl -o admin1CodesASCII.txt https://download.geonames.org/export/dump/admin1CodesASCII.txt
+unzip IN.zip
+node scripts/build-places.mjs IN.txt admin1CodesASCII.txt
+```
+
 `node scripts/test-astro.mjs` checks the ayanamsa against published Lahiri values,
 asserts the ascendant against hand-derived geometry, sweeps it across all 24 hours,
 and verifies Einstein's chart against his published one.
@@ -138,6 +155,11 @@ Rules cite classical texts — Brihat Parashara Hora Shastra, Phaladeepika, Sara
 Jataka Parijata and others — by chapter. The wording of every rule in this repository is
 original; no book text is reproduced here. See `knowledge/base/sources.json` for the
 citation keys.
+
+Place names and coordinates in `assets/data/places-in.json` come from
+[GeoNames](https://www.geonames.org/), licensed
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The attribution is a
+condition of that licence, not a courtesy.
 
 Positions are computed with [astronomy-engine](https://github.com/cosinekitty/astronomy)
 by Don Cross, MIT licensed, vendored at `assets/vendor/astronomy.js` with its licence
