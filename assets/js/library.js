@@ -7,6 +7,17 @@
 // base it came from, and re-reading the same chart later is a separate act that
 // can be compared against it.
 
+// Row format. v1 rows held only a chart code, which is house and retrogression
+// and nothing else. That is enough for a chart entered by hand, but a chart
+// computed from birth details also carries the birth block, each body's
+// longitude and its degree - none of which a code can hold. Restoring such a
+// chart from its code would reopen it looking perfectly normal while having
+// quietly thrown that away, which is the worst shape a data loss can take.
+//
+// So a v2 row stores the chart object itself and keeps the code beside it as a
+// stable key for grouping and sharing. v1 rows still load, through the code.
+const ROW_VERSION = 2;
+
 const KEYS = {
   charts: 'astrobot.charts',
   readings: 'astrobot.readings',
@@ -40,6 +51,45 @@ export const store = {
 };
 
 const newId = (prefix) => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+
+/** Stored charts must not alias live state, or later edits would rewrite history. */
+const clone = (value) => (value == null ? null : JSON.parse(JSON.stringify(value)));
+
+/**
+ * What makes two saved kundalis the same kundali.
+ *
+ * The code alone is not enough once charts carry more than houses: two people
+ * born hours apart can share a house layout while differing in every degree, and
+ * de-duplicating on the code would silently overwrite one with the other. Birth
+ * details and degrees therefore join the key when they are present, and a chart
+ * with neither behaves exactly as it did before.
+ */
+export function identityOf({ code, chart }) {
+  const parts = [`code:${code}`];
+
+  const birth = chart?.birth;
+  if (birth) {
+    parts.push(`birth:${[birth.date, birth.time, birth.lat, birth.lon, birth.tz].join('|')}`);
+  }
+
+  const places = chart?.placements || {};
+  const degrees = Object.keys(places).sort()
+    .map((k) => (typeof places[k]?.degree === 'number' ? `${k}:${places[k].degree}` : null))
+    .filter(Boolean);
+  if (degrees.length) parts.push(`deg:${degrees.join(',')}`);
+
+  return parts.join('~');
+}
+
+/**
+ * The chart to reopen from a saved row: the stored object when the row has one,
+ * and otherwise the code, which is all a v1 row ever had. Callers pass their own
+ * decoder so this module stays independent of the model.
+ */
+export function chartOf(row, decode) {
+  if (row?.chart) return clone(row.chart);
+  return row?.code ? decode(row.code) : null;
+}
 
 /* ------------------------------------------------------------------ view */
 
@@ -113,19 +163,34 @@ export function listCharts() {
  * Save a kundali. Saving the same code twice updates the existing entry rather
  * than piling up duplicates, which is what repeated taps on Save would do.
  */
-export function saveChart({ name, code, note = '' }) {
+export function saveChart({ name, code, chart = null, note = '' }) {
   const rows = listCharts();
-  const existing = rows.find((r) => r.code === code);
+  const identity = identityOf({ code, chart });
+  const existing = rows.find((r) => identityOf(r) === identity);
   const now = new Date().toISOString();
 
   if (existing) {
     existing.name = name || existing.name;
     existing.note = note || existing.note;
+    // A v1 row that is saved again gains the full chart and becomes a v2 row.
+    if (chart) {
+      existing.chart = clone(chart);
+      existing.v = ROW_VERSION;
+    }
     existing.updatedAt = now;
     return { ok: store.set(KEYS.charts, rows), row: existing, updated: true };
   }
 
-  const row = { id: newId('k'), name: name || 'Untitled', code, note, savedAt: now, updatedAt: now };
+  const row = {
+    id: newId('k'),
+    v: ROW_VERSION,
+    name: name || 'Untitled',
+    code,
+    chart: clone(chart),
+    note,
+    savedAt: now,
+    updatedAt: now,
+  };
   rows.unshift(row);
   return { ok: store.set(KEYS.charts, rows.slice(0, LIMITS.charts)), row, updated: false };
 }
@@ -155,12 +220,16 @@ export function listReadings() {
  * two readings of one kundali taken months apart are the interesting case, not
  * an accident to be de-duplicated.
  */
-export function saveReading({ title, chartCode, view, kbUpdated, kbRules }) {
+export function saveReading({ title, chartCode, chart = null, view, kbUpdated, kbRules }) {
   const rows = listReadings();
   const row = {
     id: newId('r'),
+    v: ROW_VERSION,
     title: title || 'Untitled chart',
     chartCode,
+    // Kept so "read this chart again" rebuilds the chart that produced the
+    // reading, degrees and birth details included, rather than a flattened copy.
+    chart: clone(chart),
     kbUpdated: kbUpdated || null,
     kbRules: kbRules || null,
     savedAt: new Date().toISOString(),
@@ -187,7 +256,7 @@ export function readingsForChart(code) {
 
 export function exportAll() {
   return {
-    format: 'astrobot/library@1',
+    format: 'astrobot/library@2',
     exportedAt: new Date().toISOString(),
     charts: listCharts(),
     readings: listReadings(),
@@ -213,11 +282,12 @@ export function importAll(data) {
 
   const charts = listCharts();
   const haveChart = new Set(charts.map((r) => r.id));
-  const haveCode = new Set(charts.map((r) => r.code));
+  const haveIdentity = new Set(charts.map((r) => identityOf(r)));
   let addedCharts = 0;
   for (const row of incomingCharts) {
-    if (haveChart.has(row.id) || haveCode.has(row.code)) continue;
+    if (haveChart.has(row.id) || haveIdentity.has(identityOf(row))) continue;
     charts.push({ ...row, id: row.id || newId('k') });
+    haveIdentity.add(identityOf(row));
     addedCharts += 1;
   }
 

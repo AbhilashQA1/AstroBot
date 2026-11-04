@@ -5,8 +5,9 @@ import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
 import { renderChart } from './chartview.js';
 import {
-  deleteChart, deleteReading, exportAll, getReading, importAll, listCharts, listReadings,
-  readingsForChart, renameChart, saveChart, saveReading, store, toView, usage, useEncoder,
+  chartOf, deleteChart, deleteReading, exportAll, getReading, importAll, listCharts,
+  listReadings, readingsForChart, renameChart, saveChart, saveReading, store, toView,
+  usage, useEncoder,
 } from './library.js';
 
 useEncoder(encodeChart);
@@ -469,6 +470,7 @@ function onSaveReading() {
   const { ok } = saveReading({
     title,
     chartCode: view.chartCode,
+    chart: state.raw,
     view,
     kbUpdated: state.kb.updated,
     kbRules: state.kb.rules.length,
@@ -704,7 +706,7 @@ function setSavedStatus(message, tone = '') {
 }
 
 function openSavedChart(row) {
-  const loaded = decodeChart(row.code);
+  const loaded = chartOf(row, decodeChart);
   if (!loaded) return;
   loaded.name = row.name === 'Untitled' ? '' : row.name;
   state.raw = loaded;
@@ -716,7 +718,7 @@ function openSavedChart(row) {
 function onSaveChart() {
   if (!state.chart.placed.length) return setSavedStatus('Place at least one planet first.', 'bad');
   const name = ($('#chart-name').value || '').trim();
-  const { ok, updated } = saveChart({ name, code: encodeChart(state.raw) });
+  const { ok, updated } = saveChart({ name, code: encodeChart(state.raw), chart: state.raw });
   if (!ok) return setSavedStatus('This browser would not store the chart.', 'bad');
   return setSavedStatus(
     updated
@@ -750,7 +752,7 @@ function renderSavedReading(host, row) {
         class: 'btn btn-primary',
         type: 'button',
         onclick: () => {
-          const loaded = decodeChart(row.chartCode);
+          const loaded = chartOf({ chart: row.chart, code: row.chartCode }, decodeChart);
           if (!loaded) return;
           loaded.name = row.title;
           state.raw = loaded;

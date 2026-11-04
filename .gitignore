@@ -41,3 +41,6 @@ desktop.ini
 scratch/
 .vscode/
 .idea/
+
+# Worktrees the desktop app creates for other sessions.
+.claude/worktrees/
