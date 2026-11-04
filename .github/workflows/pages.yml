@@ -2,9 +2,16 @@ name: Deploy to GitHub Pages
 
 # The site is the repository: no build step, nothing generated. The knowledge
 # base is validated first so a malformed rule cannot reach the published app.
+#
+# The checks also run on pull requests. Running them only on a push to main
+# would mean a reviewer sees no evidence at the moment they are deciding, and
+# the first time anything is verified is after it has already been merged.
+# Deployment stays on main: a pull request has nowhere to publish to.
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -39,6 +46,7 @@ jobs:
 
   deploy:
     needs: validate
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
