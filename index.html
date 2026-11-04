@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AstroBot</title>
+<meta name="description" content="Read a North Indian chart offline, with every interpretation cited to its classical source.">
+<meta name="theme-color" content="#0f1021">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AstroBot">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1 class="brand">AstroBot</h1>
+  <div class="topbar-meta">
+    <span id="chart-label" class="chart-label">New chart</span>
+    <button id="btn-settings" class="icon-btn" type="button" aria-label="Settings">&#9881;</button>
+  </div>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main id="main">
+
+  <!-- 1. Chart entry ------------------------------------------------------- -->
+  <section class="view is-active" id="view-chart" aria-labelledby="h-chart">
+    <h2 id="h-chart" class="view-title">Enter the chart</h2>
+    <p class="hint">
+      Pick the rising rashi, then tap a square and place its planets. The number in
+      each square is the rashi it holds.
+    </p>
+
+    <div class="field">
+      <label for="lagna">Lagna (rising rashi)</label>
+      <select id="lagna"></select>
+    </div>
+
+    <div id="chart-host" class="chart-host"></div>
+
+    <div class="row">
+      <span id="placed-count" class="pill"></span>
+      <button id="btn-clear" class="btn btn-quiet" type="button">Clear</button>
+      <button id="btn-sample" class="btn btn-quiet" type="button">Load sample</button>
+    </div>
+
+    <div class="field">
+      <label for="chart-name">Whose chart is this? (optional, stays on this device)</label>
+      <input id="chart-name" type="text" autocomplete="off" placeholder="Name or label">
+    </div>
+
+    <button id="btn-to-confirm" class="btn btn-primary btn-block" type="button">
+      Check what I understood
+    </button>
+  </section>
+
+  <!-- 2. Confirmation ------------------------------------------------------ -->
+  <section class="view" id="view-confirm" aria-labelledby="h-confirm">
+    <h2 id="h-confirm" class="view-title">Does this match your chart?</h2>
+    <p class="hint">
+      This is the chart as AstroBot has read it. Every planet, the rashi it occupies
+      and the square it falls in. Nothing is interpreted until you confirm.
+    </p>
+
+    <div id="confirm-lagna" class="callout"></div>
+    <div id="confirm-roster" class="roster"></div>
+    <div id="confirm-houses" class="disclosure-host"></div>
+
+    <div class="row row-split">
+      <button id="btn-back-to-chart" class="btn btn-quiet" type="button">Something is wrong</button>
+      <button id="btn-to-reading" class="btn btn-primary" type="button">Yes, read it</button>
+    </div>
+  </section>
+
+  <!-- 3. Reading ----------------------------------------------------------- -->
+  <section class="view" id="view-reading" aria-labelledby="h-reading">
+    <h2 id="h-reading" class="view-title">The reading</h2>
+    <div id="reading-host"></div>
+  </section>
+
+  <!-- 4. Knowledge --------------------------------------------------------- -->
+  <section class="view" id="view-library" aria-labelledby="h-library">
+    <h2 id="h-library" class="view-title">Knowledge</h2>
+    <p class="hint">Everything AstroBot can say, and where each statement comes from.</p>
+    <div class="field">
+      <label for="kb-search">Search the rules</label>
+      <input id="kb-search" type="search" autocomplete="off" placeholder="saturn, marriage, gajakesari...">
+    </div>
+    <div id="kb-stats" class="kb-stats"></div>
+    <div id="kb-results" class="kb-results"></div>
+    <div id="kb-sources" class="disclosure-host"></div>
+  </section>
+
+  <!-- 5. Add knowledge ----------------------------------------------------- -->
+  <section class="view" id="view-add" aria-labelledby="h-add">
+    <h2 id="h-add" class="view-title">Add knowledge</h2>
+    <p class="hint">
+      Found a claim worth keeping? File it here. It goes to the repository as an
+      issue, where it is reconciled against the existing rules before anything
+      changes.
+    </p>
+
+    <div class="field">
+      <label for="add-text">What does it say?</label>
+      <textarea id="add-text" rows="6" placeholder="Saturn in the 7th delays marriage but makes it durable, provided Jupiter aspects the 7th."></textarea>
+    </div>
+    <div class="field">
+      <label for="add-source">Where did you find it? (link or book and chapter)</label>
+      <input id="add-source" type="text" autocomplete="off" placeholder="https://... or Phaladeepika ch. 13">
+    </div>
+    <div class="field">
+      <label for="add-tradition">Tradition</label>
+      <select id="add-tradition">
+        <option value="parashari">Parashari (mainstream Vedic)</option>
+        <option value="jaimini">Jaimini</option>
+        <option value="lal-kitab">Lal Kitab</option>
+        <option value="nadi">Nadi</option>
+        <option value="community">Unsure / contemporary</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="add-comment">Your own note (optional)</label>
+      <input id="add-comment" type="text" autocomplete="off" placeholder="Seemed to fit my own chart">
+    </div>
+
+    <div id="add-queue" class="add-queue"></div>
+
+    <div class="row row-split">
+      <button id="btn-queue" class="btn btn-quiet" type="button">Save on device</button>
+      <button id="btn-submit" class="btn btn-primary" type="button">Send to repository</button>
+    </div>
+    <p id="add-status" class="status" role="status"></p>
+  </section>
+
+  <!-- 6. Settings ---------------------------------------------------------- -->
+  <section class="view" id="view-settings" aria-labelledby="h-settings">
+    <h2 id="h-settings" class="view-title">Settings</h2>
+
+    <h3 class="sub">Saved charts</h3>
+    <div id="saved-charts" class="saved-charts"></div>
+
+    <h3 class="sub">Sending knowledge to GitHub</h3>
+    <p class="hint">
+      To file submissions straight from this phone, AstroBot needs a GitHub token
+      with permission to open issues on one repository. It is kept in this
+      browser only, is never sent anywhere except github.com, and you can clear it
+      below. Use a fine-grained token scoped to this repository with
+      <strong>Issues: read and write</strong> and nothing else.
+    </p>
+    <div class="field">
+      <label for="gh-repo">Repository</label>
+      <input id="gh-repo" type="text" autocomplete="off" placeholder="owner/AstroBot" spellcheck="false">
+    </div>
+    <div class="field">
+      <label for="gh-token">Token</label>
+      <input id="gh-token" type="password" autocomplete="off" placeholder="github_pat_..." spellcheck="false">
+    </div>
+    <div class="row row-split">
+      <button id="btn-clear-token" class="btn btn-quiet" type="button">Forget token</button>
+      <button id="btn-save-gh" class="btn btn-primary" type="button">Save</button>
+    </div>
+    <p id="gh-status" class="status" role="status"></p>
+
+    <h3 class="sub">About</h3>
+    <p class="hint" id="about-text"></p>
+    <p class="hint small">
+      Astrology is not a predictive science. Nothing here is advice about health,
+      money, law or relationships.
+    </p>
+  </section>
+
+</main>
+
+<nav class="tabbar" aria-label="Sections">
+  <button class="tab is-active" data-view="chart" type="button"><span>&#9671;</span>Chart</button>
+  <button class="tab" data-view="confirm" type="button"><span>&#10003;</span>Confirm</button>
+  <button class="tab" data-view="reading" type="button"><span>&#9776;</span>Reading</button>
+  <button class="tab" data-view="library" type="button"><span>&#9906;</span>Knowledge</button>
+  <button class="tab" data-view="add" type="button"><span>&#43;</span>Add</button>
+</nav>
+
+<!-- Planet picker, raised when a square is tapped ------------------------- -->
+<div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+<div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-head">
+    <h2 id="sheet-title" class="sheet-title"></h2>
+    <button id="sheet-close" class="icon-btn" type="button" aria-label="Close">&times;</button>
+  </div>
+  <p id="sheet-sub" class="sheet-sub"></p>
+  <div id="sheet-planets" class="planet-grid"></div>
+  <p class="hint small">
+    Tap a planet to put it here or take it away. Tap R to mark it retrograde.
+  </p>
+</div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "lord-in-house",
+  "about": "Where the lord of a house sits decides where that house affairs get played out. The Lagna lord is covered for all twelve houses; beyond that this file holds the placements that carry a named classical judgement. The engine also states every lordship as derived geometry, so a house is never left unaddressed just because no rule exists for it yet.",
+  "defaults": { "tradition": "parashari", "status": "active", "added": "2026-11-04" },
+  "rules": [
+    { "id": "lih.1.1", "when": { "lordInHouse": { "lordOf": 1, "house": 1 } },
+      "says": "The Lagna lord sits in its own house: self-possessed and physically resilient, with a life largely steered from the inside.",
+      "themes": ["self", "health"], "polarity": "favourable", "confidence": 0.9,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.2", "when": { "lordInHouse": { "lordOf": 1, "house": 2 } },
+      "says": "The Lagna lord goes to the second: the person is bound up with earning and with family resources, and identity is measured partly in what has been accumulated.",
+      "themes": ["self", "wealth"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.3", "when": { "lordInHouse": { "lordOf": 1, "house": 3 } },
+      "says": "The Lagna lord goes to the third: self-made through effort, competitive by instinct, and closely involved with siblings.",
+      "themes": ["self", "effort", "siblings"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.4", "when": { "lordInHouse": { "lordOf": 1, "house": 4 } },
+      "says": "The Lagna lord goes to the fourth: home, land and the mother are central to the life, and the person is at their strongest on familiar ground.",
+      "themes": ["self", "home", "mother"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.5", "when": { "lordInHouse": { "lordOf": 1, "house": 5 } },
+      "says": "The Lagna lord goes to the fifth: identity is invested in children, in creative work, or in whatever the person considers worth being right about.",
+      "themes": ["self", "children", "intellect"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.6", "when": { "lordInHouse": { "lordOf": 1, "house": 6 } },
+      "says": "The Lagna lord falls into the sixth: the person is defined partly by what they are up against. Health and debt need watching, and the capacity for service is real.",
+      "themes": ["self", "health", "adversity"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }, { "key": "phaladeepika", "locus": "ch. 14" }] },
+
+    { "id": "lih.1.7", "when": { "lordInHouse": { "lordOf": 1, "house": 7 } },
+      "says": "The Lagna lord goes to the seventh: the self is completed by the other. Partnership is not optional in this chart, and travel or relocation often follows it.",
+      "themes": ["self", "partnership"], "polarity": "mixed", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.8", "when": { "lordInHouse": { "lordOf": 1, "house": 8 } },
+      "says": "The Lagna lord falls into the eighth: the life changes shape abruptly more than once, and the person is drawn to what other people leave alone.",
+      "themes": ["self", "rupture", "occult"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.9", "when": { "lordInHouse": { "lordOf": 1, "house": 9 } },
+      "says": "The Lagna lord goes to the ninth: fortunate, and principled in a way that is load-bearing rather than decorative. The father or a teacher shapes the direction taken.",
+      "themes": ["self", "fortune", "faith"], "polarity": "favourable", "confidence": 0.9,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.10", "when": { "lordInHouse": { "lordOf": 1, "house": 10 } },
+      "says": "The Lagna lord goes to the tenth: the person is their work. Status is achieved rather than inherited, and idleness is genuinely uncomfortable.",
+      "themes": ["self", "work", "status"], "polarity": "favourable", "confidence": 0.9,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }, { "key": "phaladeepika", "locus": "ch. 14" }] },
+
+    { "id": "lih.1.11", "when": { "lordInHouse": { "lordOf": 1, "house": 11 } },
+      "says": "The Lagna lord goes to the eleventh: gains come through their own initiative and through a network they built themselves.",
+      "themes": ["self", "gain", "friends"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.1.12", "when": { "lordInHouse": { "lordOf": 1, "house": 12 } },
+      "says": "The Lagna lord falls into the twelfth: energy goes outward into foreign places, private work or things given away. Vitality needs protecting.",
+      "themes": ["self", "loss", "foreign"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.vipreet.harsha", "name": "Harsha yoga (Vipreet Raja yoga)",
+      "when": { "any": [
+        { "lordInHouse": { "lordOf": 6, "house": 8 } },
+        { "lordInHouse": { "lordOf": 6, "house": 12 } }
+      ] },
+      "says": "The lord of the sixth is itself displaced into a house of difficulty: the classical reversal, where adversity undoes itself. Enemies, illness and debt lose their grip, often after one bad stretch that turns out to have been the turning point.",
+      "themes": ["adversity", "health", "fortune"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "jataka-parijata", "locus": "ch. 7" }, { "key": "phaladeepika", "locus": "ch. 6" }],
+      "group": "vipreet-raja" },
+
+    { "id": "lih.vipreet.sarala", "name": "Sarala yoga (Vipreet Raja yoga)",
+      "when": { "any": [
+        { "lordInHouse": { "lordOf": 8, "house": 6 } },
+        { "lordInHouse": { "lordOf": 8, "house": 12 } }
+      ] },
+      "says": "The lord of the eighth is displaced into another difficult house: longevity improves, sudden reversals lose their force, and the person survives situations that should have cost them more.",
+      "themes": ["longevity", "rupture", "fortune"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "jataka-parijata", "locus": "ch. 7" }, { "key": "phaladeepika", "locus": "ch. 6" }],
+      "group": "vipreet-raja" },
+
+    { "id": "lih.vipreet.vimala", "name": "Vimala yoga (Vipreet Raja yoga)",
+      "when": { "any": [
+        { "lordInHouse": { "lordOf": 12, "house": 6 } },
+        { "lordInHouse": { "lordOf": 12, "house": 8 } }
+      ] },
+      "says": "The lord of the twelfth is displaced into another difficult house: expenditure stays under control, independence comes early, and the person is harder to ruin than they look.",
+      "themes": ["loss", "wealth", "fortune"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "jataka-parijata", "locus": "ch. 7" }, { "key": "phaladeepika", "locus": "ch. 6" }],
+      "group": "vipreet-raja" },
+
+    { "id": "lih.dharma-karma", "name": "Dharma-Karmadhipati yoga",
+      "when": { "lordsConjunct": { "a": 9, "b": 10 } },
+      "says": "The lords of the ninth and tenth sit together: what the person believes and what the person does for a living are the same thing. One of the strongest signatures for a career with standing behind it.",
+      "themes": ["work", "status", "fortune", "faith"], "polarity": "favourable", "confidence": 0.9,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }, { "key": "phaladeepika", "locus": "ch. 6" }] },
+
+    { "id": "lih.11.dusthana", "name": "Lord of gain in a difficult house",
+      "when": { "any": [
+        { "lordInHouse": { "lordOf": 11, "house": 6 } },
+        { "lordInHouse": { "lordOf": 11, "house": 8 } },
+        { "lordInHouse": { "lordOf": 11, "house": 12 } }
+      ] },
+      "says": "The lord of the eleventh is displaced into a house of difficulty: income is irregular and tends to be consumed by obligations as it arrives.",
+      "themes": ["gain", "wealth", "loss"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.10.1", "when": { "lordInHouse": { "lordOf": 10, "house": 1 } },
+      "says": "The lord of work comes to the Lagna: the profession attaches itself to the person rather than the other way round, and reputation precedes them into a room.",
+      "themes": ["work", "self", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.9.9", "when": { "lordInHouse": { "lordOf": 9, "house": 9 } },
+      "says": "The lord of fortune occupies its own house: the ninth works without obstruction, which shows as good luck that other people find implausible.",
+      "themes": ["fortune", "faith"], "polarity": "favourable", "confidence": 0.9,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] },
+
+    { "id": "lih.7.dusthana", "name": "Lord of partnership in a difficult house",
+      "when": { "any": [
+        { "lordInHouse": { "lordOf": 7, "house": 6 } },
+        { "lordInHouse": { "lordOf": 7, "house": 8 } },
+        { "lordInHouse": { "lordOf": 7, "house": 12 } }
+      ] },
+      "says": "The lord of the seventh is displaced into a house of difficulty: partnership is strained by circumstance rather than by feeling, often through distance, illness or work.",
+      "themes": ["partnership"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 19" }] }
+  ]
+}

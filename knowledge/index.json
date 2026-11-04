@@ -1,0 +1,25 @@
+{
+  "schema": "astrobot/index@1",
+  "updated": "2026-11-04",
+  "base": [
+    "base/planets.json",
+    "base/rashis.json",
+    "base/houses.json",
+    "base/sources.json"
+  ],
+  "rules": [
+    "rules/planet-in-house/su.json",
+    "rules/planet-in-house/mo.json",
+    "rules/planet-in-house/ma.json",
+    "rules/planet-in-house/me.json",
+    "rules/planet-in-house/ju.json",
+    "rules/planet-in-house/ve.json",
+    "rules/planet-in-house/sa.json",
+    "rules/planet-in-house/ra.json",
+    "rules/planet-in-house/ke.json",
+    "rules/lord-in-house/general.json",
+    "rules/yogas.json",
+    "rules/conjunctions.json",
+    "rules/aspects.json"
+  ]
+}

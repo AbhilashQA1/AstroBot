@@ -1,0 +1,175 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "yoga",
+  "about": "Named combinations. These outrank single placements in the reading, so the engine shows them first.",
+  "defaults": { "tradition": "parashari", "status": "active", "added": "2026-11-04" },
+  "rules": [
+    { "id": "yog.gajakesari", "name": "Gajakesari yoga",
+      "when": { "relativeHouse": { "from": "mo", "to": "ju", "houses": [1, 4, 7, 10] } },
+      "says": "Jupiter stands in an angle from the Moon: judgement and feeling work together, which shows up as steadiness under pressure and a reputation that survives setbacks.",
+      "themes": ["mind", "fortune", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }, { "key": "saravali", "locus": "ch. 34" }] },
+
+    { "id": "yog.budha-aditya", "name": "Budha-Aditya yoga",
+      "when": { "conjunct": ["su", "me"] },
+      "says": "The Sun and Mercury together put intelligence at the centre of the identity: articulate, quick to read a situation, and usually recognised for it.",
+      "themes": ["intellect", "self", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }],
+      "note": "Mercury very close to the Sun is combust, which some authorities say cancels this yoga. AstroBot cannot judge combustion without degrees." },
+
+    { "id": "yog.chandra-mangala", "name": "Chandra-Mangala yoga",
+      "when": { "conjunct": ["mo", "ma"] },
+      "says": "The Moon with Mars gives drive to earn and a willingness to act on feeling; money comes readily and so does friction at home.",
+      "themes": ["wealth", "mind"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }, { "key": "phaladeepika", "locus": "ch. 6" }] },
+
+    { "id": "yog.kuja-dosha", "name": "Kuja (Mangal) dosha",
+      "when": { "any": [
+        { "planetInHouse": { "planet": "ma", "house": 1 } },
+        { "planetInHouse": { "planet": "ma", "house": 4 } },
+        { "planetInHouse": { "planet": "ma", "house": 7 } },
+        { "planetInHouse": { "planet": "ma", "house": 8 } },
+        { "planetInHouse": { "planet": "ma", "house": 12 } }
+      ] },
+      "says": "Mars occupies one of the five houses that classically strain marriage. Traditionally read as a warning about temper and timing in partnership, not as a verdict on it.",
+      "themes": ["partnership"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 80" }, { "key": "jataka-parijata", "locus": "ch. 10" }],
+      "note": "Which houses count is genuinely disputed: some traditions include the 2nd, some exclude the 1st, and most hold the dosha cancelled when both charts carry it or when Mars is in its own or exaltation sign. AstroBot reports it and does not act on it." },
+
+    { "id": "yog.ruchaka", "name": "Ruchaka yoga",
+      "when": { "all": [
+        { "dignityAny": { "planet": "ma", "in": ["ownSign", "exalted"] } },
+        { "inHouseClass": { "planet": "ma", "class": "kendra" } }
+      ] },
+      "says": "Mars is dignified and placed in an angle: physical confidence, command in a crisis, and a body that holds up to being used.",
+      "themes": ["self", "courage", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }], "group": "pancha-mahapurusha" },
+
+    { "id": "yog.bhadra", "name": "Bhadra yoga",
+      "when": { "all": [
+        { "dignityAny": { "planet": "me", "in": ["ownSign", "exalted"] } },
+        { "inHouseClass": { "planet": "me", "class": "kendra" } }
+      ] },
+      "says": "Mercury is dignified in an angle: unusual clarity of expression, and a mind that gets trusted with decisions belonging to other people.",
+      "themes": ["intellect", "speech", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }], "group": "pancha-mahapurusha" },
+
+    { "id": "yog.hamsa", "name": "Hamsa yoga",
+      "when": { "all": [
+        { "dignityAny": { "planet": "ju", "in": ["ownSign", "exalted"] } },
+        { "inHouseClass": { "planet": "ju", "class": "kendra" } }
+      ] },
+      "says": "Jupiter is dignified in an angle: moral authority that others defer to without being asked, and good fortune that looks like good character.",
+      "themes": ["faith", "fortune", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }], "group": "pancha-mahapurusha" },
+
+    { "id": "yog.malavya", "name": "Malavya yoga",
+      "when": { "all": [
+        { "dignityAny": { "planet": "ve", "in": ["ownSign", "exalted"] } },
+        { "inHouseClass": { "planet": "ve", "class": "kendra" } }
+      ] },
+      "says": "Venus is dignified in an angle: comfort, attractiveness and the means to enjoy both, with taste that other people borrow.",
+      "themes": ["comfort", "art", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }], "group": "pancha-mahapurusha" },
+
+    { "id": "yog.sasa", "name": "Sasa yoga",
+      "when": { "all": [
+        { "dignityAny": { "planet": "sa", "in": ["ownSign", "exalted"] } },
+        { "inHouseClass": { "planet": "sa", "class": "kendra" } }
+      ] },
+      "says": "Saturn is dignified in an angle: durable authority built slowly, with a capacity for work that wears down opposition.",
+      "themes": ["work", "status"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }], "group": "pancha-mahapurusha" },
+
+    { "id": "yog.sunapha", "name": "Sunapha yoga",
+      "when": { "planetsInRelativeHouse": { "from": "mo", "houses": [2], "exclude": ["su", "ra", "ke"], "min": 1 } },
+      "says": "A planet stands in the second from the Moon: resources gather through effort rather than arriving unasked.",
+      "themes": ["wealth"], "polarity": "favourable", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "chandra-yoga" },
+
+    { "id": "yog.anapha", "name": "Anapha yoga",
+      "when": { "planetsInRelativeHouse": { "from": "mo", "houses": [12], "exclude": ["su", "ra", "ke"], "min": 1 } },
+      "says": "A planet stands in the twelfth from the Moon: well-formed physically and inclined to spend on others, with a late turn towards letting things go.",
+      "themes": ["self", "loss"], "polarity": "favourable", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "chandra-yoga" },
+
+    { "id": "yog.durudhara", "name": "Durudhara yoga",
+      "when": { "all": [
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [2], "exclude": ["su", "ra", "ke"], "min": 1 } },
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [12], "exclude": ["su", "ra", "ke"], "min": 1 } }
+      ] },
+      "says": "The Moon is flanked on both sides: support arrives from more than one direction, and little has to be done entirely alone.",
+      "themes": ["wealth", "friends"], "polarity": "favourable", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "chandra-yoga" },
+
+    { "id": "yog.kemadruma", "name": "Kemadruma yoga",
+      "when": { "all": [
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [2], "exclude": ["su", "ra", "ke"], "max": 0 } },
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [12], "exclude": ["su", "ra", "ke"], "max": 0 } },
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [1], "exclude": ["su", "ra", "ke"], "max": 0 } }
+      ] },
+      "says": "The Moon stands unsupported on either side: a tendency to carry things alone, and stretches where help is genuinely absent.",
+      "themes": ["mind", "loss"], "polarity": "difficult", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "chandra-yoga",
+      "note": "Classically cancelled when a planet sits in an angle from the Moon or from the Lagna. Check Gajakesari and the kendra placements before giving this any weight." },
+
+    { "id": "yog.adhi", "name": "Adhi yoga",
+      "when": { "planetsInRelativeHouse": { "from": "mo", "houses": [6, 7, 8], "only": ["ju", "ve", "me"], "min": 2 } },
+      "says": "Benefics gather in the sixth, seventh and eighth from the Moon: a settled life with real standing, arrived at without much drama.",
+      "themes": ["status", "comfort", "fortune"], "polarity": "favourable", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }, { "key": "phaladeepika", "locus": "ch. 6" }] },
+
+    { "id": "yog.shakata", "name": "Shakata yoga",
+      "when": { "relativeHouse": { "from": "ju", "to": "mo", "houses": [6, 8] } },
+      "says": "The Moon falls in the sixth or eighth from Jupiter: fortune arrives in cycles, and what was gained has a way of needing to be rebuilt.",
+      "themes": ["fortune", "wealth"], "polarity": "difficult", "confidence": 0.65,
+      "sources": [{ "key": "jataka-parijata", "locus": "ch. 7" }],
+      "note": "Many practitioners consider this yoga overstated and set it aside when the chart is otherwise strong." },
+
+    { "id": "yog.amala", "name": "Amala yoga",
+      "when": { "any": [
+        { "planetsInRelativeHouse": { "from": "mo", "houses": [10], "only": ["ju", "ve", "me"], "min": 1 } },
+        { "planetsInRelativeHouse": { "from": "lagna", "houses": [10], "only": ["ju", "ve", "me"], "min": 1 } }
+      ] },
+      "says": "A benefic occupies the tenth from the Moon or the Lagna: a clean reputation that holds, and work others speak well of.",
+      "themes": ["work", "status"], "polarity": "favourable", "confidence": 0.75,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }] },
+
+    { "id": "yog.vesi", "name": "Vesi yoga",
+      "when": { "planetsInRelativeHouse": { "from": "su", "houses": [2], "exclude": ["mo", "ra", "ke"], "min": 1 } },
+      "says": "A planet stands in the second from the Sun: speaks plainly and is believed, with a directness that reads as honesty or as bluntness depending on the room.",
+      "themes": ["speech", "self"], "polarity": "favourable", "confidence": 0.65,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "surya-yoga" },
+
+    { "id": "yog.vasi", "name": "Vasi yoga",
+      "when": { "planetsInRelativeHouse": { "from": "su", "houses": [12], "exclude": ["mo", "ra", "ke"], "min": 1 } },
+      "says": "A planet stands in the twelfth from the Sun: generous, well regarded, and inclined to act through others rather than directly.",
+      "themes": ["self", "friends"], "polarity": "favourable", "confidence": 0.65,
+      "sources": [{ "key": "bphs", "locus": "ch. 35" }], "group": "surya-yoga" },
+
+    { "id": "yog.kala-sarpa", "name": "Kala Sarpa yoga",
+      "when": { "allBetweenNodes": true },
+      "says": "All seven grahas fall on one side of the Rahu-Ketu axis: life tends to run in a single strong current, with long waits followed by abrupt movement.",
+      "themes": ["self", "fortune"], "polarity": "mixed", "confidence": 0.55,
+      "sources": [{ "key": "community", "locus": "widely held, late attestation" }],
+      "note": "Not found in BPHS, Phaladeepika or Saravali. A comparatively recent construction, popular in practice and treated sceptically by many classicists. Weighted low for that reason." },
+
+    { "id": "yog.parivartana.1.10", "name": "Parivartana between the Lagna and the 10th",
+      "when": { "exchange": { "a": 1, "b": 10 } },
+      "says": "The lords of the first and tenth exchange houses: identity and work are bound together, so the career is rarely experienced as merely a job.",
+      "themes": ["self", "work", "status"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }], "group": "parivartana" },
+
+    { "id": "yog.parivartana.2.11", "name": "Parivartana between the 2nd and 11th",
+      "when": { "exchange": { "a": 2, "b": 11 } },
+      "says": "The lords of the second and eleventh exchange houses: income converts into holdings efficiently, which is the plainest wealth signature in the system.",
+      "themes": ["wealth", "gain"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }], "group": "parivartana" },
+
+    { "id": "yog.parivartana.5.9", "name": "Parivartana between the 5th and 9th",
+      "when": { "exchange": { "a": 5, "b": 9 } },
+      "says": "The two trine lords exchange houses: merit and fortune reinforce each other, usually through a teacher or a line of learning.",
+      "themes": ["fortune", "intellect", "faith"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 36" }], "group": "parivartana" }
+  ]
+}

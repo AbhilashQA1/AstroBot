@@ -1,0 +1,17 @@
+{
+  "schema": "astrobot/rashis@1",
+  "rashis": [
+    { "n": 1,  "en": "Aries",       "sa": "Mesha",     "lord": "ma", "element": "fire",  "mode": "movable", "gender": "male",   "nature": "malefic", "rising": "prishtodaya", "direction": "east",  "body": "head",      "symbol": "\u2648" },
+    { "n": 2,  "en": "Taurus",      "sa": "Vrishabha", "lord": "ve", "element": "earth", "mode": "fixed",   "gender": "female", "nature": "benefic", "rising": "prishtodaya", "direction": "south", "body": "face",      "symbol": "\u2649" },
+    { "n": 3,  "en": "Gemini",      "sa": "Mithuna",   "lord": "me", "element": "air",   "mode": "dual",    "gender": "male",   "nature": "malefic", "rising": "shirshodaya", "direction": "west",  "body": "neck",      "symbol": "\u264a" },
+    { "n": 4,  "en": "Cancer",      "sa": "Karka",     "lord": "mo", "element": "water", "mode": "movable", "gender": "female", "nature": "benefic", "rising": "prishtodaya", "direction": "north", "body": "chest",     "symbol": "\u264b" },
+    { "n": 5,  "en": "Leo",         "sa": "Simha",     "lord": "su", "element": "fire",  "mode": "fixed",   "gender": "male",   "nature": "malefic", "rising": "shirshodaya", "direction": "east",  "body": "heart",     "symbol": "\u264c" },
+    { "n": 6,  "en": "Virgo",       "sa": "Kanya",     "lord": "me", "element": "earth", "mode": "dual",    "gender": "female", "nature": "benefic", "rising": "shirshodaya", "direction": "south", "body": "abdomen",   "symbol": "\u264d" },
+    { "n": 7,  "en": "Libra",       "sa": "Tula",      "lord": "ve", "element": "air",   "mode": "movable", "gender": "male",   "nature": "malefic", "rising": "shirshodaya", "direction": "west",  "body": "waist",     "symbol": "\u264e" },
+    { "n": 8,  "en": "Scorpio",     "sa": "Vrischika", "lord": "ma", "element": "water", "mode": "fixed",   "gender": "female", "nature": "benefic", "rising": "shirshodaya", "direction": "north", "body": "genitals",  "symbol": "\u264f" },
+    { "n": 9,  "en": "Sagittarius", "sa": "Dhanu",     "lord": "ju", "element": "fire",  "mode": "dual",    "gender": "male",   "nature": "malefic", "rising": "prishtodaya", "direction": "east",  "body": "thighs",    "symbol": "\u2650" },
+    { "n": 10, "en": "Capricorn",   "sa": "Makara",    "lord": "sa", "element": "earth", "mode": "movable", "gender": "female", "nature": "benefic", "rising": "prishtodaya", "direction": "south", "body": "knees",     "symbol": "\u2651" },
+    { "n": 11, "en": "Aquarius",    "sa": "Kumbha",    "lord": "sa", "element": "air",   "mode": "fixed",   "gender": "male",   "nature": "malefic", "rising": "shirshodaya", "direction": "west",  "body": "calves",    "symbol": "\u2652" },
+    { "n": 12, "en": "Pisces",      "sa": "Meena",     "lord": "ju", "element": "water", "mode": "dual",    "gender": "female", "nature": "benefic", "rising": "ubhayodaya",  "direction": "north", "body": "feet",      "symbol": "\u2653" }
+  ]
+}

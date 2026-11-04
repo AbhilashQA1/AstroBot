@@ -1,0 +1,98 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "aspect",
+  "about": "Full-strength graha drishti. Every planet aspects the 7th from itself; Mars adds the 4th and 8th, Jupiter the 5th and 9th, Saturn the 3rd and 10th. The engine lists all full aspects as geometry; this file holds the ones that carry a specific classical judgement.",
+  "defaults": { "tradition": "parashari", "status": "active", "added": "2026-11-04" },
+  "rules": [
+    { "id": "asp.sa.mo", "when": { "aspect": { "from": "sa", "to": "mo" } },
+      "says": "Saturn aspects the Moon: the mind carries weight that is not always its own. Realism, caution, and long stretches where nothing feels light.",
+      "themes": ["mind", "adversity"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 12" }, { "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.sa.su", "when": { "aspect": { "from": "sa", "to": "su" } },
+      "says": "Saturn aspects the Sun: recognition is withheld until it has been earned twice over, and the relationship with authority, including the father, is formal.",
+      "themes": ["self", "status", "father"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 11" }] },
+
+    { "id": "asp.sa.ve", "when": { "aspect": { "from": "sa", "to": "ve" } },
+      "says": "Saturn aspects Venus: affection is dutiful rather than demonstrative, and pleasure is rationed, sometimes by circumstance and sometimes by choice.",
+      "themes": ["partnership", "comfort"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "saravali", "locus": "ch. 15" }] },
+
+    { "id": "asp.sa.h1", "when": { "aspectsHouse": { "from": "sa", "house": 1 } },
+      "says": "Saturn aspects the Lagna: a serious bearing from early on, and a constitution that strengthens with age rather than declining.",
+      "themes": ["self", "health"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.sa.h7", "when": { "aspectsHouse": { "from": "sa", "house": 7 } },
+      "says": "Saturn aspects the seventh: marriage arrives late or soberly, and the partnership is held together by obligation as much as by warmth.",
+      "themes": ["partnership"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 17" }] },
+
+    { "id": "asp.sa.h10", "when": { "aspectsHouse": { "from": "sa", "house": 10 } },
+      "says": "Saturn aspects the tenth: the career advances slowly and does not slip back; responsibility arrives before the title does.",
+      "themes": ["work", "status"], "polarity": "favourable", "confidence": 0.75,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.ju.mo", "when": { "aspect": { "from": "ju", "to": "mo" } },
+      "says": "Jupiter aspects the Moon: the mind is protected. Good faith survives bad experience, and perspective returns faster than it should.",
+      "themes": ["mind", "fortune"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }, { "key": "saravali", "locus": "ch. 11" }] },
+
+    { "id": "asp.ju.h1", "when": { "aspectsHouse": { "from": "ju", "house": 1 } },
+      "says": "Jupiter aspects the Lagna: general protection on the body and the reputation; difficulties land, but not as hard as the rest of the chart suggests.",
+      "themes": ["self", "health", "fortune"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 15" }] },
+
+    { "id": "asp.ju.h2", "when": { "aspectsHouse": { "from": "ju", "house": 2 } },
+      "says": "Jupiter aspects the second: money recovers after it is lost, and speech is trusted.",
+      "themes": ["wealth", "speech"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.ju.h5", "when": { "aspectsHouse": { "from": "ju", "house": 5 } },
+      "says": "Jupiter aspects the fifth: matters of children and of learning are protected, and judgement improves under pressure.",
+      "themes": ["children", "intellect"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 15" }] },
+
+    { "id": "asp.ju.h7", "when": { "aspectsHouse": { "from": "ju", "house": 7 } },
+      "says": "Jupiter aspects the seventh: the partnership has ballast. Disagreements are survivable and the spouse is a steadying influence.",
+      "themes": ["partnership"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 15" }] },
+
+    { "id": "asp.ju.h9", "when": { "aspectsHouse": { "from": "ju", "house": 9 } },
+      "says": "Jupiter aspects the ninth: fortune is structural rather than lucky, and a teacher turns up at the point of need.",
+      "themes": ["fortune", "faith"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.ma.mo", "when": { "aspect": { "from": "ma", "to": "mo" } },
+      "says": "Mars aspects the Moon: feeling arrives fast and hot, with courage that does not need to be summoned and a temper that does not need provoking.",
+      "themes": ["mind", "courage"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 11" }] },
+
+    { "id": "asp.ma.ve", "when": { "aspect": { "from": "ma", "to": "ve" } },
+      "says": "Mars aspects Venus: desire is urgent and direct; attraction is acted on rather than considered.",
+      "themes": ["romance", "partnership"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "saravali", "locus": "ch. 12" }] },
+
+    { "id": "asp.ma.h7", "when": { "aspectsHouse": { "from": "ma", "house": 7 } },
+      "says": "Mars aspects the seventh: friction in close dealings, whether in marriage or in business. Agreements hold better when they are written down.",
+      "themes": ["partnership"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 13" }] },
+
+    { "id": "asp.ma.h10", "when": { "aspectsHouse": { "from": "ma", "house": 10 } },
+      "says": "Mars aspects the tenth: energetic in the work and willing to take on what others avoid; promotion follows visible effort.",
+      "themes": ["work", "courage"], "polarity": "favourable", "confidence": 0.75,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 13" }] },
+
+    { "id": "asp.ra.mo", "when": { "aspect": { "from": "ra", "to": "mo" } },
+      "says": "Rahu aspects the Moon: imagination is enlarged past its evidence. Vivid instincts, some of them worth acting on and some of them not.",
+      "themes": ["mind", "ambition"], "polarity": "difficult", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }],
+      "note": "Whether the nodes aspect at all is disputed; many authorities give them only the 7th, others add the 5th and 9th. AstroBot uses the 7th only." },
+
+    { "id": "asp.su.mo", "when": { "aspect": { "from": "su", "to": "mo" } },
+      "says": "The Sun and Moon face each other across the chart: purpose and feeling are in open dialogue, which gives self-knowledge and a certain restlessness. Born near a full moon.",
+      "themes": ["self", "mind"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "saravali", "locus": "ch. 10" }] }
+  ]
+}

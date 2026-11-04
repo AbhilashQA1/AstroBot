@@ -1,0 +1,160 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "conjunction",
+  "about": "Two grahas sharing one house. AstroBot works from house positions, not degrees, so these are same-house conjunctions rather than close ones; the engine says so in the reading.",
+  "defaults": { "tradition": "parashari", "status": "active", "added": "2026-11-04" },
+  "rules": [
+    { "id": "cnj.su.mo", "when": { "conjunct": ["su", "mo"] },
+      "says": "Sun with Moon: will and feeling pull in the same direction, which gives force but leaves little distance from oneself. Born near a new moon.",
+      "themes": ["self", "mind"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 10" }] },
+
+    { "id": "cnj.su.ma", "when": { "conjunct": ["su", "ma"] },
+      "says": "Sun with Mars: considerable heat in the temperament, effective in a fight and quick to find one.",
+      "themes": ["self", "courage"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 10" }] },
+
+    { "id": "cnj.su.ju", "when": { "conjunct": ["su", "ju"] },
+      "says": "Sun with Jupiter: principle and position reinforce each other, and advice is given with authority even when it was not sought.",
+      "themes": ["faith", "status"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 7" }] },
+
+    { "id": "cnj.su.ve", "when": { "conjunct": ["su", "ve"] },
+      "says": "Sun with Venus: drawn to art, display and refinement; Venus close to the Sun loses some of its ease, so pleasure and duty compete.",
+      "themes": ["art", "comfort"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "saravali", "locus": "ch. 10" }] },
+
+    { "id": "cnj.su.sa", "when": { "conjunct": ["su", "sa"] },
+      "says": "Sun with Saturn: authority and restriction in one place. Recognition comes late, the father is a complicated subject, and self-doubt does the work that confidence should.",
+      "themes": ["self", "father", "status"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 11" }, { "key": "saravali", "locus": "ch. 10" }] },
+
+    { "id": "cnj.su.ra", "name": "Grahan dosha (solar)", "when": { "conjunct": ["su", "ra"] },
+      "says": "Sun with Rahu: ambition outruns position, and the sense of self takes on something borrowed or performed. Classically read as an eclipse of the Sun significations.",
+      "themes": ["self", "ambition", "father"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.su.ke", "when": { "conjunct": ["su", "ke"] },
+      "says": "Sun with Ketu: detachment from status and from the father; capable, and privately indifferent to being seen as capable.",
+      "themes": ["self", "faith", "father"], "polarity": "mixed", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.mo.me", "when": { "conjunct": ["mo", "me"] },
+      "says": "Moon with Mercury: feeling is put into words quickly and accurately, which suits writing, teaching and negotiation.",
+      "themes": ["mind", "intellect", "speech"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 11" }] },
+
+    { "id": "cnj.mo.ju", "when": { "conjunct": ["mo", "ju"] },
+      "says": "Moon with Jupiter: generous by instinct and widely liked; the fullest form of the Gajakesari combination.",
+      "themes": ["mind", "fortune"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 7" }] },
+
+    { "id": "cnj.mo.ve", "when": { "conjunct": ["mo", "ve"] },
+      "says": "Moon with Venus: affectionate, aesthetically alert, and dependent on pleasant surroundings more than is usually admitted.",
+      "themes": ["mind", "comfort", "art"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 11" }] },
+
+    { "id": "cnj.mo.sa", "name": "Vish yoga", "when": { "conjunct": ["mo", "sa"] },
+      "says": "Moon with Saturn: the mind runs cold and heavy. Realistic to a fault, slow to trust, and prone to long low stretches that look like patience from outside.",
+      "themes": ["mind", "loss"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 12" }, { "key": "saravali", "locus": "ch. 11" }],
+      "note": "Also called Punarphoo by some authorities, who apply the name specifically to delay in marriage rather than to temperament." },
+
+    { "id": "cnj.mo.ra", "when": { "conjunct": ["mo", "ra"] },
+      "says": "Moon with Rahu: imagination amplified past what it can carry; strong intuitions, some of them unreliable, and real difficulty settling the mind.",
+      "themes": ["mind", "ambition"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.mo.ke", "when": { "conjunct": ["mo", "ke"] },
+      "says": "Moon with Ketu: emotional withdrawal that can look like composure; attachment is felt and then quietly released.",
+      "themes": ["mind", "faith"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.ma.me", "when": { "conjunct": ["ma", "me"] },
+      "says": "Mars with Mercury: sharp, fast argument and genuine technical skill; the tongue is used as an instrument and occasionally as a weapon.",
+      "themes": ["intellect", "speech"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "saravali", "locus": "ch. 12" }] },
+
+    { "id": "cnj.ma.ju", "when": { "conjunct": ["ma", "ju"] },
+      "says": "Mars with Jupiter: conviction backed by the willingness to act on it, which is effective and occasionally righteous.",
+      "themes": ["courage", "faith"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 7" }] },
+
+    { "id": "cnj.ma.ve", "when": { "conjunct": ["ma", "ve"] },
+      "says": "Mars with Venus: strong appetites and a direct way of pursuing them; artistically forceful, romantically impatient.",
+      "themes": ["romance", "art"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 12" }] },
+
+    { "id": "cnj.ma.sa", "when": { "conjunct": ["ma", "sa"] },
+      "says": "Mars with Saturn: drive and restraint locked together. Capable of sustained hard work, and of frustration that accumulates without an outlet.",
+      "themes": ["work", "adversity"], "polarity": "difficult", "confidence": 0.85,
+      "sources": [{ "key": "bphs", "locus": "ch. 13" }] },
+
+    { "id": "cnj.ma.ra", "name": "Angarak yoga", "when": { "conjunct": ["ma", "ra"] },
+      "says": "Mars with Rahu: force without brakes. Decisive and physically bold, with a real risk of acting first and understanding afterwards.",
+      "themes": ["courage", "adversity"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.ma.ke", "when": { "conjunct": ["ma", "ke"] },
+      "says": "Mars with Ketu: precise, surgical capability; aggression is applied narrowly and then withdrawn.",
+      "themes": ["courage", "health"], "polarity": "mixed", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.me.ju", "when": { "conjunct": ["me", "ju"] },
+      "says": "Mercury with Jupiter: learning becomes doctrine and then gets taught well; the classical signature of a scholar.",
+      "themes": ["intellect", "faith"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "phaladeepika", "locus": "ch. 7" }] },
+
+    { "id": "cnj.me.ve", "when": { "conjunct": ["me", "ve"] },
+      "says": "Mercury with Venus: persuasive, well-mannered and commercially able; a natural fit for design, trade and diplomacy.",
+      "themes": ["speech", "art", "wealth"], "polarity": "favourable", "confidence": 0.85,
+      "sources": [{ "key": "saravali", "locus": "ch. 13" }] },
+
+    { "id": "cnj.me.sa", "when": { "conjunct": ["me", "sa"] },
+      "says": "Mercury with Saturn: slow, methodical and unusually accurate thinking. Speech is withheld until it is certain, which is often mistaken for dullness.",
+      "themes": ["intellect", "speech"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 13" }] },
+
+    { "id": "cnj.ju.ra", "name": "Guru Chandala yoga", "when": { "conjunct": ["ju", "ra"] },
+      "says": "Jupiter with Rahu: the teaching function gets mixed with appetite. Unorthodox wisdom, impatience with inherited authority, and a tendency to argue the case for whatever is wanted.",
+      "themes": ["faith", "intellect", "ambition"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }, { "key": "jataka-parijata", "locus": "ch. 7" }],
+      "note": "Some practitioners read this combination as a positive signature for unconventional learning and treat the classical warning as moralising. Both readings circulate." },
+
+    { "id": "cnj.ju.ke", "when": { "conjunct": ["ju", "ke"] },
+      "says": "Jupiter with Ketu: wisdom turned inward; drawn to renunciation and genuinely uninterested in the rewards that Jupiter usually brings.",
+      "themes": ["faith", "loss"], "polarity": "mixed", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.ju.sa", "when": { "conjunct": ["ju", "sa"] },
+      "says": "Jupiter with Saturn: expansion and limit in the same place. Mature judgement, built slowly, with optimism that has been tested rather than assumed.",
+      "themes": ["faith", "work"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 14" }] },
+
+    { "id": "cnj.ve.sa", "when": { "conjunct": ["ve", "sa"] },
+      "says": "Venus with Saturn: affection held under discipline. Loyal and undemonstrative, with pleasure postponed often enough to become a habit.",
+      "themes": ["partnership", "comfort"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "saravali", "locus": "ch. 15" }] },
+
+    { "id": "cnj.ve.ra", "when": { "conjunct": ["ve", "ra"] },
+      "says": "Venus with Rahu: strong and unconventional attractions, often across a boundary of culture, age or circumstance.",
+      "themes": ["romance", "partnership", "foreign"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.ve.ke", "when": { "conjunct": ["ve", "ke"] },
+      "says": "Venus with Ketu: desire that arrives and then loses interest in itself; relationships are entered sincerely and held loosely.",
+      "themes": ["romance", "partnership"], "polarity": "difficult", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] },
+
+    { "id": "cnj.sa.ra", "name": "Shrapit dosha", "when": { "conjunct": ["sa", "ra"] },
+      "says": "Saturn with Rahu: obstruction with ambition behind it. Long delays, inherited difficulty, and gains that arrive only after the person has stopped expecting them.",
+      "themes": ["adversity", "loss", "work"], "polarity": "difficult", "confidence": 0.75,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }],
+      "note": "The name Shrapit is modern and the doctrine is not classical in this form. The underlying judgement about Saturn and Rahu together is." },
+
+    { "id": "cnj.sa.ke", "when": { "conjunct": ["sa", "ke"] },
+      "says": "Saturn with Ketu: endurance without attachment to the outcome, which is either austerity or resignation depending on the rest of the chart.",
+      "themes": ["adversity", "faith"], "polarity": "difficult", "confidence": 0.7,
+      "sources": [{ "key": "bphs", "locus": "ch. 18" }] }
+  ]
+}

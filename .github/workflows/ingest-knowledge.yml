@@ -1,0 +1,107 @@
+name: Ingest knowledge submission
+
+# A submission filed from the app (or by hand) is reconciled against the existing
+# rules and arrives as a pull request. Nothing reaches the knowledge base without
+# a human merging it, and an existing rule is never rewritten by this job.
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number to ingest
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  ingest:
+    # Only issues carrying the label the app applies.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'knowledge-submission')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install the Anthropic SDK
+        run: npm install --no-save @anthropic-ai/sdk@1.4.0
+
+      - name: Read the issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.inputs.issue || github.event.issue.number }}
+        run: |
+          gh issue view "$NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json number,title,body > issue.json
+          {
+            echo "number=$(jq -r .number issue.json)"
+            echo "title=$(jq -r .title issue.json)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Reconcile against the knowledge base
+        id: ingest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+        run: |
+          ISSUE_BODY="$(jq -r .body issue.json)" node scripts/ingest.mjs
+
+      - name: Validate the result
+        run: node scripts/validate.mjs
+
+      - name: Open a pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          if git diff --quiet -- knowledge/; then
+            echo "No rule changes were produced."
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file ingest-report.md
+            gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --add-label "not-encoded"
+            exit 0
+          fi
+
+          BRANCH="knowledge/submission-$NUMBER"
+          git config user.name "astrobot-ingest"
+          git config user.email "noreply@github.com"
+          git checkout -b "$BRANCH"
+          git add knowledge/
+          git commit -m "Knowledge from submission #$NUMBER
+
+          Reconciled by scripts/ingest.mjs. Existing rules were not modified.
+
+          Closes #$NUMBER"
+          git push --set-upstream origin "$BRANCH"
+
+          LABELS="knowledge"
+          if [ "$(jq -r .hasContradiction ingest-summary.json)" = "true" ]; then
+            LABELS="$LABELS,knowledge-conflict"
+          fi
+
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Knowledge from submission #$NUMBER: ${{ steps.issue.outputs.title }}" \
+            --body-file ingest-report.md \
+            --label "$LABELS" \
+            --head "$BRANCH"
+
+      - name: Report failure on the issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.issue.outputs.number }}
+        run: |
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --body "Ingestion failed. See the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Nothing was changed."

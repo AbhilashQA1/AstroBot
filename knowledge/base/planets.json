@@ -1,0 +1,100 @@
+{
+  "schema": "astrobot/planets@1",
+  "order": ["su", "mo", "ma", "me", "ju", "ve", "sa", "ra", "ke"],
+  "planets": {
+    "su": {
+      "en": "Sun", "sa": "Surya", "glyph": "Su", "symbol": "\u2609",
+      "nature": "malefic", "natureNote": "A mild malefic by heat and separation, never by malice.",
+      "gender": "male", "caste": "kshatriya", "element": "fire", "dayLord": "Sunday",
+      "owns": [5], "moolatrikona": { "sign": 5, "from": 0, "to": 20 },
+      "exalted": { "sign": 1, "degree": 10 }, "debilitated": { "sign": 7, "degree": 10 },
+      "friends": ["mo", "ma", "ju"], "enemies": ["ve", "sa"], "neutral": ["me"],
+      "aspects": [7], "directionalStrength": 10, "retrogrades": false,
+      "karaka": ["soul", "father", "authority", "vitality", "bone", "right eye", "government", "fame"]
+    },
+    "mo": {
+      "en": "Moon", "sa": "Chandra", "glyph": "Mo", "symbol": "\u263d",
+      "nature": "benefic", "natureNote": "Benefic while waxing; treated as malefic when close to the Sun.",
+      "gender": "female", "caste": "vaishya", "element": "water", "dayLord": "Monday",
+      "owns": [4], "moolatrikona": { "sign": 2, "from": 3, "to": 30 },
+      "exalted": { "sign": 2, "degree": 3 }, "debilitated": { "sign": 8, "degree": 3 },
+      "friends": ["su", "me"], "enemies": [], "neutral": ["ma", "ju", "ve", "sa"],
+      "aspects": [7], "directionalStrength": 4, "retrogrades": false,
+      "karaka": ["mind", "mother", "emotion", "blood", "left eye", "water", "public", "comfort"]
+    },
+    "ma": {
+      "en": "Mars", "sa": "Mangala", "glyph": "Ma", "symbol": "\u2642",
+      "nature": "malefic", "natureNote": "A full malefic; cuts, burns and separates, but also protects.",
+      "gender": "male", "caste": "kshatriya", "element": "fire", "dayLord": "Tuesday",
+      "owns": [1, 8], "moolatrikona": { "sign": 1, "from": 0, "to": 12 },
+      "exalted": { "sign": 10, "degree": 28 }, "debilitated": { "sign": 4, "degree": 28 },
+      "friends": ["su", "mo", "ju"], "enemies": ["me"], "neutral": ["ve", "sa"],
+      "aspects": [4, 7, 8], "directionalStrength": 10, "retrogrades": true,
+      "karaka": ["courage", "younger sibling", "land", "muscle", "surgery", "weapons", "anger", "engineering"]
+    },
+    "me": {
+      "en": "Mercury", "sa": "Budha", "glyph": "Me", "symbol": "\u263f",
+      "nature": "neutral", "natureNote": "Takes the character of whatever it sits with; benefic when alone and unafflicted.",
+      "gender": "neuter", "caste": "vaishya", "element": "earth", "dayLord": "Wednesday",
+      "owns": [3, 6], "moolatrikona": { "sign": 6, "from": 16, "to": 20 },
+      "exalted": { "sign": 6, "degree": 15 }, "debilitated": { "sign": 12, "degree": 15 },
+      "friends": ["su", "ve"], "enemies": ["mo"], "neutral": ["ma", "ju", "sa"],
+      "aspects": [7], "directionalStrength": 1, "retrogrades": true,
+      "karaka": ["speech", "intellect", "trade", "skin", "nerves", "writing", "calculation", "maternal uncle"]
+    },
+    "ju": {
+      "en": "Jupiter", "sa": "Guru", "glyph": "Ju", "symbol": "\u2643",
+      "nature": "benefic", "natureNote": "The great benefic; expands whatever it touches, for better and for worse.",
+      "gender": "male", "caste": "brahmin", "element": "ether", "dayLord": "Thursday",
+      "owns": [9, 12], "moolatrikona": { "sign": 9, "from": 0, "to": 10 },
+      "exalted": { "sign": 4, "degree": 5 }, "debilitated": { "sign": 10, "degree": 5 },
+      "friends": ["su", "mo", "ma"], "enemies": ["me", "ve"], "neutral": ["sa"],
+      "aspects": [5, 7, 9], "directionalStrength": 1, "retrogrades": true,
+      "karaka": ["wisdom", "children", "teacher", "wealth", "fat", "law", "faith", "fortune"]
+    },
+    "ve": {
+      "en": "Venus", "sa": "Shukra", "glyph": "Ve", "symbol": "\u2640",
+      "nature": "benefic", "natureNote": "Benefic, concerned with pleasure, refinement and union.",
+      "gender": "female", "caste": "brahmin", "element": "water", "dayLord": "Friday",
+      "owns": [2, 7], "moolatrikona": { "sign": 7, "from": 0, "to": 15 },
+      "exalted": { "sign": 12, "degree": 27 }, "debilitated": { "sign": 6, "degree": 27 },
+      "friends": ["me", "sa"], "enemies": ["su", "mo"], "neutral": ["ma", "ju"],
+      "aspects": [7], "directionalStrength": 4, "retrogrades": true,
+      "karaka": ["spouse", "beauty", "art", "vehicle", "semen", "luxury", "romance", "diplomacy"]
+    },
+    "sa": {
+      "en": "Saturn", "sa": "Shani", "glyph": "Sa", "symbol": "\u2644",
+      "nature": "malefic", "natureNote": "The great malefic; delays, restricts and finally matures whatever it rules.",
+      "gender": "neuter", "caste": "shudra", "element": "air", "dayLord": "Saturday",
+      "owns": [10, 11], "moolatrikona": { "sign": 11, "from": 0, "to": 20 },
+      "exalted": { "sign": 7, "degree": 20 }, "debilitated": { "sign": 1, "degree": 20 },
+      "friends": ["me", "ve"], "enemies": ["su", "mo", "ma"], "neutral": ["ju"],
+      "aspects": [3, 7, 10], "directionalStrength": 7, "retrogrades": true,
+      "karaka": ["longevity", "sorrow", "labour", "servants", "nerves", "old age", "detachment", "discipline"]
+    },
+    "ra": {
+      "en": "Rahu", "sa": "Rahu", "glyph": "Ra", "symbol": "\u260a",
+      "nature": "malefic", "natureNote": "Shadow planet. Has no body of its own and acts through its dispositor and co-tenants.",
+      "gender": "neuter", "caste": "outcaste", "element": "air", "dayLord": null,
+      "owns": [], "moolatrikona": null,
+      "exalted": { "sign": 3, "degree": 20, "disputed": true, "alternatives": [2] },
+      "debilitated": { "sign": 9, "degree": 20, "disputed": true, "alternatives": [8] },
+      "friends": ["me", "ve", "sa"], "enemies": ["su", "mo", "ma"], "neutral": ["ju"],
+      "aspects": [7], "aspectsDisputed": [5, 9], "directionalStrength": null,
+      "retrogrades": true, "alwaysRetrograde": true,
+      "karaka": ["obsession", "foreign", "illusion", "poison", "technology", "grandfather", "sudden rise", "taboo"]
+    },
+    "ke": {
+      "en": "Ketu", "sa": "Ketu", "glyph": "Ke", "symbol": "\u260b",
+      "nature": "malefic", "natureNote": "Shadow planet. Separates and dissolves; a liberator in spiritual matters.",
+      "gender": "neuter", "caste": "outcaste", "element": "fire", "dayLord": null,
+      "owns": [], "moolatrikona": null,
+      "exalted": { "sign": 9, "degree": 20, "disputed": true, "alternatives": [8] },
+      "debilitated": { "sign": 3, "degree": 20, "disputed": true, "alternatives": [2] },
+      "friends": ["ma", "ve", "sa"], "enemies": ["su", "mo"], "neutral": ["me", "ju"],
+      "aspects": [7], "aspectsDisputed": [5, 9], "directionalStrength": null,
+      "retrogrades": true, "alwaysRetrograde": true,
+      "karaka": ["detachment", "liberation", "loss", "maternal grandfather", "flag", "insight", "surgery", "renunciation"]
+    }
+  }
+}

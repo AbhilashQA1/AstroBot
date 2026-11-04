@@ -1,0 +1,88 @@
+{
+  "schema": "astrobot/sources@1",
+  "note": "Citation registry. Rules in knowledge/rules/ reference these keys. The texts themselves are NOT redistributed in this repository; the wording of every AstroBot rule is original. `repoPath` points into the third-party reference collection listed under `collections` for anyone who wants to check a doctrine against its source.",
+  "collections": [
+    {
+      "key": "abd",
+      "name": "ASTROLOGY-BOOKS-DATABASE",
+      "url": "https://github.com/ayushman1024/ASTROLOGY-BOOKS-DATABASE",
+      "owner": "ayushman1024",
+      "license": "none stated",
+      "caution": "The collection's own README states its files were gathered from freely available sources and disclaims responsibility for copyright. Treat every file in it as third-party copyrighted material: consult it, do not copy from it."
+    }
+  ],
+  "sources": {
+    "bphs": {
+      "title": "Brihat Parashara Hora Shastra", "author": "attributed to Parashara",
+      "translator": "R. Santhanam", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/BPHS-Santhanam-Vol-1.pdf",
+      "note": "The base text for house, sign and planet doctrine used throughout AstroBot."
+    },
+    "phaladeepika": {
+      "title": "Phaladeepika", "author": "Mantreswara", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/Mantreswara_Phaladeeplka.pdf",
+      "note": "Concise and unusually systematic on planets in houses and on yogas."
+    },
+    "saravali": {
+      "title": "Saravali", "author": "Kalyana Varma", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/Kalyana Varmas Saravali.pdf",
+      "note": "Detailed on planets in signs and in houses."
+    },
+    "jataka-parijata": {
+      "title": "Jataka Parijata", "author": "Vaidyanatha Dikshita", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/Jataka-Parijata-Vol-1.pdf"
+    },
+    "sarvartha-chintamani": {
+      "title": "Sarvartha Chintamani", "author": "Venkatesa Daivagna", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/Sarvartha-Chintamani-JN-Bhasin_compressed.pdf"
+    },
+    "jaimini": {
+      "title": "Jaimini Sutras", "author": "Jaimini", "era": "classical", "authority": "primary",
+      "repoPath": "Classics books/JaiminiSutrasCompleteEng.pdf",
+      "note": "A separate system (rashi drishti, chara karakas). Do not mix its rules with Parashari rules without marking them."
+    },
+    "satya-jataka": {
+      "title": "Satya Jataka", "author": "Satyacharya", "era": "classical", "authority": "secondary",
+      "repoPath": "Classics books/Satya Jataka.pdf"
+    },
+    "prasna-marga": {
+      "title": "Prasna Marga", "author": "unknown (Kerala tradition)", "era": "classical", "authority": "secondary",
+      "repoPath": "Classics books/PRASNA MARGA.doc",
+      "note": "Horary. Relevant to question-charts, not to natal interpretation."
+    },
+    "strijataka": {
+      "title": "Strijataka", "author": "unknown", "era": "classical", "authority": "secondary",
+      "repoPath": "Classics books/STRIJATAKA.pdf",
+      "note": "Historical interest. Its gendered judgements are period-bound and are not encoded as rules."
+    },
+    "lal-kitab": {
+      "title": "Lal Kitab", "author": "Pandit Roop Chand Joshi", "era": "modern", "authority": "divergent",
+      "repoPath": "Classics books/Lal kitabh/lal-kitab-vol-1-1952.pdf",
+      "note": "A distinct tradition with its own house-grid logic and remedies. Frequently contradicts Parashari rules; always tag rules from it so the engine can keep them apart."
+    },
+    "deva-keralam": {
+      "title": "Deva Keralam (Chandra Kala Nadi)", "author": "unknown", "era": "classical", "authority": "divergent",
+      "repoPath": "Classics books/Deva-keralam.pdf",
+      "note": "Nadi style; highly specific combinations rather than general principles."
+    },
+    "jatak-nirnay": {
+      "title": "Jatak Nirnay", "author": "V. B. Raman / compiled", "era": "modern", "authority": "secondary",
+      "repoPath": "Classics books/Jatak Nirnay 1.pdf"
+    },
+    "community": {
+      "title": "Community and social-media submissions", "author": "various", "era": "contemporary", "authority": "unverified",
+      "note": "Knowledge added through the app. Never promoted above `secondary` without a classical citation being attached by review."
+    },
+    "astrobot": {
+      "title": "AstroBot derived", "author": "AstroBot engine", "era": "contemporary", "authority": "derived",
+      "note": "Statements the engine composes from reference data (lordship, dignity, aspect geometry) rather than from a cited rule."
+    }
+  },
+  "authorityWeight": {
+    "primary": 1.0,
+    "secondary": 0.75,
+    "divergent": 0.5,
+    "derived": 0.9,
+    "unverified": 0.35
+  }
+}

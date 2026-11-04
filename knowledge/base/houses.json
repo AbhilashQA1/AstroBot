@@ -1,0 +1,30 @@
+{
+  "schema": "astrobot/houses@1",
+  "classes": {
+    "kendra":   { "houses": [1, 4, 7, 10], "label": "Angle",      "note": "Pillars of the chart; planets here act visibly in life." },
+    "trikona":  { "houses": [1, 5, 9],     "label": "Trine",      "note": "Houses of merit and fortune; their lords are the chart's benefactors." },
+    "dusthana": { "houses": [6, 8, 12],    "label": "Difficult",  "note": "Houses of debt, rupture and loss; planets here are weakened in worldly terms." },
+    "upachaya": { "houses": [3, 6, 10, 11],"label": "Growing",    "note": "Houses that improve with effort and age; malefics do well here." },
+    "panapara": { "houses": [2, 5, 8, 11], "label": "Succedent",  "note": "Houses of accumulation and resources." },
+    "apoklima": { "houses": [3, 6, 9, 12], "label": "Cadent",     "note": "Houses of release and transition." },
+    "maraka":   { "houses": [2, 7],        "label": "Maraka",     "note": "Lords of these houses become agents of mortality in longevity work." },
+    "dharma":   { "houses": [1, 5, 9],     "label": "Dharma",     "note": "Purpose, merit, right action." },
+    "artha":    { "houses": [2, 6, 10],    "label": "Artha",      "note": "Resources, work, material sustenance." },
+    "kama":     { "houses": [3, 7, 11],    "label": "Kama",       "note": "Desire, partnership, gain." },
+    "moksha":   { "houses": [4, 8, 12],    "label": "Moksha",     "note": "Inwardness, dissolution, release." }
+  },
+  "houses": [
+    { "n": 1,  "sa": "Tanu",     "label": "Self",          "body": "head",      "significations": ["body", "appearance", "vitality", "temperament", "beginnings", "general direction of life"] },
+    { "n": 2,  "sa": "Dhana",    "label": "Wealth",        "body": "face",      "significations": ["accumulated money", "speech", "food", "family of origin", "movable assets", "self-worth"] },
+    { "n": 3,  "sa": "Sahaja",   "label": "Siblings",      "body": "arms",      "significations": ["younger siblings", "courage", "effort", "short travel", "hands and skill", "communication"] },
+    { "n": 4,  "sa": "Bandhu",   "label": "Home",          "body": "chest",     "significations": ["mother", "home and land", "vehicles", "inner peace", "schooling", "what is private"] },
+    { "n": 5,  "sa": "Putra",    "label": "Children",      "body": "stomach",   "significations": ["children", "intelligence", "merit earned earlier", "romance", "creative work", "speculation"] },
+    { "n": 6,  "sa": "Shatru",   "label": "Adversity",     "body": "waist",     "significations": ["illness", "debt", "enemies", "litigation", "daily service", "competition", "discipline"] },
+    { "n": 7,  "sa": "Kalatra",  "label": "Partnership",   "body": "pelvis",    "significations": ["spouse", "business partner", "contracts", "the public", "open dealings", "foreign residence"] },
+    { "n": 8,  "sa": "Randhra",  "label": "Rupture",       "body": "genitals",  "significations": ["longevity", "sudden change", "inheritance", "occult", "chronic matters", "others' money", "research"] },
+    { "n": 9,  "sa": "Dharma",   "label": "Fortune",       "body": "thighs",    "significations": ["father", "teacher", "faith", "long travel", "higher learning", "good fortune", "ethics"] },
+    { "n": 10, "sa": "Karma",    "label": "Work",          "body": "knees",     "significations": ["profession", "status", "visible action", "authority", "reputation", "duty"] },
+    { "n": 11, "sa": "Labha",    "label": "Gain",          "body": "calves",    "significations": ["income", "elder siblings", "networks and friends", "fulfilled desire", "gains from work"] },
+    { "n": 12, "sa": "Vyaya",    "label": "Loss",          "body": "feet",      "significations": ["expenditure", "foreign lands", "sleep and dreams", "isolation", "liberation", "what is given up", "hidden life"] }
+  ]
+}
