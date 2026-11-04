@@ -34,6 +34,9 @@ jobs:
       - name: Check the kundali calculation
         run: node scripts/test-astro.mjs
 
+      - name: Check the chart-editing rules
+        run: node scripts/test-edits.mjs
+
   deploy:
     needs: validate
     runs-on: ubuntu-latest

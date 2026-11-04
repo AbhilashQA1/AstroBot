@@ -85,6 +85,28 @@ coordinates can be entered directly. A computed chart goes to the confirmation
 screen like any other — the arithmetic can be right while the birth certificate
 is wrong.
 
+### Editing a calculated chart
+
+A calculated chart can be changed, and it stops claiming to be calculated the
+moment you do. The calculation is kept as a snapshot and "edited" is worked out
+by comparing against it, so a stored flag can never drift out of step with the
+data it describes.
+
+| Action | What happens |
+| --- | --- |
+| Move a body to another square | Its degree is dropped. A longitude places a body in exactly one sign, so once it is somewhere else that number describes nothing — keeping it would let the reading judge moolatrikona from a figure you overruled. |
+| Type a degree | Kept to a thousandth of a degree. Leave it blank to be judged by sign alone. |
+| Change the Lagna | All twelve houses rotate, as before. |
+| Undo my changes | Puts every body and the Lagna back to the calculation. |
+| Move the birth time | Recalculates. The chart stays *calculated*, because nothing was edited. |
+
+Edited bodies are badged on the confirmation screen and named above the roster,
+so an edited chart can never be read as though it were computed.
+
+The birth-time nudge is there because rectification is the real reason anyone
+edits a calculated chart: birth times get rounded to five minutes or misremembered,
+and the Lagna moves about a degree every four minutes.
+
 The place list is fetched the first time that screen is opened, not at start-up,
 so anyone who only enters charts by hand never downloads it. Rebuild it with:
 
