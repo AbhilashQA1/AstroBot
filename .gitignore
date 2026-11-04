@@ -1,7 +1,43 @@
+# --- secrets ---------------------------------------------------------------
+# Nothing in this repository should ever hold a credential. The app keeps the
+# user's GitHub token in browser storage on their own device, and CI reads
+# ANTHROPIC_API_KEY from GitHub Actions secrets. These patterns are here so an
+# accidental local file cannot be committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+secrets.json
+secrets.yml
+secrets.yaml
+.secrets
+credentials.json
+service-account*.json
+.npmrc
+.netrc
+*.token
+anthropic.key
+github-token*
+.claude/settings.local.json
+
+# --- CI artefacts ----------------------------------------------------------
+# Written by scripts/ingest.mjs during a workflow run; the workflow reads them
+# and they never belong in a commit.
+ingest-report.md
+ingest-summary.json
+issue.json
+
+# --- local noise -----------------------------------------------------------
 node_modules/
+package-lock.json
 .DS_Store
 Thumbs.db
+desktop.ini
 *.log
-.env
-.env.local
 scratch/
+.vscode/
+.idea/
