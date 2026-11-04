@@ -635,3 +635,51 @@ input[type='date'],
 input[type='time'] { min-height: var(--tap); }
 
 input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- provenance and editing -------------------------------------------- */
+
+.computed-panel {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-raised);
+}
+
+.computed-line { margin: 0 0 8px; font-size: 0.85rem; color: var(--ink-dim); }
+.computed-panel .hint { margin: 0 0 10px; }
+.computed-panel .btn { min-height: 36px; padding: 7px 12px; font-size: 0.8rem; }
+
+.nudge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.nudge-row .hint { margin: 0; flex: 1 1 100%; }
+.btn.nudge { min-width: 52px; padding: 7px 10px; font-variant-numeric: tabular-nums; }
+
+.tag-edited { background: color-mix(in srgb, var(--mixed) 24%, transparent); color: var(--mixed); }
+.callout.is-edited { border-left-color: var(--mixed); }
+.callout p { margin: 0 0 6px; }
+.callout p:last-child { margin-bottom: 0; }
+
+.sheet-degrees { margin-top: 16px; }
+.sheet-degrees .sheet-sub { margin-bottom: 8px; }
+
+.degree-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.degree-row .glyph { font-weight: 700; color: var(--ink); min-width: 1.6em; }
+.degree-row input { width: 7.5em; margin-left: auto; min-height: 38px; text-align: right; }

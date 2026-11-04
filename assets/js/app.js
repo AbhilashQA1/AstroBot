@@ -6,6 +6,11 @@ import { compose, ordinal } from './engine.js';
 import { renderChart } from './chartview.js';
 import { renderBirthView } from './birth.js';
 import {
+  chartSource, editedBodies, lagnaEdited, moveBody, revertToComputed,
+  setDegree, shiftBirthMinutes, snapshot,
+} from './edits.js';
+import { computeKundali, toChartPlacements } from './astro/compute.js';
+import {
   chartOf, deleteChart, deleteReading, exportAll, getReading, importAll, listCharts,
   listReadings, readingsForChart, renameChart, saveChart, saveReading, store, toView,
   usage, useEncoder,
@@ -102,6 +107,89 @@ function renderChartView() {
   $('#lagna').value = String(chart.lagna);
   $('#chart-name').value = state.raw.name || '';
   $('#chart-label').textContent = state.raw.name || (placed ? `${placed}/9 placed` : 'New chart');
+  renderComputedPanel();
+}
+
+/**
+ * The provenance strip: whether this chart was calculated, whether it has since
+ * been edited, and the controls for moving the birth time.
+ */
+function renderComputedPanel() {
+  const host = $('#computed-panel');
+  const birth = state.raw.birth;
+
+  if (!state.raw.computed || !birth) {
+    host.hidden = true;
+    host.textContent = '';
+    return;
+  }
+
+  host.hidden = false;
+  host.textContent = '';
+
+  const edits = editedBodies(state.raw);
+  const movedLagna = lagnaEdited(state.raw);
+  const source = chartSource(state.raw);
+
+  const where = birth.place ? `${birth.place.name}` : 'entered coordinates';
+  host.append(el('p', { class: 'computed-line' }, [
+    el('span', { class: `tag ${source === 'computed' ? 'tag-ownSign' : 'tag-retro'}`, text: source === 'computed' ? 'calculated' : 'calculated, then edited' }),
+    ` ${birth.date} ${birth.timeKnown === false ? 'time unknown' : birth.time}, ${where}`,
+  ]));
+
+  if (edits.length || movedLagna) {
+    const parts = [];
+    if (movedLagna) parts.push('the Lagna');
+    for (const e of edits) parts.push(`${state.chart.planet(e.key).en} (${e.change})`);
+    host.append(el('p', { class: 'hint small', text: `Changed by hand: ${parts.join(', ')}. The reading will use what is on the chart now, not the calculation.` }));
+    host.append(el('button', {
+      type: 'button', class: 'btn btn-quiet',
+      onclick: () => { revertToComputed(state.raw); rebuild(); },
+    }, 'Undo my changes'));
+  }
+
+  // Birth-time rectification. The Lagna moves roughly a degree every four
+  // minutes, so a certificate rounded to the nearest five minutes is worth
+  // nudging. This recomputes rather than editing, so the chart stays calculated.
+  if (birth.timeKnown !== false) {
+    const nudge = el('div', { class: 'nudge-row' }, [
+      el('span', { class: 'hint small', text: 'Move the birth time' }),
+    ]);
+    for (const delta of [-5, -1, 1, 5]) {
+      nudge.append(el('button', {
+        type: 'button', class: 'btn btn-quiet nudge',
+        onclick: () => recomputeWithBirth(shiftBirthMinutes(birth, delta)),
+      }, `${delta > 0 ? '+' : ''}${delta}m`));
+    }
+    host.append(nudge);
+  }
+}
+
+/** Recompute from a birth record and replace the chart, keeping it calculated. */
+function recomputeWithBirth(birth) {
+  try {
+    const result = computeKundali({
+      year: Number(birth.date.slice(0, 4)),
+      month: Number(birth.date.slice(5, 7)),
+      day: Number(birth.date.slice(8, 10)),
+      hour: Number(birth.time.slice(0, 2)),
+      minute: Number(birth.time.slice(3, 5)),
+      latitude: birth.place.latitude,
+      longitude: birth.place.longitude,
+      zone: 'Asia/Kolkata',
+      ayanamsa: birth.ayanamsa,
+      ...(birth.offsetMinutes === null || birth.offsetMinutes === undefined ? {} : { offsetMinutes: birth.offsetMinutes }),
+    });
+    const { lagna, placements } = toChartPlacements(result);
+    state.raw.lagna = lagna;
+    state.raw.placements = placements;
+    state.raw.birth = birth;
+    state.raw.computed = snapshot(lagna, placements);
+    state.lastComputation = result;
+    rebuild();
+  } catch (err) {
+    banner(`Could not recalculate: ${err.message}`, 'bad');
+  }
 }
 
 /* --------------------------------------------------- calculate from birth */
@@ -115,8 +203,11 @@ function renderBirth() {
       state.raw.lagna = lagna;
       state.raw.placements = placements;
       state.raw.birth = birth;
-      state.raw.source = 'computed';
       state.raw.computedAt = new Date().toISOString();
+      // Keep the calculation as a snapshot. Everything the app later says about
+      // what has been edited is derived by comparing against this, so a flag can
+      // never drift out of step with the data it describes.
+      state.raw.computed = snapshot(lagna, placements);
       if (birth.name?.trim()) state.raw.name = birth.name.trim();
 
       rebuild();
@@ -203,6 +294,8 @@ function openSheet(house) {
   grid.append(el('p', { class: 'planet-grid-note', text: 'Outside the classical nine. Recorded on the chart, but no classical rule refers to them, so they do not change the reading.' }));
   for (const p of OUTER_KEYS) grid.append(chipFor(p));
 
+  renderDegreeEditors(house);
+
   $('#sheet').hidden = false;
   $('#sheet-backdrop').hidden = false;
   renderChartView();
@@ -218,9 +311,60 @@ function closeSheet() {
 function togglePlanet(p, house) {
   const at = state.chart.houseOf(p);
   if (at === house) delete state.raw.placements[p];
-  else state.raw.placements[p] = { house, retro: Boolean(state.raw.placements[p]?.retro) };
+  else moveBody(state.raw, p, house);
   rebuild();
   openSheet(house);
+}
+
+function onDegreeInput(p, raw) {
+  try {
+    setDegree(state.raw, p, raw);
+    rebuild();
+    setSheetStatus('');
+  } catch (err) {
+    setSheetStatus(err.message, 'bad');
+  }
+}
+
+/**
+ * Degree editors for whatever occupies the tapped square.
+ *
+ * A degree is only meaningful once a body is in a sign, so these appear per
+ * occupant rather than as a field on the form. Leaving one blank is allowed and
+ * means "sign only" — the engine already handles a missing degree by falling
+ * back to a sign-level judgement and saying so.
+ */
+function renderDegreeEditors(house) {
+  const host = $('#sheet-degrees');
+  host.textContent = '';
+  const occupants = state.chart.occupants(house);
+  if (!occupants.length) return;
+
+  host.append(el('p', { class: 'sheet-sub', text: 'Degree within the rashi, if you know it. Leave blank to judge by sign alone.' }));
+
+  for (const p of occupants) {
+    const value = state.chart.degreeOf(p);
+    host.append(el('label', { class: 'degree-row' }, [
+      el('span', { class: 'glyph', text: state.chart.planet(p).glyph }),
+      el('span', { text: state.chart.planet(p).en }),
+      el('input', {
+        type: 'number', min: '0', max: '29.9999', step: 'any',
+        inputmode: 'decimal',
+        placeholder: '—',
+        'aria-label': `Degree of ${state.chart.planet(p).en}`,
+        value: value === null ? '' : value.toFixed(4).replace(/0+$/, '').replace(/\.$/, ''),
+        onchange: (ev) => onDegreeInput(p, ev.target.value),
+      }),
+    ]));
+  }
+  host.append(el('p', { id: 'sheet-status', class: 'status', role: 'status' }));
+}
+
+function setSheetStatus(message, tone = '') {
+  const node = $('#sheet-status');
+  if (!node) return;
+  node.textContent = message;
+  node.className = `status${tone ? ` is-${tone}` : ''}`;
 }
 
 function toggleRetro(p) {
@@ -243,6 +387,40 @@ const DIGNITY_LABEL = {
   neutral: 'neutral sign',
 };
 
+/**
+ * Says where this chart came from, immediately above the roster the person is
+ * being asked to approve. A hand-entered chart gets nothing: there is no claim
+ * to qualify.
+ */
+function renderProvenanceCallout(edits) {
+  const host = $('#confirm-provenance');
+  host.textContent = '';
+  const birth = state.raw.birth;
+  if (!state.raw.computed || !birth) return;
+
+  const movedLagna = lagnaEdited(state.raw);
+  const clean = edits.size === 0 && !movedLagna;
+  const where = birth.place ? birth.place.name : 'entered coordinates';
+  const when = birth.timeKnown === false ? 'time unknown' : birth.time;
+
+  const lines = [
+    el('p', { text: `Calculated for ${birth.date}, ${when}, ${where}.` }),
+  ];
+
+  if (birth.timeKnown === false) {
+    lines.push(el('p', { class: 'hint small', text: 'With no birth time this was worked out for noon. The Lagna and every house position below are guesses; read the rashis the planets sit in, not the houses.' }));
+  }
+
+  if (!clean) {
+    const parts = [];
+    if (movedLagna) parts.push(`the Lagna (calculated ${state.raw.computed.lagna}, now ${state.raw.lagna})`);
+    for (const e of edits.values()) parts.push(`${state.chart.planet(e.key).en} ${e.change}`);
+    lines.push(el('p', { class: 'hint small', text: `Since then, changed by hand: ${parts.join('; ')}. What follows describes the chart as it stands now.` }));
+  }
+
+  host.append(el('div', { class: `callout ${clean ? '' : 'is-edited'}`.trim() }, lines));
+}
+
 function renderConfirm() {
   const chart = state.chart;
 
@@ -251,6 +429,9 @@ function renderConfirm() {
   $('#confirm-lagna').textContent =
     `${lagnaRashi.en} (${lagnaRashi.sa}) rises, so square 1 is ${lagnaRashi.en} and the squares run ` +
     `anticlockwise from there. The Lagna lord is ${chart.planet(lagnaRashi.lord).en}.`;
+
+  const confirmEdits = new Map(editedBodies(state.raw).map((e) => [e.key, e]));
+  renderProvenanceCallout(confirmEdits);
 
   const host = $('#confirm-roster');
   host.textContent = '';
@@ -276,6 +457,19 @@ function renderConfirm() {
       tags.push(el('span', {
         class: 'tag tag-retro',
         text: r.retroState === 'always' ? 'always retrograde' : 'retrograde',
+      }));
+    }
+
+    // A body that no longer matches the calculation says so here, where the
+    // person is being asked to approve the chart. Silently reading an edited
+    // chart as though it were computed is the failure this whole screen exists
+    // to prevent.
+    const edit = confirmEdits.get(r.key);
+    if (edit) {
+      tags.push(el('span', {
+        class: 'tag tag-edited',
+        title: edit.was ? `calculated: square ${edit.was.house}${edit.was.degree === null ? '' : `, ${edit.was.degree.toFixed(2)} deg`}` : 'not in the calculation',
+        text: `${edit.change} by hand`,
       }));
     }
 

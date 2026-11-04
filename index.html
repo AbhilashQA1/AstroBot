@@ -54,6 +54,8 @@
       <button id="btn-sample" class="btn btn-quiet" type="button">Load sample</button>
     </div>
 
+    <div id="computed-panel" class="computed-panel" hidden></div>
+
     <div class="field">
       <label for="chart-name">Whose chart is this? (optional, stays on this device)</label>
       <input id="chart-name" type="text" autocomplete="off" placeholder="Name or label">
@@ -87,6 +89,7 @@
       and the square it falls in. Nothing is interpreted until you confirm.
     </p>
 
+    <div id="confirm-provenance"></div>
     <div id="confirm-lagna" class="callout"></div>
     <div id="confirm-roster" class="roster"></div>
     <div id="confirm-houses" class="disclosure-host"></div>
@@ -240,6 +243,7 @@
   </div>
   <p id="sheet-sub" class="sheet-sub"></p>
   <div id="sheet-planets" class="planet-grid"></div>
+  <div id="sheet-degrees" class="sheet-degrees"></div>
   <p class="hint small">
     Tap a planet to put it here or take it away. R marks it retrograde where that
     is a choice: the Sun and Moon never are, and Rahu and Ketu always are.
