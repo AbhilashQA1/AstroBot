@@ -7,6 +7,9 @@
   "scripts": {
     "validate": "node scripts/validate.mjs",
     "test:library": "node scripts/test-library.mjs",
+    "test:astro": "node scripts/test-astro.mjs",
+    "test": "node scripts/validate.mjs && node scripts/test-library.mjs && node scripts/test-astro.mjs",
+    "kundali": "node scripts/kundali.mjs",
     "read": "node scripts/read.mjs",
     "ingest": "node scripts/ingest.mjs",
     "serve": "python -m http.server 8080"

@@ -55,6 +55,33 @@ If you change a file and the browser keeps serving the old one, the service work
 is holding a cached copy — open DevTools → Application → Service Workers →
 Unregister, or hard-reload twice.
 
+## Computing a kundali from birth details
+
+AstroBot calculates charts itself. No API, no key, no network — the whole
+ephemeris runs in the browser and works offline like everything else here.
+
+```bash
+node scripts/kundali.mjs --date 1991-08-23 --time 05:45 --lat 26.8467 --lon 80.9462
+```
+
+Add `--read` to interpret the result in the same command.
+
+| Decision | What AstroBot does |
+| --- | --- |
+| Houses | Whole sign. The first square is the rising rashi; there is no house system to choose. |
+| Ayanamsa | Lahiri (Chitrapaksha) by default. Raman and KP are offered for comparison and are marked unverified in `ayanamsa.js`, because their zero points have not been checked against a published table. |
+| Nodes | Mean node, as the classical texts use. `--true-node` switches, which can move Rahu a sign. |
+| Timezone | The IANA database that ships with every browser, so India's `+05:21:10` before 1906 and `+06:30` wartime daylight saving are handled. |
+| Precision | Longitudes are apparent, in the true ecliptic of date. Degrees reach the engine, so moolatrikona, combustion and nakshatra can be judged exactly. |
+
+Before standard time, a zone carries one local mean time taken from its reference
+city — a birth in Ulm resolves to Berlin's, and a birth in Delhi before 1906 to
+Madras's. Where the real offset is known, pass `--offset` in minutes.
+
+`node scripts/test-astro.mjs` checks the ayanamsa against published Lahiri values,
+asserts the ascendant against hand-derived geometry, sweeps it across all 24 hours,
+and verifies Einstein's chart against his published one.
+
 ## Working on the knowledge base
 
 ```bash
@@ -111,6 +138,11 @@ Rules cite classical texts — Brihat Parashara Hora Shastra, Phaladeepika, Sara
 Jataka Parijata and others — by chapter. The wording of every rule in this repository is
 original; no book text is reproduced here. See `knowledge/base/sources.json` for the
 citation keys.
+
+Positions are computed with [astronomy-engine](https://github.com/cosinekitty/astronomy)
+by Don Cross, MIT licensed, vendored at `assets/vendor/astronomy.js` with its licence
+header intact. Swiss Ephemeris was not used: it is AGPL, which would have placed
+conditions on this repository.
 
 Astrology is not a predictive science. Nothing here is advice about health, money, law or
 relationships.
