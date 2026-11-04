@@ -1,6 +1,8 @@
 {
   "schema": "astrobot/planets@1",
   "order": ["su", "mo", "ma", "me", "ju", "ve", "sa", "ra", "ke"],
+  "outer": ["ur", "ne", "pl"],
+  "outerNote": "Optional. The nine grahas above are the whole of classical Jyotish; the outer planets are recorded so a chart drawn by modern software can be entered faithfully, and they carry no classical rules.",
   "planets": {
     "su": {
       "en": "Sun", "sa": "Surya", "glyph": "Su", "symbol": "\u2609",
@@ -95,6 +97,37 @@
       "aspects": [7], "aspectsDisputed": [5, 9], "directionalStrength": null,
       "retrogrades": true, "alwaysRetrograde": true,
       "karaka": ["detachment", "liberation", "loss", "maternal grandfather", "flag", "insight", "surgery", "renunciation"]
+    },
+
+    "ur": {
+      "en": "Uranus", "sa": null, "glyph": "Ur", "symbol": "♅",
+      "nature": "modern", "classical": false,
+      "natureNote": "Outside the classical system. Jyotish was fixed long before Uranus was discovered in 1781, so no classical text assigns it a sign, an aspect or a result.",
+      "gender": null, "caste": null, "element": null, "dayLord": null,
+      "owns": [], "moolatrikona": null, "exalted": null, "debilitated": null,
+      "friends": [], "enemies": [], "neutral": [],
+      "aspects": [7], "directionalStrength": null, "retrogrades": true,
+      "karaka": ["disruption", "invention", "sudden reversal", "independence", "technology"]
+    },
+    "ne": {
+      "en": "Neptune", "sa": null, "glyph": "Ne", "symbol": "♆",
+      "nature": "modern", "classical": false,
+      "natureNote": "Outside the classical system. Discovered in 1846; no classical text assigns it a sign, an aspect or a result.",
+      "gender": null, "caste": null, "element": null, "dayLord": null,
+      "owns": [], "moolatrikona": null, "exalted": null, "debilitated": null,
+      "friends": [], "enemies": [], "neutral": [],
+      "aspects": [7], "directionalStrength": null, "retrogrades": true,
+      "karaka": ["dissolution", "illusion", "imagination", "intoxication", "the sea"]
+    },
+    "pl": {
+      "en": "Pluto", "sa": null, "glyph": "Pl", "symbol": "♇",
+      "nature": "modern", "classical": false,
+      "natureNote": "Outside the classical system. Discovered in 1930; no classical text assigns it a sign, an aspect or a result.",
+      "gender": null, "caste": null, "element": null, "dayLord": null,
+      "owns": [], "moolatrikona": null, "exalted": null, "debilitated": null,
+      "friends": [], "enemies": [], "neutral": [],
+      "aspects": [7], "directionalStrength": null, "retrogrades": true,
+      "karaka": ["upheaval", "power", "what is buried", "compulsion", "regeneration"]
     }
   }
 }

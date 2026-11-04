@@ -8,7 +8,9 @@ GitHub Pages. Bookmark it to your home screen and it works offline.
 1. **Enter a chart** — pick the Lagna rashi, then tap planets into the twelve squares of a
    North Indian chart. No birth-time maths, no ambiguity.
 2. **Confirm the reading of the chart** — AstroBot lists every planet with its rashi and
-   square number and asks you to approve before interpreting anything.
+   square number and asks you to approve before interpreting anything. Uranus, Neptune
+   and Pluto can be entered so a chart drawn by modern software can be copied as it
+   stands; they are drawn and confirmed, and marked as carrying no classical rule.
 3. **Explain the chart** — a deterministic rules engine matches the chart against the
    knowledge base. Every sentence carries a citation to the classical source it came from.
 4. **Add knowledge from your phone** — paste something you found on social media; AstroBot

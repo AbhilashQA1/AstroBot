@@ -1,9 +1,18 @@
 // Chart model and every derivation the engine needs.
 // A chart is house positions plus a Lagna rashi. Nothing here needs a birth time.
 
+// The nine grahas. This list is what every classical calculation counts: yoga
+// pools, Kala Sarpa, whether a house is empty. It must never gain a member, or
+// doctrine written for nine bodies would quietly start being applied to twelve.
 export const PLANET_KEYS = ['su', 'mo', 'ma', 'me', 'ju', 've', 'sa', 'ra', 'ke'];
 export const NODES = ['ra', 'ke'];
 export const GRAHAS_NO_NODES = ['su', 'mo', 'ma', 'me', 'ju', 've', 'sa'];
+
+// Outside the classical system, and optional. Recorded so a chart drawn by
+// modern software can be entered as it stands; they are displayed and confirmed
+// but take no part in any classical judgement.
+export const OUTER_KEYS = ['ur', 'ne', 'pl'];
+export const ALL_BODY_KEYS = [...PLANET_KEYS, ...OUTER_KEYS];
 
 /** An empty chart. House 1 holds the Lagna rashi; every planet starts unplaced. */
 export function emptyChart() {
@@ -34,9 +43,19 @@ export class Chart {
     this.placements = raw.placements || {};
   }
 
-  /** Planets actually placed, in canonical order. */
+  /** Grahas actually placed, in canonical order. Classical calculations use this. */
   get placed() {
     return PLANET_KEYS.filter((p) => Number.isInteger(this.placements[p]?.house));
+  }
+
+  /** Outer planets actually placed. Display and confirmation only. */
+  get placedOuter() {
+    return OUTER_KEYS.filter((p) => Number.isInteger(this.placements[p]?.house));
+  }
+
+  /** Everything on the chart, grahas and outer planets alike. */
+  get placedBodies() {
+    return [...this.placed, ...this.placedOuter];
   }
 
   get isComplete() {
@@ -80,8 +99,24 @@ export class Chart {
     return h === null ? null : this.signOfHouse(h);
   }
 
+  /**
+   * The nodes are always retrograde, so that is a property of the body rather
+   * than something to be entered. The Sun and Moon never are, whatever a stray
+   * saved flag says.
+   */
   isRetrograde(p) {
+    const data = this.base.planets.planets[p];
+    if (data?.alwaysRetrograde) return true;
+    if (data && data.retrogrades === false) return false;
     return Boolean(this.placements[p]?.retro);
+  }
+
+  /** Can this body's retrogression be chosen, or is it fixed by what it is? */
+  retroState(p) {
+    const data = this.base.planets.planets[p];
+    if (data?.alwaysRetrograde) return 'always';
+    if (data && data.retrogrades === false) return 'never';
+    return 'optional';
   }
 
   degreeOf(p) {
@@ -89,9 +124,17 @@ export class Chart {
     return typeof d === 'number' && Number.isFinite(d) ? d : null;
   }
 
-  /** Planets sharing a house, in canonical order. */
+  /**
+   * Grahas sharing a house. The engine uses this, so a house holding only an
+   * outer planet still counts as empty for every classical rule.
+   */
   occupants(h) {
     return this.placed.filter((p) => this.houseOf(p) === h);
+  }
+
+  /** Everything sharing a house, for drawing the chart. */
+  allOccupants(h) {
+    return this.placedBodies.filter((p) => this.houseOf(p) === h);
   }
 
   /** The dispositor of a house: lord of the rashi occupying it. */
@@ -243,19 +286,22 @@ export class Chart {
    * This is what the confirmation screen shows.
    */
   roster() {
-    return PLANET_KEYS.map((p) => {
+    return ALL_BODY_KEYS.map((p) => {
       const h = this.houseOf(p);
       const s = this.signOf(p);
+      const classical = PLANET_KEYS.includes(p);
       return {
         key: p,
         planet: this.planet(p),
+        classical,
         house: h,
         rashi: s === null ? null : this.rashi(s),
         dignity: this.dignity(p),
         retro: this.isRetrograde(p),
+        retroState: this.retroState(p),
         degree: this.degreeOf(p),
         rules: h === null ? [] : this.housesRuledBy(p),
-        aspecting: this.aspectedHouses(p),
+        aspecting: classical ? this.aspectedHouses(p) : [],
         placed: h !== null,
       };
     });
@@ -263,31 +309,37 @@ export class Chart {
 }
 
 /** Serialise a chart to a short string for sharing or storing in a URL. */
+const token = (at) => (Number.isInteger(at?.house) ? `${at.house}${at.retro ? 'r' : ''}` : '-');
+
+/**
+ * Nine fields for the grahas, and three more only when an outer planet is on
+ * the chart. A code written before the outer planets existed stays readable.
+ */
 export function encodeChart(raw) {
-  const parts = [String(raw.lagna)];
-  for (const p of PLANET_KEYS) {
-    const at = raw.placements[p];
-    if (!Number.isInteger(at?.house)) {
-      parts.push('-');
-      continue;
-    }
-    parts.push(`${at.house}${at.retro ? 'r' : ''}`);
+  const parts = [String(raw.lagna), ...PLANET_KEYS.map((p) => token(raw.placements[p]))];
+  if (OUTER_KEYS.some((p) => Number.isInteger(raw.placements[p]?.house))) {
+    parts.push(...OUTER_KEYS.map((p) => token(raw.placements[p])));
   }
   return parts.join('.');
 }
 
 export function decodeChart(str) {
   const parts = String(str || '').split('.');
-  if (parts.length !== PLANET_KEYS.length + 1) return null;
+  const short = PLANET_KEYS.length + 1;
+  const long = ALL_BODY_KEYS.length + 1;
+  if (parts.length !== short && parts.length !== long) return null;
+
   const lagna = Number(parts[0]);
   if (!Number.isInteger(lagna) || lagna < 1 || lagna > 12) return null;
+
   const chart = emptyChart();
   chart.lagna = lagna;
-  PLANET_KEYS.forEach((p, i) => {
-    const token = parts[i + 1];
-    if (token === '-' || !token) return;
-    const retro = token.endsWith('r');
-    const house = Number(retro ? token.slice(0, -1) : token);
+  const keys = parts.length === long ? ALL_BODY_KEYS : PLANET_KEYS;
+  keys.forEach((p, i) => {
+    const raw = parts[i + 1];
+    if (raw === '-' || !raw) return;
+    const retro = raw.endsWith('r');
+    const house = Number(retro ? raw.slice(0, -1) : raw);
     if (!Number.isInteger(house) || house < 1 || house > 12) return;
     chart.placements[p] = { house, retro };
   });

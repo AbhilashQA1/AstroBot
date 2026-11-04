@@ -5,7 +5,7 @@
 //   npm run read -- --code 5.10.4.6.10.9.11.3.1.7
 
 import { loadKnowledgeFromDisk } from './kb-node.mjs';
-import { Chart, PLANET_KEYS, decodeChart, emptyChart } from '../assets/js/model.js';
+import { ALL_BODY_KEYS, Chart, decodeChart, emptyChart } from '../assets/js/model.js';
 import { compose, ordinal } from '../assets/js/engine.js';
 
 const argv = process.argv.slice(2);
@@ -27,7 +27,7 @@ if (code) {
 } else {
   raw = emptyChart();
   raw.lagna = Number(flag('lagna') || 1);
-  for (const p of PLANET_KEYS) {
+  for (const p of ALL_BODY_KEYS) {
     const v = flag(p);
     if (v === null) continue;
     const retro = v.endsWith('r');

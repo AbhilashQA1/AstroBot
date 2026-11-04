@@ -76,7 +76,7 @@ export function renderChart(host, chart, opts = {}) {
     const geo = HOUSES[house];
     const sign = chart.signOfHouse(house);
     const rashi = chart.rashi(sign);
-    const occupants = chart.occupants(house);
+    const occupants = chart.allOccupants(house);
 
     const group = el('g', {
       class: `kundli-house${selected === house ? ' is-selected' : ''}${occupants.length ? ' is-occupied' : ''}`,

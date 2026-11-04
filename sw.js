@@ -3,7 +3,7 @@
 //
 // Bump CACHE when shipping a change, or clients keep the old files.
 
-const CACHE = 'astrobot-v1';
+const CACHE = 'astrobot-v2';
 
 const SHELL = [
   './',

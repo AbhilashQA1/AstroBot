@@ -274,6 +274,9 @@ button:focus-visible, .kundli-hit:focus-visible {
 .gl-sa, .gl-ma, .gl-ra, .gl-ke { fill: var(--hard); }
 .gl-ju, .gl-ve { fill: var(--good); }
 .gl-su, .gl-mo, .gl-me { fill: var(--ink); }
+/* Outer planets are outside the classical system, so they are drawn as a
+   quieter annotation rather than as another graha. */
+.gl-ur, .gl-ne, .gl-pl { fill: var(--ink-faint); font-weight: 500; font-style: italic; }
 
 /* --- planet picker sheet ------------------------------------------------ */
 
@@ -343,6 +346,33 @@ button:focus-visible, .kundli-hit:focus-visible {
 }
 
 .retro-btn.is-on { background: var(--mixed); border-color: var(--mixed); color: #fff; }
+
+/* Retrogression that is fixed by what the body is, not chosen: shown, not offered. */
+.retro-fixed {
+  margin-left: auto;
+  min-width: 28px;
+  padding: 4px 0;
+  border: 1px dashed var(--line);
+  border-radius: 7px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--mixed);
+}
+
+.retro-fixed.is-off { color: var(--ink-faint); font-weight: 500; }
+
+.planet-grid-note {
+  grid-column: 1 / -1;
+  margin: 10px 0 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 0.74rem;
+  color: var(--ink-faint);
+}
+
+.planet-chip.is-outer { border-style: dashed; }
+.planet-chip.is-outer .glyph { color: var(--ink-faint); font-style: italic; }
 
 /* --- confirmation ------------------------------------------------------- */
 

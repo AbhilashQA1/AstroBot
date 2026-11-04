@@ -1,6 +1,6 @@
 // AstroBot UI. No framework: a handful of render functions over one piece of state.
 
-import { Chart, PLANET_KEYS, decodeChart, emptyChart, encodeChart } from './model.js';
+import { ALL_BODY_KEYS, Chart, OUTER_KEYS, PLANET_KEYS, decodeChart, emptyChart, encodeChart } from './model.js';
 import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
 import { renderChart } from './chartview.js';
@@ -110,7 +110,8 @@ function renderChartView() {
   });
 
   const placed = chart.placed.length;
-  $('#placed-count').textContent = `${placed} of 9 placed`;
+  const outer = chart.placedOuter.length;
+  $('#placed-count').textContent = `${placed} of 9 placed${outer ? ` + ${outer} outer` : ''}`;
   $('#btn-to-confirm').disabled = placed === 0;
   $('#lagna').value = String(chart.lagna);
   $('#chart-name').value = state.raw.name || '';
@@ -134,16 +135,17 @@ function openSheet(house) {
   const grid = $('#sheet-planets');
   grid.textContent = '';
 
-  for (const p of PLANET_KEYS) {
+  const chipFor = (p) => {
     const data = chart.planet(p);
     const at = chart.houseOf(p);
     const here = at === house;
     const elsewhere = at !== null && !here;
-    const isNode = ['ra', 'ke'].includes(p);
+    const retro = chart.retroState(p);
 
     const chip = el('button', {
       type: 'button',
-      class: `planet-chip${here ? ' is-here' : ''}${elsewhere ? ' is-elsewhere' : ''}`,
+      class: `planet-chip${here ? ' is-here' : ''}${elsewhere ? ' is-elsewhere' : ''}`
+        + (OUTER_KEYS.includes(p) ? ' is-outer' : ''),
       'aria-pressed': here ? 'true' : 'false',
       onclick: () => togglePlanet(p, house),
     }, [
@@ -153,7 +155,7 @@ function openSheet(house) {
 
     if (elsewhere) {
       chip.append(el('span', { class: 'where', text: `sq ${at}` }));
-    } else if (here && !isNode && data.retrogrades) {
+    } else if (here && retro === 'optional') {
       const on = chart.isRetrograde(p);
       chip.append(el('button', {
         type: 'button',
@@ -165,10 +167,29 @@ function openSheet(house) {
           toggleRetro(p);
         },
       }, 'R'));
+    } else if (here && retro === 'always') {
+      // Not a choice: the nodes are retrograde by nature, so the state is shown
+      // rather than offered. Leaving the control out entirely reads as a bug.
+      chip.append(el('span', {
+        class: 'retro-fixed',
+        title: `${data.en} is always retrograde`,
+        text: 'R',
+      }));
+    } else if (here && retro === 'never') {
+      chip.append(el('span', {
+        class: 'retro-fixed is-off',
+        title: `${data.en} is never retrograde`,
+        text: '—',
+      }));
     }
 
-    grid.append(chip);
-  }
+    return chip;
+  };
+
+  for (const p of PLANET_KEYS) grid.append(chipFor(p));
+
+  grid.append(el('p', { class: 'planet-grid-note', text: 'Outside the classical nine. Recorded on the chart, but no classical rule refers to them, so they do not change the reading.' }));
+  for (const p of OUTER_KEYS) grid.append(chipFor(p));
 
   $('#sheet').hidden = false;
   $('#sheet-backdrop').hidden = false;
@@ -224,6 +245,8 @@ function renderConfirm() {
 
   for (const r of chart.roster()) {
     if (!r.placed) {
+      // The outer planets are optional, so leaving them off is not an omission.
+      if (!r.classical) continue;
       host.append(el('div', { class: 'roster-row is-missing' }, [
         el('span', { class: 'roster-name', text: r.planet.en }),
         el('span', { class: 'roster-where', text: 'not placed' }),
@@ -233,24 +256,34 @@ function renderConfirm() {
     }
 
     const tags = [];
-    if (r.dignity.state !== 'neutral' && r.dignity.state !== 'friendly' && r.dignity.state !== 'enemy') {
+    if (!r.classical) tags.push(el('span', { class: 'tag tag-plain', text: 'outside the nine' }));
+    if (r.classical && !['neutral', 'friendly', 'enemy'].includes(r.dignity.state)) {
       tags.push(el('span', { class: `tag tag-${r.dignity.state}`, text: DIGNITY_LABEL[r.dignity.state] }));
     }
-    if (r.retro) tags.push(el('span', { class: 'tag tag-retro', text: 'retrograde' }));
+    if (r.retro) {
+      tags.push(el('span', {
+        class: 'tag tag-retro',
+        text: r.retroState === 'always' ? 'always retrograde' : 'retrograde',
+      }));
+    }
 
     const extras = [];
-    if (r.rules.length) {
-      extras.push(`rules the ${r.rules.map((h) => ordinal(h)).join(' and ')}`);
+    if (!r.classical) {
+      extras.push('no classical rule refers to this body, so it does not change the reading');
+    } else {
+      if (r.rules.length) {
+        extras.push(`rules the ${r.rules.map((h) => ordinal(h)).join(' and ')}`);
+      }
+      if (['friendly', 'enemy', 'neutral'].includes(r.dignity.state)) {
+        extras.push(DIGNITY_LABEL[r.dignity.state]);
+      }
+      if (r.dignity.couldBe === 'moolatrikona') {
+        extras.push('own sign; a degree would say whether it is moolatrikona');
+      }
+      extras.push(r.aspecting.length === 1
+        ? `aspects square ${r.aspecting[0]}`
+        : `aspects squares ${r.aspecting.join(', ')}`);
     }
-    if (['friendly', 'enemy', 'neutral'].includes(r.dignity.state)) {
-      extras.push(DIGNITY_LABEL[r.dignity.state]);
-    }
-    if (r.dignity.couldBe === 'moolatrikona') {
-      extras.push('own sign; a degree would say whether it is moolatrikona');
-    }
-    extras.push(r.aspecting.length === 1
-      ? `aspects square ${r.aspecting[0]}`
-      : `aspects squares ${r.aspecting.join(', ')}`);
 
     host.append(el('div', { class: 'roster-row' }, [
       el('span', { class: 'roster-name', text: r.planet.en }),

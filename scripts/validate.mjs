@@ -2,7 +2,7 @@
 // Run before committing a rule change: npm run validate
 
 import { loadKnowledgeFromDisk } from './kb-node.mjs';
-import { Chart, PLANET_KEYS, emptyChart } from '../assets/js/model.js';
+import { ALL_BODY_KEYS, Chart, PLANET_KEYS, emptyChart } from '../assets/js/model.js';
 import { SECTIONS, evaluate } from '../assets/js/engine.js';
 
 const POLARITIES = new Set(['favourable', 'difficult', 'mixed', 'neutral']);
@@ -44,7 +44,7 @@ for (const rule of kb.rules) {
   }
 
   for (const p of planetsMentioned(rule.when)) {
-    if (!PLANET_KEYS.includes(p)) errors.push(`${at}: unknown planet "${p}"`);
+    if (!ALL_BODY_KEYS.includes(p)) errors.push(`${at}: unknown body "${p}"`);
   }
   for (const h of housesMentioned(rule.when)) {
     if (!Number.isInteger(h) || h < 1 || h > 12) errors.push(`${at}: house out of range: ${h}`);
