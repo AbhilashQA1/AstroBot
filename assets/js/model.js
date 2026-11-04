@@ -172,9 +172,15 @@ export class Chart {
    * same-sign cases are not combust at all, so a house-based shortcut would be
    * wrong in both directions.
    *
-   * Returns `na` for bodies combustion does not apply to, and `unknown` when
-   * the chart was entered by hand and carries no degrees - which is honest,
-   * and different from saying a planet is clear.
+   * Returns `na` for bodies combustion does not apply to, and `unknown` when a
+   * degree is missing - which is honest, and different from saying a planet is
+   * clear.
+   *
+   * `unknown` carries `missing`: the bodies whose degrees are wanted. Two
+   * degrees are needed for every verdict, the graha's and the Sun's, so a chart
+   * can carry a degree for the graha and still decide nothing. Naming them lets
+   * the reading ask for the one entry that is actually missing instead of
+   * telling the reader the chart has no degrees at all.
    */
   combustion(p) {
     const orbs = this.planet(p)?.combustion;
@@ -182,7 +188,12 @@ export class Chart {
 
     const sun = this.siderealLongitude('su');
     const own = this.siderealLongitude(p);
-    if (sun === null || own === null) return { state: 'unknown' };
+    if (sun === null || own === null) {
+      const missing = [];
+      if (sun === null) missing.push('su');
+      if (own === null) missing.push(p);
+      return { state: 'unknown', missing };
+    }
 
     const orb = this.isRetrograde(p) && typeof orbs.retroOrb === 'number' ? orbs.retroOrb : orbs.orb;
     const separation = Math.abs(((own - sun + 180) % 360 + 360) % 360 - 180);

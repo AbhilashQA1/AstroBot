@@ -15,7 +15,7 @@
       "says": "The Sun and Mercury together put intelligence at the centre of the identity: articulate, quick to read a situation, and usually recognised for it.",
       "themes": ["intellect", "self", "status"], "polarity": "favourable", "confidence": 0.85,
       "sources": [{ "key": "phaladeepika", "locus": "ch. 6" }],
-      "note": "Mercury very close to the Sun is combust, which some authorities say cancels this yoga outright. Where the chart carries degrees AstroBot works that out and shows the opposing reading under Where the sources differ; a chart entered by hand has no degrees, so there the question stays open." },
+      "note": "Mercury very close to the Sun is combust, which some authorities say cancels this yoga outright. That turns on the two longitudes rather than on the shared house, so it is decided wherever the chart carries a degree for both the Sun and Mercury, and the opposing reading then appears under Where the sources differ." },
 
     { "id": "yog.budha-aditya.burnt", "name": "Budha-Aditya with Mercury combust",
       "when": { "all": [{ "conjunct": ["su", "me"] }, { "combust": "me" }] },

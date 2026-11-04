@@ -3,6 +3,7 @@
 import { ALL_BODY_KEYS, Chart, OUTER_KEYS, PLANET_KEYS, decodeChart, emptyChart, encodeChart } from './model.js';
 import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
+import { dashaFor } from './astro/dasha.js';
 import { renderChart } from './chartview.js';
 import { renderBirthView } from './birth.js';
 import {
@@ -663,9 +664,18 @@ function readingNodes(view) {
   return out;
 }
 
+/**
+ * The running period, where the chart can support one. Worked out fresh each
+ * time a reading is composed, so it follows the clock rather than whatever was
+ * true when the chart was entered.
+ */
+function dashaContext() {
+  return { dasha: dashaFor(state.chart, state.raw.birth || {}, Date.now()) };
+}
+
 function currentView() {
   if (!state.readingView) {
-    state.reading = state.reading || compose(state.chart, state.kb);
+    state.reading = state.reading || compose(state.chart, state.kb, dashaContext());
     state.readingView = toView(state.reading, state.chart, state.raw);
   }
   return state.readingView;
