@@ -419,6 +419,7 @@ button:focus-visible, .kundli-hit:focus-visible {
 .tag-debilitated { background: color-mix(in srgb, var(--hard) 22%, transparent); color: var(--hard); }
 .tag-ownSign, .tag-moolatrikona { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
 .tag-retro { background: color-mix(in srgb, var(--mixed) 22%, transparent); color: var(--mixed); }
+.tag-combust { background: color-mix(in srgb, var(--hard) 18%, transparent); color: var(--hard); }
 .tag-plain { background: var(--bg-sunken); color: var(--ink-faint); }
 
 /* --- disclosure --------------------------------------------------------- */

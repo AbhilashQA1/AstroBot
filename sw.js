@@ -3,7 +3,7 @@
 //
 // Bump CACHE when shipping a change, or clients keep the old files.
 
-const CACHE = 'astrobot-v6';
+const CACHE = 'astrobot-v7';
 
 const SHELL = [
   './',
@@ -42,6 +42,7 @@ const SHELL = [
   'knowledge/rules/planet-in-house/ke.json',
   'knowledge/rules/lord-in-house/general.json',
   'knowledge/rules/yogas.json',
+  'knowledge/rules/combustion.json',
   'knowledge/rules/conjunctions.json',
   'knowledge/rules/aspects.json',
 ];

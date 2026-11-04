@@ -469,6 +469,17 @@ function renderConfirm() {
       }));
     }
 
+    // Combustion is a fact about degrees, so it only appears where the chart
+    // has them. Saying nothing is correct for a hand-entered chart: the reading
+    // explains separately that it cannot be judged.
+    if (r.combustion?.state === 'combust') {
+      tags.push(el('span', {
+        class: 'tag tag-combust',
+        title: `${r.combustion.separation}\u00b0 from the Sun, inside its ${r.combustion.orb}\u00b0 orb`,
+        text: 'combust',
+      }));
+    }
+
     // A body that no longer matches the calculation says so here, where the
     // person is being asked to approve the chart. Silently reading an edited
     // chart as though it were computed is the failure this whole screen exists
@@ -491,6 +502,9 @@ function renderConfirm() {
       }
       if (['friendly', 'enemy', 'neutral'].includes(r.dignity.state)) {
         extras.push(DIGNITY_LABEL[r.dignity.state]);
+      }
+      if (r.combustion?.state === 'combust') {
+        extras.push(`burnt: ${r.combustion.separation}\u00b0 from the Sun, orb ${r.combustion.orb}\u00b0`);
       }
       if (r.dignity.couldBe === 'moolatrikona') {
         extras.push('own sign; a degree would say whether it is moolatrikona');

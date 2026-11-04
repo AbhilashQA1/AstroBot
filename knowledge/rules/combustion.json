@@ -1,0 +1,39 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "combustion",
+  "about": "Combustion (asta): a graha within a few degrees of the Sun is burnt and gives its own significations weakly. These rules fire only when the chart carries degrees, because combustion is a matter of longitude and cannot be read off house positions. The engine also weights every other rule about a burnt graha downward, so these statements name the condition rather than repeating its effect everywhere.",
+  "defaults": {
+    "tradition": "parashari",
+    "status": "active",
+    "added": "2026-11-04",
+    "sources": [{ "key": "bphs", "locus": "on the avasthas of the grahas and combustion" }]
+  },
+  "rules": [
+    { "id": "cmb.mo", "when": { "combust": "mo" },
+      "says": "The Moon is burnt: born within a day or so of the new moon, with a mind that runs quiet and a constitution that needs more rest than it admits.",
+      "themes": ["mind", "health"], "polarity": "difficult", "confidence": 0.8 },
+
+    { "id": "cmb.ma", "when": { "combust": "ma" },
+      "says": "Mars is burnt: the drive is there but spends itself on the wrong things, and physical stamina gives out sooner than the will does.",
+      "themes": ["courage", "health"], "polarity": "difficult", "confidence": 0.75 },
+
+    { "id": "cmb.me", "when": { "combust": "me" },
+      "says": "Mercury is burnt: quick but scattered, and the gap between what is understood and what comes out in words is wider than it looks from inside.",
+      "themes": ["intellect", "speech"], "polarity": "difficult", "confidence": 0.75,
+      "note": "Mercury is combust in roughly two charts out of five, simply because it never travels far from the Sun. It is the ordinary condition of Mercury rather than a misfortune, and most authorities weigh it lightly on its own." },
+
+    { "id": "cmb.ju", "when": { "combust": "ju" },
+      "says": "Jupiter is burnt: belief is held privately rather than taught, and the protection Jupiter usually gives arrives late or through someone else.",
+      "themes": ["faith", "fortune"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "on the avasthas of the grahas and combustion" }, { "key": "saravali", "locus": "on combustion" }] },
+
+    { "id": "cmb.ve", "when": { "combust": "ve" },
+      "says": "Venus is burnt: affection is real but awkwardly expressed, and matters of marriage and comfort are delayed rather than denied.",
+      "themes": ["partnership", "comfort"], "polarity": "difficult", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "on the avasthas of the grahas and combustion" }, { "key": "saravali", "locus": "on combustion" }] },
+
+    { "id": "cmb.sa", "when": { "combust": "sa" },
+      "says": "Saturn is burnt: endurance is undercut by the very authority it answers to, and relations with the father or with those in charge stay formal and cool.",
+      "themes": ["work", "father"], "polarity": "difficult", "confidence": 0.75 }
+  ]
+}

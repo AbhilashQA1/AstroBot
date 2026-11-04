@@ -44,6 +44,9 @@ jobs:
       - name: Check the chart-editing rules
         run: node scripts/test-edits.mjs
 
+      - name: Check combustion
+        run: node scripts/test-combustion.mjs
+
       - name: Check the markup against the scripts
         run: node scripts/test-dom.mjs
 

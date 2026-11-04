@@ -139,6 +139,17 @@ node scripts/read.mjs --lagna 5 --su 10 --mo 4 --ma 6 --me 10 --ju 9 --ve 11 --s
 node scripts/test-library.mjs
 ```
 
+```bash
+node scripts/test-combustion.mjs
+```
+
+Checks combustion: that it is measured in degrees rather than houses (a burnt graha
+often sits in the next sign along, and sharing the Sun's sign often means nothing),
+that a chart without degrees reports `unknown` rather than claiming a planet is
+clear, that retrograde Mercury and Venus take their tighter orbs, and that a burnt
+Mercury puts Budha-Aditya into *Where the sources differ* instead of silently
+cancelling it.
+
 Checks the saved-kundali and saved-reading rules against a stub localStorage: that
 saving one chart twice updates it rather than duplicating it, that one chart can hold
 several readings taken at different times, and that an export re-imports without

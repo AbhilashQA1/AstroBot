@@ -2,6 +2,7 @@
   "schema": "astrobot/planets@1",
   "order": ["su", "mo", "ma", "me", "ju", "ve", "sa", "ra", "ke"],
   "outer": ["ur", "ne", "pl"],
+  "combustionNote": "Orbs are the BPHS figures in common use; other texts differ by a degree or two. The Sun cannot be combust, the nodes have no body to burn, and the outer planets sit outside the system that defines combustion, so none of them carry an orb.",
   "outerNote": "Optional. The nine grahas above are the whole of classical Jyotish; the outer planets are recorded so a chart drawn by modern software can be entered faithfully, and they carry no classical rules.",
   "planets": {
     "su": {
@@ -21,6 +22,7 @@
       "owns": [4], "moolatrikona": { "sign": 2, "from": 3, "to": 30 },
       "exalted": { "sign": 2, "degree": 3 }, "debilitated": { "sign": 8, "degree": 3 },
       "friends": ["su", "me"], "enemies": [], "neutral": ["ma", "ju", "ve", "sa"],
+      "combustion": { "orb": 12 },
       "aspects": [7], "directionalStrength": 4, "retrogrades": false,
       "karaka": ["mind", "mother", "emotion", "blood", "left eye", "water", "public", "comfort"]
     },
@@ -31,6 +33,7 @@
       "owns": [1, 8], "moolatrikona": { "sign": 1, "from": 0, "to": 12 },
       "exalted": { "sign": 10, "degree": 28 }, "debilitated": { "sign": 4, "degree": 28 },
       "friends": ["su", "mo", "ju"], "enemies": ["me"], "neutral": ["ve", "sa"],
+      "combustion": { "orb": 17 },
       "aspects": [4, 7, 8], "directionalStrength": 10, "retrogrades": true,
       "karaka": ["courage", "younger sibling", "land", "muscle", "surgery", "weapons", "anger", "engineering"]
     },
@@ -41,6 +44,7 @@
       "owns": [3, 6], "moolatrikona": { "sign": 6, "from": 16, "to": 20 },
       "exalted": { "sign": 6, "degree": 15 }, "debilitated": { "sign": 12, "degree": 15 },
       "friends": ["su", "ve"], "enemies": ["mo"], "neutral": ["ma", "ju", "sa"],
+      "combustion": { "orb": 14, "retroOrb": 12 },
       "aspects": [7], "directionalStrength": 1, "retrogrades": true,
       "karaka": ["speech", "intellect", "trade", "skin", "nerves", "writing", "calculation", "maternal uncle"]
     },
@@ -51,6 +55,7 @@
       "owns": [9, 12], "moolatrikona": { "sign": 9, "from": 0, "to": 10 },
       "exalted": { "sign": 4, "degree": 5 }, "debilitated": { "sign": 10, "degree": 5 },
       "friends": ["su", "mo", "ma"], "enemies": ["me", "ve"], "neutral": ["sa"],
+      "combustion": { "orb": 11 },
       "aspects": [5, 7, 9], "directionalStrength": 1, "retrogrades": true,
       "karaka": ["wisdom", "children", "teacher", "wealth", "fat", "law", "faith", "fortune"]
     },
@@ -61,6 +66,7 @@
       "owns": [2, 7], "moolatrikona": { "sign": 7, "from": 0, "to": 15 },
       "exalted": { "sign": 12, "degree": 27 }, "debilitated": { "sign": 6, "degree": 27 },
       "friends": ["me", "sa"], "enemies": ["su", "mo"], "neutral": ["ma", "ju"],
+      "combustion": { "orb": 10, "retroOrb": 8 },
       "aspects": [7], "directionalStrength": 4, "retrogrades": true,
       "karaka": ["spouse", "beauty", "art", "vehicle", "semen", "luxury", "romance", "diplomacy"]
     },
@@ -71,6 +77,7 @@
       "owns": [10, 11], "moolatrikona": { "sign": 11, "from": 0, "to": 20 },
       "exalted": { "sign": 7, "degree": 20 }, "debilitated": { "sign": 1, "degree": 20 },
       "friends": ["me", "ve"], "enemies": ["su", "mo", "ma"], "neutral": ["ju"],
+      "combustion": { "orb": 15 },
       "aspects": [3, 7, 10], "directionalStrength": 7, "retrogrades": true,
       "karaka": ["longevity", "sorrow", "labour", "servants", "nerves", "old age", "detachment", "discipline"]
     },

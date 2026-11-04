@@ -60,6 +60,8 @@ Leaf conditions:
 | `{"dignity": {"planet": "su", "is": "exalted"}}` | `exalted`, `debilitated`, `ownSign`, `moolatrikona`, `friendly`, `enemy`, `neutral` |
 | `{"inHouseClass": {"planet": "sa", "class": "dusthana"}}` | Planet sits in a house of that class |
 | `{"retrograde": "sa"}` | Marked retrograde on entry |
+| `{"combust": "me"}` | That graha is inside its combustion orb of the Sun. Needs degrees: a chart entered by hand never matches |
+| `{"notCombust": "me"}` | That graha is known to be clear of the Sun. Also needs degrees, so it is not the negation of the above |
 | `{"emptyHouse": 7}` | No planet occupies that house |
 
 Combinators: `{"all": [...]}`, `{"any": [...]}`, `{"not": {...}}`.
@@ -77,6 +79,7 @@ reported by `npm run validate` — it is never silently ignored at runtime.
 | `yog` | `yoga` | `rules/yogas.json` |
 | `cnj` | `conjunction` | `rules/conjunctions.json` |
 | `asp` | `aspect` | `rules/aspects.json` |
+| `cmb` | `combustion` | `rules/combustion.json` |
 
 ## Conflicts
 
