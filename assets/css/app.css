@@ -266,6 +266,7 @@ button:focus-visible, .kundli-hit:focus-visible {
 .kundli-rashi { fill: var(--ink-faint); font-size: 4px; font-family: var(--font); }
 .kundli-rashi-name { fill: var(--ink-faint); font-size: 3.1px; font-family: var(--font); }
 .kundli-lagna-mark { fill: none; stroke: var(--accent); stroke-width: 0.7; opacity: 0.8; pointer-events: none; }
+.kundli-lagna-label { fill: var(--accent); font-size: 3.6px; font-weight: 700; font-family: var(--font); pointer-events: none; letter-spacing: 0.04em; }
 .kundli-house[data-house='1'] .kundli-rashi { fill: var(--accent); font-weight: 700; }
 
 .kundli-planets { fill: var(--ink); font-size: 5.2px; font-weight: 600; font-family: var(--font); }

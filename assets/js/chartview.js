@@ -131,11 +131,13 @@ export function renderChart(host, chart, opts = {}) {
       group.appendChild(text);
     });
 
-    // House 1 is marked by outlining the kite rather than by a floating label:
-    // the kite's lower vertex is the centre of the chart, where any text reads as
-    // belonging to the whole figure instead of to one square.
+    // House 1 carries the Lagna. Other chart software writes "La" here, so the
+    // label is drawn to match, high in the kite where it cannot be mistaken for a
+    // planet sitting in the square. The outline reinforces it without a label at
+    // the kite's lower vertex, which is the centre of the whole figure.
     if (house === 1) {
       group.appendChild(el('polygon', { points: geo.points, class: 'kundli-lagna-mark' }));
+      group.appendChild(el('text', { x: 50, y: 22, class: 'kundli-lagna-label', 'text-anchor': 'middle' }, 'La'));
     }
 
     if (onHouseTap) {

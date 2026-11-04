@@ -126,7 +126,10 @@ function openSheet(house) {
   $('#sheet-title').textContent = `Square ${house} — ${rashi.en}`;
   $('#sheet-sub').textContent =
     `${ordinal(house)} house (${chart.house(house).sa}, ${chart.house(house).label.toLowerCase()}), ` +
-    `rashi ${sign} ${rashi.sa}, ruled by ${chart.planet(rashi.lord).en}.`;
+    `rashi ${sign} ${rashi.sa}, ruled by ${chart.planet(rashi.lord).en}.` +
+    // Other chart software prints "La" in this square, so people come looking
+    // for it among the planets. It is the Lagna itself and is never placed.
+    (house === 1 ? ' La on the chart marks the Lagna itself; it is not a planet and is never placed.' : '');
 
   const grid = $('#sheet-planets');
   grid.textContent = '';
