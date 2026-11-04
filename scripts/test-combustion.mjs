@@ -151,5 +151,58 @@ check('a computed chart names what is burnt',
 check('a hand-entered chart says it cannot judge',
   bareReading.derived.some((d) => d.kind === 'combustion' && /cannot be judged/.test(d.text)));
 
+console.log('a missing degree is named precisely');
+
+/** The same chart with the degrees of the named bodies removed and no others. */
+function without(chart, keys) {
+  const raw = emptyChart();
+  raw.lagna = chart.lagna;
+  for (const [k, v] of Object.entries(chart.placements)) {
+    raw.placements[k] = keys.includes(k) ? { house: v.house, retro: v.retro } : { ...v };
+  }
+  return new Chart(raw, kb.base);
+}
+
+// One missing Sun degree blocks every verdict on the chart, however many of the
+// other degrees are present. Telling the reader the chart "carries no degrees"
+// after they have typed several in is both wrong and unactionable.
+const noSunDegree = without(c2, ['su']);
+check('Mercury keeps its own degree', noSunDegree.degreeOf('me') !== null);
+check('but cannot be judged once the Sun loses its degree',
+  noSunDegree.combustion('me').state === 'unknown');
+check('and the Sun alone is named as what is wanted',
+  JSON.stringify(noSunDegree.combustion('me').missing) === '["su"]',
+  JSON.stringify(noSunDegree.combustion('me').missing));
+
+const noSunText = compose(noSunDegree, kb).derived.find((d) => d.kind === 'combustion')?.text || '';
+check('the reading asks for the Sun’s degree', /no degree for the Sun/.test(noSunText), noSunText);
+check('and does not claim the chart has no degrees at all',
+  !/no degrees/.test(noSunText), noSunText);
+
+check('a graha missing only its own degree names itself',
+  JSON.stringify(without(c2, ['me']).combustion('me').missing) === '["me"]');
+check('both are named when both are absent',
+  JSON.stringify(without(c2, ['su', 'me']).combustion('me').missing) === '["su","me"]');
+
+console.log('a decided verdict does not silence an undecided one');
+// Mercury burnt on the degrees it has, Mars beside the Sun with no degree at
+// all. While the two statements were alternatives, the burnt list won and Mars
+// dropped out of the reading entirely - which a reader takes as clearing it.
+const mixed = emptyChart();
+mixed.lagna = 1;
+mixed.placements.su = { house: 1, retro: false, degree: 10 };
+mixed.placements.me = { house: 1, retro: false, degree: 12 };
+mixed.placements.ma = { house: 1, retro: false };
+const mixedChart = new Chart(mixed, kb.base);
+check('Mercury is judged burnt', mixedChart.combustion('me').state === 'combust');
+check('Mars stays unknown', mixedChart.combustion('ma').state === 'unknown');
+
+const mixedNotes = compose(mixedChart, kb).derived.filter((d) => d.kind === 'combustion');
+check('the reading carries both statements', mixedNotes.length === 2, `${mixedNotes.length} statement(s)`);
+check('one names what is burnt', /Combust: Mercury/.test(mixedNotes[0]?.text || ''));
+check('the other names what cannot be judged',
+  /^Mars sits/.test(mixedNotes[1]?.text || '') && /no degree for Mars/.test(mixedNotes[1]?.text || ''),
+  mixedNotes[1]?.text);
+
 console.log(failures ? `\n${failures} failure(s)` : '\nall combustion checks passed');
 process.exit(failures ? 1 : 0);

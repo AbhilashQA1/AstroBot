@@ -28,6 +28,7 @@ const DIGNITY_FACTOR = {
 const COMBUSTION_FACTOR = 0.6;
 
 export const SECTIONS = [
+  { key: 'period', title: 'The period running now', themes: ['period'] },
   { key: 'self', title: 'Self and temperament', themes: ['self', 'mind', 'health', 'courage'] },
   { key: 'learning', title: 'Mind, learning and children', themes: ['intellect', 'children', 'art'] },
   { key: 'wealth', title: 'Money and gain', themes: ['wealth', 'gain', 'speech', 'friends'] },
@@ -46,12 +47,12 @@ class UnsupportedCondition extends Error {}
  * Throws UnsupportedCondition for anything it does not recognise, so a malformed
  * rule is reported rather than silently skipped.
  */
-function test(cond, chart) {
+function test(cond, chart, ctx = {}) {
   if (!cond || typeof cond !== 'object') throw new UnsupportedCondition('empty condition');
 
-  if (Array.isArray(cond.all)) return cond.all.every((c) => test(c, chart));
-  if (Array.isArray(cond.any)) return cond.any.some((c) => test(c, chart));
-  if (cond.not) return !test(cond.not, chart);
+  if (Array.isArray(cond.all)) return cond.all.every((c) => test(c, chart, ctx));
+  if (Array.isArray(cond.any)) return cond.any.some((c) => test(c, chart, ctx));
+  if (cond.not) return !test(cond.not, chart, ctx);
 
   if (cond.planetInHouse) {
     const { planet, house } = cond.planetInHouse;
@@ -107,6 +108,24 @@ function test(cond, chart) {
   // Only true when the chart actually carries degrees. A chart entered by hand
   // reports `unknown`, which is not a match - absence of evidence is not
   // evidence that a planet is clear of the Sun.
+  // Period conditions. Every one is false when no dasha could be worked out,
+  // so a chart without birth details simply reads as it always did rather than
+  // acquiring timed statements it has no basis for.
+  if (cond.dashaLord) return ctx.dasha?.maha?.lord === cond.dashaLord;
+  if (cond.antardashaLord) return ctx.dasha?.antar?.lord === cond.antardashaLord;
+
+  if (Number.isInteger(cond.dashaLordInHouse)) {
+    const lord = ctx.dasha?.maha?.lord;
+    return Boolean(lord) && chart.houseOf(lord) === cond.dashaLordInHouse;
+  }
+
+  if (Number.isInteger(cond.dashaLordRules)) {
+    const lord = ctx.dasha?.maha?.lord;
+    // The nodes rule no sign, so this never matches for them. That is correct
+    // rather than a gap: they are read through their dispositor instead.
+    return Boolean(lord) && chart.housesRuledBy(lord).includes(cond.dashaLordRules);
+  }
+
   if (cond.combust) return chart.combustion(cond.combust).state === 'combust';
   if (cond.notCombust) return chart.combustion(cond.notCombust).state === 'clear';
 
@@ -191,7 +210,7 @@ function contextFactor(rule, chart) {
 }
 
 /** Run every rule against the chart. */
-export function evaluate(chart, kb) {
+export function evaluate(chart, kb, ctx = {}) {
   const sourcesFile = kb.base.sources;
   const findings = [];
   const broken = [];
@@ -200,7 +219,7 @@ export function evaluate(chart, kb) {
     if (rule.status === 'retired') continue;
     let matched = false;
     try {
-      matched = test(rule.when, chart);
+      matched = test(rule.when, chart, ctx);
     } catch (err) {
       broken.push({ id: rule.id, file: rule.file, reason: err.message });
       continue;
@@ -234,7 +253,7 @@ export function evaluate(chart, kb) {
 }
 
 /** Statements the engine derives from reference data rather than from a rule. */
-export function derived(chart) {
+export function derived(chart, ctx = {}) {
   const out = [];
   const lagnaSign = chart.signOfHouse(1);
   const lagnaRashi = chart.rashi(lagnaSign);
@@ -291,6 +310,29 @@ export function derived(chart) {
     });
   }
 
+  if (ctx.dasha?.available) {
+    const { maha, antar, nakshatra, yearDays } = ctx.dasha;
+    const span = (p) => `${new Date(p.from).toISOString().slice(0, 10)} to ${new Date(p.to).toISOString().slice(0, 10)}`;
+    if (maha) {
+      out.push({
+        kind: 'dasha',
+        text:
+          `The Moon sits in ${nakshatra.name}, which sets the dasha cycle. ` +
+          `As at ${new Date(ctx.dasha.at).toISOString().slice(0, 10)}: the ${chart.planet(maha.lord).en} mahadasha, ${span(maha)}` +
+          `${antar ? `, and within it the ${chart.planet(antar.lord).en} antardasha, ${span(antar)}` : ''}. ` +
+          `Dates are reckoned at ${yearDays} days to the year; other conventions shift them.`,
+      });
+    }
+  } else if (ctx.dasha && !ctx.dasha.available) {
+    out.push({
+      kind: 'dasha',
+      text:
+        'No period can be worked out for this chart. Dashas run from the exact birth moment and the '
+        + 'Moon\u2019s degree, so a chart entered by hand has nothing to anchor them to. Calculating it '
+        + 'from birth details would give dated periods.',
+    });
+  }
+
   const burnt = chart.combust;
   if (burnt.length) {
     const phrases = burnt.map((p) => {
@@ -303,14 +345,29 @@ export function derived(chart) {
         `Combust: ${phrases.join('; ')}. A burnt graha holds its place but gives its own results weakly, ` +
         'so everything said about it below is weighted down.',
     });
-  } else if (chart.placed.some((p) => chart.combustion(p).state === 'unknown')
-      && nearTheSun(chart).length) {
+  }
+
+  // Combustion that cannot be decided, reported alongside the burnt list rather
+  // than instead of it. A chart can have Mercury judged burnt and Mars still
+  // undecidable, and in that case saying nothing about Mars reads as clearing
+  // it.
+  const undecided = nearTheSun(chart);
+  if (undecided.length) {
+    // The degrees actually wanted, which is rarely all of them: one missing Sun
+    // degree blocks every verdict on the chart, and asking for that single
+    // entry is far more use than announcing that degrees are absent.
+    const needed = new Set();
+    for (const p of undecided) for (const k of chart.combustion(p).missing || []) needed.add(k);
+    const wanted = PLANET_KEYS.filter((k) => needed.has(k)).map((k) => bodyName(chart, k));
+
     out.push({
       kind: 'combustion',
       text:
-        `${nearTheSun(chart).map((p) => chart.planet(p).en).join(', ')} ${nearTheSun(chart).length === 1 ? 'sits' : 'sit'} ` +
-        'close enough to the Sun that combustion is possible, but this chart carries no degrees, so it cannot be judged. ' +
-        'Calculating the chart from birth details would settle it.',
+        `${andList(undecided.map((p) => bodyName(chart, p)))} `
+        + `${undecided.length === 1 ? 'sits' : 'sit'} close enough to the Sun that combustion is possible, `
+        + `but it turns on longitude and this chart has no degree for ${andList(wanted)}, so it cannot be judged. `
+        + `Entering ${wanted.length === 1 ? 'that degree' : 'those degrees'} on the chart, or calculating it from `
+        + 'birth details, would settle it.',
     });
   }
 
@@ -372,8 +429,8 @@ export function conflicts(findings) {
 }
 
 /** Arrange findings into the section order used by the reading. */
-export function compose(chart, kb) {
-  const { findings, broken } = evaluate(chart, kb);
+export function compose(chart, kb, ctx = {}) {
+  const { findings, broken } = evaluate(chart, kb, ctx);
   const combos = findings.filter((f) => ['yoga', 'conjunction'].includes(f.rule.family));
   const rest = findings.filter((f) => !['yoga', 'conjunction'].includes(f.rule.family));
 
@@ -389,7 +446,7 @@ export function compose(chart, kb) {
   }
 
   return {
-    derived: derived(chart),
+    derived: derived(chart, ctx),
     combinations: combos,
     sections: sections.filter((s) => s.findings.length),
     unsectioned,
@@ -404,10 +461,23 @@ export function compose(chart, kb) {
   };
 }
 
+/** English wants the article on the luminaries and not on the rest. */
+function bodyName(chart, k) {
+  const en = chart.planet(k)?.en || k;
+  return k === 'su' || k === 'mo' ? `the ${en}` : en;
+}
+
+/** "Mars", "Mars and Mercury", "the Sun, Mars and Mercury". */
+function andList(names) {
+  if (names.length <= 1) return names[0] || '';
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
 /**
  * Grahas in the Sun's house or either neighbour, where combustion is at least
- * possible. Used only to decide whether a chart without degrees is worth
- * warning about, so that the warning does not appear on every chart.
+ * possible but a missing degree leaves it undecided. Restricted to those houses
+ * so the warning appears only where a degree would actually change the verdict,
+ * rather than on every graha in a chart entered by hand.
  */
 function nearTheSun(chart) {
   const sunHouse = chart.houseOf('su');

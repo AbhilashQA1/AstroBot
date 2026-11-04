@@ -1,0 +1,148 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "dasha",
+  "about": "Vimshottari dasha: which planet's period is running, and what that brings forward. These rules fire only when the chart was calculated from birth details, because a dasha is anchored to the exact birth moment and the Moon's degree. They are written against the lord's lordship and placement rather than naming all nine lords twelve times over, which is also how the doctrine is actually stated: the dasha of the lord of a house brings that house's affairs to the front.",
+  "defaults": {
+    "tradition": "parashari",
+    "status": "active",
+    "added": "2026-11-04",
+    "sources": [{ "key": "bphs", "locus": "on the Vimshottari dasha and its effects" }]
+  },
+  "rules": [
+    { "id": "dsa.lord.su", "when": { "dashaLord": "su" },
+      "says": "A Sun period of six years: matters of standing, authority and recognition come to the front, and so does the question of whose approval is being sought.",
+      "themes": ["period", "status"], "polarity": "mixed", "confidence": 0.75 },
+
+    { "id": "dsa.lord.mo", "when": { "dashaLord": "mo" },
+      "says": "A Moon period of ten years: home, the mother and the state of the mind set the tone, and life is lived more by feeling than by plan.",
+      "themes": ["period", "mind"], "polarity": "mixed", "confidence": 0.75 },
+
+    { "id": "dsa.lord.ma", "when": { "dashaLord": "ma" },
+      "says": "A Mars period of seven years: decisive, effortful and often contentious, with property, siblings and physical risk all more prominent than usual.",
+      "themes": ["period", "courage"], "polarity": "mixed", "confidence": 0.75 },
+
+    { "id": "dsa.lord.me", "when": { "dashaLord": "me" },
+      "says": "A Mercury period of seventeen years: trade, study, writing and negotiation carry the life, and most of what changes is arranged through talking.",
+      "themes": ["period", "intellect"], "polarity": "mixed", "confidence": 0.75 },
+
+    { "id": "dsa.lord.ju", "when": { "dashaLord": "ju" },
+      "says": "A Jupiter period of sixteen years: classically the most favourable stretch, bringing teaching, children, counsel and a widening of what the person is responsible for.",
+      "themes": ["period", "fortune"], "polarity": "favourable", "confidence": 0.8 },
+
+    { "id": "dsa.lord.ve", "when": { "dashaLord": "ve" },
+      "says": "A Venus period of twenty years: the longest of them, turning on marriage, comfort, art and whatever the person finds worth enjoying.",
+      "themes": ["period", "comfort"], "polarity": "favourable", "confidence": 0.8 },
+
+    { "id": "dsa.lord.sa", "when": { "dashaLord": "sa" },
+      "says": "A Saturn period of nineteen years: slow, heavy and finally consolidating. What is built here is built properly, and little of it arrives early.",
+      "themes": ["period", "work"], "polarity": "mixed", "confidence": 0.8 },
+
+    { "id": "dsa.lord.ra", "when": { "dashaLord": "ra" },
+      "says": "A Rahu period of eighteen years: ambition, foreign ground and unorthodox routes. Rises can be sudden and are rarely along the path that was planned.",
+      "themes": ["period", "ambition"], "polarity": "mixed", "confidence": 0.75,
+      "note": "Rahu owns no sign, so it gives the results of the planet it sits with and of its dispositor. The period is read through those rather than on its own." },
+
+    { "id": "dsa.lord.ke", "when": { "dashaLord": "ke" },
+      "says": "A Ketu period of seven years: things fall away more than they arrive, and what the person had been holding onto is often set down during it.",
+      "themes": ["period", "loss"], "polarity": "difficult", "confidence": 0.75,
+      "note": "As with Rahu, Ketu owns no sign and acts through its dispositor and co-tenants." },
+
+    { "id": "dsa.rules.1", "when": { "dashaLordRules": 1 },
+      "says": "The period belongs to the Lagna lord, so it bears on the person themselves: health, bearing and the direction the whole life is taking.",
+      "themes": ["period", "self"], "polarity": "favourable", "confidence": 0.8 },
+
+    { "id": "dsa.rules.2", "when": { "dashaLordRules": 2 },
+      "says": "The lord of the second runs the period, bringing savings, the family of origin and matters of speech to the front.",
+      "themes": ["period", "wealth"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.rules.3", "when": { "dashaLordRules": 3 },
+      "says": "The lord of the third runs the period: effort, initiative, siblings and short journeys take up more of the life than usual.",
+      "themes": ["period", "effort"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.rules.4", "when": { "dashaLordRules": 4 },
+      "says": "The lord of the fourth runs the period, so home, land, vehicles and the mother come forward, often as a move or a purchase.",
+      "themes": ["period", "home"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.rules.5", "when": { "dashaLordRules": 5 },
+      "says": "The lord of the fifth runs the period: children, learning and creative work are where the years go.",
+      "themes": ["period", "children"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.rules.6", "when": { "dashaLordRules": 6 },
+      "says": "The lord of the sixth runs the period, which brings competition, debt, illness and daily obligation to the surface. Hard work tells here, and so does neglect.",
+      "themes": ["period", "adversity"], "polarity": "difficult", "confidence": 0.75 },
+
+    { "id": "dsa.rules.7", "when": { "dashaLordRules": 7 },
+      "says": "The lord of the seventh runs the period, so partnership is the subject of these years: marriage if it has not happened, and its testing if it has.",
+      "themes": ["period", "partnership"], "polarity": "mixed", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "on the Vimshottari dasha and its effects" }, { "key": "phaladeepika", "locus": "on the results of dashas" }] },
+
+    { "id": "dsa.rules.8", "when": { "dashaLordRules": 8 },
+      "says": "The lord of the eighth runs the period: upheaval, other people's money, and matters that were buried coming up to be dealt with.",
+      "themes": ["period", "rupture"], "polarity": "difficult", "confidence": 0.75 },
+
+    { "id": "dsa.rules.9", "when": { "dashaLordRules": 9 },
+      "says": "The lord of the ninth runs the period, which classically favours fortune, teachers, long journeys and the father.",
+      "themes": ["period", "fortune"], "polarity": "favourable", "confidence": 0.8 },
+
+    { "id": "dsa.rules.10", "when": { "dashaLordRules": 10 },
+      "says": "The lord of the tenth runs the period, so work and standing are where the years are spent: a change of role, a rise in responsibility, or the weight of the one already held.",
+      "themes": ["period", "work"], "polarity": "favourable", "confidence": 0.8,
+      "sources": [{ "key": "bphs", "locus": "on the Vimshottari dasha and its effects" }, { "key": "phaladeepika", "locus": "on the results of dashas" }] },
+
+    { "id": "dsa.rules.11", "when": { "dashaLordRules": 11 },
+      "says": "The lord of the eleventh runs the period: income, networks and the meeting of long-held wants.",
+      "themes": ["period", "gain"], "polarity": "favourable", "confidence": 0.8 },
+
+    { "id": "dsa.rules.12", "when": { "dashaLordRules": 12 },
+      "says": "The lord of the twelfth runs the period, which spends rather than gathers: foreign ground, withdrawal, expense, and whatever is being let go of.",
+      "themes": ["period", "loss"], "polarity": "difficult", "confidence": 0.75 },
+
+    { "id": "dsa.sits.2", "when": { "dashaLordInHouse": 2 },
+      "says": "The period's lord sits in the second, so money, family and what gets said are where the years show their effect.",
+      "themes": ["period", "wealth"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.sits.3", "when": { "dashaLordInHouse": 3 },
+      "says": "The period's lord sits in the third, so the years reward initiative: what is asked for gets given, and what is not asked for does not.",
+      "themes": ["period", "effort"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.sits.4", "when": { "dashaLordInHouse": 4 },
+      "says": "The period's lord sits in the fourth, which turns the years inward towards home, land and the people the person lives among.",
+      "themes": ["period", "home"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.sits.5", "when": { "dashaLordInHouse": 5 },
+      "says": "The period's lord sits in the fifth, so children, study and creative work are where the years leave their mark.",
+      "themes": ["period", "children"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "dsa.sits.9", "when": { "dashaLordInHouse": 9 },
+      "says": "The period's lord sits in the ninth, so the years tend to go well and to widen things: travel, teachers, and a settling of what the person believes.",
+      "themes": ["period", "fortune"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.sits.11", "when": { "dashaLordInHouse": 11 },
+      "says": "The period's lord sits in the eleventh, so the years pay: income rises and the circle that produces it widens.",
+      "themes": ["period", "gain"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.sits.1", "when": { "dashaLordInHouse": 1 },
+      "says": "The period's lord stands in the Lagna, so its results arrive personally and visibly rather than through circumstance.",
+      "themes": ["period", "self"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.sits.6", "when": { "dashaLordInHouse": 6 },
+      "says": "The period's lord sits in the sixth, so the years are worked through rather than enjoyed: obligation, competition and health all ask for attention.",
+      "themes": ["period", "adversity"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "dsa.sits.7", "when": { "dashaLordInHouse": 7 },
+      "says": "The period's lord sits in the seventh, which pulls the years towards partnership, negotiation and dealings conducted in the open.",
+      "themes": ["period", "partnership"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "dsa.sits.8", "when": { "dashaLordInHouse": 8 },
+      "says": "The period's lord sits in the eighth, so events in these years tend to arrive abruptly and to change more than they were expected to.",
+      "themes": ["period", "rupture"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "dsa.sits.10", "when": { "dashaLordInHouse": 10 },
+      "says": "The period's lord sits in the tenth, so whatever else the years hold, they show up in the work and in how the person is regarded.",
+      "themes": ["period", "work"], "polarity": "favourable", "confidence": 0.75 },
+
+    { "id": "dsa.sits.12", "when": { "dashaLordInHouse": 12 },
+      "says": "The period's lord sits in the twelfth, so the years run quietly or elsewhere: expense, distance, or work done out of sight.",
+      "themes": ["period", "loss"], "polarity": "difficult", "confidence": 0.7 }
+  ]
+}

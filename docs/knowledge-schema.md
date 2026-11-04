@@ -62,6 +62,10 @@ Leaf conditions:
 | `{"retrograde": "sa"}` | Marked retrograde on entry |
 | `{"combust": "me"}` | That graha is inside its combustion orb of the Sun. Needs degrees: a chart entered by hand never matches |
 | `{"notCombust": "me"}` | That graha is known to be clear of the Sun. Also needs degrees, so it is not the negation of the above |
+| `{"dashaLord": "ra"}` | That graha's mahadasha is running at the date being read. Needs birth details |
+| `{"antardashaLord": "ju"}` | That graha's antardasha is running inside the current mahadasha |
+| `{"dashaLordInHouse": 10}` | The running mahadasha lord occupies that house |
+| `{"dashaLordRules": 7}` | The running mahadasha lord rules that house. Never matches for the nodes, which rule no sign |
 | `{"emptyHouse": 7}` | No planet occupies that house |
 
 Combinators: `{"all": [...]}`, `{"any": [...]}`, `{"not": {...}}`.
@@ -80,6 +84,7 @@ reported by `npm run validate` — it is never silently ignored at runtime.
 | `cnj` | `conjunction` | `rules/conjunctions.json` |
 | `asp` | `aspect` | `rules/aspects.json` |
 | `cmb` | `combustion` | `rules/combustion.json` |
+| `dsa` | `dasha` | `rules/dasha.json` |
 
 ## Conflicts
 

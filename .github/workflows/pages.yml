@@ -47,6 +47,9 @@ jobs:
       - name: Check combustion
         run: node scripts/test-combustion.mjs
 
+      - name: Check the dasha calendar
+        run: node scripts/test-dasha.mjs
+
       - name: Check the markup against the scripts
         run: node scripts/test-dom.mjs
 

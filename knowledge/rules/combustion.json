@@ -1,7 +1,7 @@
 {
   "schema": "astrobot/rules@1",
   "family": "combustion",
-  "about": "Combustion (asta): a graha within a few degrees of the Sun is burnt and gives its own significations weakly. These rules fire only when the chart carries degrees, because combustion is a matter of longitude and cannot be read off house positions. The engine also weights every other rule about a burnt graha downward, so these statements name the condition rather than repeating its effect everywhere.",
+  "about": "Combustion (asta): a graha within a few degrees of the Sun is burnt and gives its own significations weakly. These rules fire only where the chart carries a degree for both the Sun and the graha in question, because combustion is a matter of longitude and cannot be read off house positions. The engine also weights every other rule about a burnt graha downward, so these statements name the condition rather than repeating its effect everywhere.",
   "defaults": {
     "tradition": "parashari",
     "status": "active",

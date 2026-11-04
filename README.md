@@ -13,6 +13,10 @@ GitHub Pages. Bookmark it to your home screen and it works offline.
    stands; they are drawn and confirmed, and marked as carrying no classical rule.
 3. **Explain the chart** — a deterministic rules engine matches the chart against the
    knowledge base. Every sentence carries a citation to the classical source it came from.
+   Where the chart was calculated from birth details, the reading also names the Vimshottari
+   mahadasha and antardasha running today and what they bring forward. A chart entered by
+   hand has no birth moment to anchor a period to, and the reading says so rather than
+   guessing.
 4. **Save what matters** — keep a kundali to reopen later, and snapshot a reading as it
    reads today. A saved reading stores its own text rather than recomputing, so when the
    knowledge base grows you can set the old reading beside a new one instead of losing it.
@@ -142,6 +146,16 @@ node scripts/test-library.mjs
 ```bash
 node scripts/test-combustion.mjs
 ```
+
+```bash
+node scripts/test-dasha.mjs
+```
+
+Checks the Vimshottari calendar: that the cycle closes at 120 years, that the
+opening period is truncated by however much of the Moon's nakshatra was already
+travelled, that antardashas fill their parent exactly and are clipped when the
+parent is itself partial, and that the year-length convention is honoured rather
+than assumed — gregorian and savana years put the end of a cycle 600 days apart.
 
 Checks combustion: that it is measured in degrees rather than houses (a burnt graha
 often sits in the next sign along, and sharing the Sun's sign often means nothing),
