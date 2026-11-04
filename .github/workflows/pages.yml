@@ -31,6 +31,9 @@ jobs:
       - name: Check the saved-library rules
         run: node scripts/test-library.mjs
 
+      - name: Check the kundali calculation
+        run: node scripts/test-astro.mjs
+
   deploy:
     needs: validate
     runs-on: ubuntu-latest
