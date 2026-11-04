@@ -4,6 +4,7 @@ import { ALL_BODY_KEYS, Chart, OUTER_KEYS, PLANET_KEYS, decodeChart, emptyChart,
 import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
 import { renderChart } from './chartview.js';
+import { renderBirthView } from './birth.js';
 import {
   chartOf, deleteChart, deleteReading, exportAll, getReading, importAll, listCharts,
   listReadings, readingsForChart, renameChart, saveChart, saveReading, store, toView,
@@ -66,6 +67,7 @@ function show(view) {
   $$('.tab').forEach((t) => t.classList.toggle('is-active', t.dataset.view === view));
   window.scrollTo({ top: 0, behavior: 'instant' });
 
+  if (view === 'birth') renderBirth();
   if (view === 'confirm') renderConfirm();
   if (view === 'reading') renderReading();
   if (view === 'library') renderLibrary();
@@ -100,6 +102,32 @@ function renderChartView() {
   $('#lagna').value = String(chart.lagna);
   $('#chart-name').value = state.raw.name || '';
   $('#chart-label').textContent = state.raw.name || (placed ? `${placed}/9 placed` : 'New chart');
+}
+
+/* --------------------------------------------------- calculate from birth */
+
+function renderBirth() {
+  renderBirthView($('#birth-host'), {
+    initial: state.raw.birth || {},
+    onComputed: ({ lagna, placements, birth, result }) => {
+      // The computed chart replaces whatever was on the board. Degrees come with
+      // it, which is what lets dignity be judged exactly rather than by sign.
+      state.raw.lagna = lagna;
+      state.raw.placements = placements;
+      state.raw.birth = birth;
+      state.raw.source = 'computed';
+      state.raw.computedAt = new Date().toISOString();
+      if (birth.name?.trim()) state.raw.name = birth.name.trim();
+
+      rebuild();
+
+      // Straight to confirmation: a calculated chart still has to be approved
+      // before it is read, exactly as a hand-entered one does. The arithmetic
+      // can be right while the birth time on the certificate is wrong.
+      state.lastComputation = result;
+      show('confirm');
+    },
+  });
 }
 
 function openSheet(house) {
@@ -937,6 +965,8 @@ async function boot() {
   $('#btn-settings').addEventListener('click', () => show('settings'));
   $('#btn-saved').addEventListener('click', () => show('saved'));
   $('#btn-open-saved').addEventListener('click', () => show('saved'));
+  $('#btn-open-birth').addEventListener('click', () => show('birth'));
+  $('#btn-birth-back').addEventListener('click', () => show('chart'));
   $('#btn-save-chart').addEventListener('click', onSaveChart);
   $('#btn-export').addEventListener('click', downloadLibrary);
   $('#import-file').addEventListener('change', (ev) => {
