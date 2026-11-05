@@ -1,0 +1,843 @@
+{
+  "schema": "astrobot/corpus@1",
+  "note": "Chapter structure of the books the rules cite. Facts about the books, not their text; the books themselves are third-party copyrighted material and are never committed. Rebuild with: node scripts/corpus-index.mjs build",
+  "collection": "https://github.com/ayushman1024/ASTROLOGY-BOOKS-DATABASE",
+  "builtAt": "2026-11-05",
+  "books": {
+    "bphs": {
+      "repoPath": "Classics books/BPHS 1.HTM",
+      "bytes": 725155,
+      "extractable": true,
+      "textChars": 667471,
+      "detector": "ch-heading",
+      "chapterCount": 97,
+      "lastChapter": 97,
+      "chapters": [
+        {
+          "n": 1,
+          "title": "The Creation"
+        },
+        {
+          "n": 2,
+          "title": "Great Incarnations"
+        },
+        {
+          "n": 3,
+          "title": "Grah Characters and Description"
+        },
+        {
+          "n": 4,
+          "title": "Zodiacal Rāśis Described"
+        },
+        {
+          "n": 5,
+          "title": "Special Lagnas"
+        },
+        {
+          "n": 6,
+          "title": "The Sixteen Divisions of a Rāśi"
+        },
+        {
+          "n": 7,
+          "title": "Divisional Considerations"
+        },
+        {
+          "n": 8,
+          "title": "Drishtis of the Rāśis"
+        },
+        {
+          "n": 9,
+          "title": "Evils at Birth"
+        },
+        {
+          "n": 10,
+          "title": "Antidotes for Evils"
+        },
+        {
+          "n": 11,
+          "title": "Judgement of Bhavas"
+        },
+        {
+          "n": 12,
+          "title": "Effects of Tanu Bhava"
+        },
+        {
+          "n": 13,
+          "title": "Effects of Dhan Bhava"
+        },
+        {
+          "n": 14,
+          "title": "Effects of Sahaj Bhava"
+        },
+        {
+          "n": 15,
+          "title": "Effects of Bandhu Bhava"
+        },
+        {
+          "n": 16,
+          "title": "Effects of Putr Bhava"
+        },
+        {
+          "n": 17,
+          "title": "Effects of Ari Bhava"
+        },
+        {
+          "n": 18,
+          "title": "Effects of Yuvati Bhava"
+        },
+        {
+          "n": 19,
+          "title": "Effects of Randhr Bhava"
+        },
+        {
+          "n": 20,
+          "title": "Effects of Dharm Bhava"
+        },
+        {
+          "n": 21,
+          "title": "Effects of Karm Bhava"
+        },
+        {
+          "n": 22,
+          "title": "Effects of Labh Bhava"
+        },
+        {
+          "n": 23,
+          "title": "Effects of Vyaya Bhava"
+        },
+        {
+          "n": 24,
+          "title": "Effects of the Bhava Lords"
+        },
+        {
+          "n": 25,
+          "title": "Effects of Non-Luminous Grahas"
+        },
+        {
+          "n": 26,
+          "title": "Evaluation of Drishtis of Grahas"
+        },
+        {
+          "n": 27,
+          "title": "Evaluation Of Strengths"
+        },
+        {
+          "n": 28,
+          "title": "Isht and Kasht Balas"
+        },
+        {
+          "n": 29,
+          "title": "Bhava Padas"
+        },
+        {
+          "n": 30,
+          "title": "Upa Pad"
+        },
+        {
+          "n": 31,
+          "title": "Argala, or Intervention from Grahas"
+        },
+        {
+          "n": 32,
+          "title": "Karakatwas of the Grahas"
+        },
+        {
+          "n": 33,
+          "title": "Effects of Karakāńś"
+        },
+        {
+          "n": 34,
+          "title": "Yoga Karakas"
+        },
+        {
+          "n": 35,
+          "title": "Nabhash Yogas"
+        },
+        {
+          "n": 36,
+          "title": "Many Other Yogas"
+        },
+        {
+          "n": 37,
+          "title": "Candr's Yogas"
+        },
+        {
+          "n": 38,
+          "title": "Sūrya's Yogas"
+        },
+        {
+          "n": 39,
+          "title": "Raj Yog"
+        },
+        {
+          "n": 40,
+          "title": "Yogas For Royal Association"
+        },
+        {
+          "n": 41,
+          "title": "Combinations for Wealth"
+        },
+        {
+          "n": 42,
+          "title": "Combinations for Penury"
+        },
+        {
+          "n": 43,
+          "title": "Longevity"
+        },
+        {
+          "n": 44,
+          "title": "Marak Grahas"
+        },
+        {
+          "n": 45,
+          "title": "Avasthas of Grahas"
+        },
+        {
+          "n": 46,
+          "title": "Dashas of Grahas"
+        },
+        {
+          "n": 47,
+          "title": "Effects of Dashas"
+        },
+        {
+          "n": 48,
+          "title": "Distinctive Effects of the Nakshatr Dasha, or of the"
+        },
+        {
+          "n": 49,
+          "title": "Effects of the Kaal Chakr"
+        },
+        {
+          "n": 50,
+          "title": "Effects of the Char etc. Dashas"
+        },
+        {
+          "n": 51,
+          "title": "Working out of Antar Dashas of Grahas and"
+        },
+        {
+          "n": 52,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 53,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 54,
+          "title": "Effects of Antar Dashas in the Dasha of Mangal"
+        },
+        {
+          "n": 55,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 56,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 57,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 58,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 59,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 60,
+          "title": "Effects of the Antar Dashas in the Dasha of"
+        },
+        {
+          "n": 61,
+          "title": "Effects of Pratyantar Dashas in Antar Dashas"
+        },
+        {
+          "n": 62,
+          "title": "Effects of Sukshmantar Dashas in Pratyantar"
+        },
+        {
+          "n": 63,
+          "title": "Effects of Prana Dashas in Sukshma Dashas"
+        },
+        {
+          "n": 64,
+          "title": "Effects of Antar Dashas in the Kala Chakr"
+        },
+        {
+          "n": 65,
+          "title": "Effects of Dashas of Rāśis in the"
+        },
+        {
+          "n": 66,
+          "title": "AshtakaVarg"
+        },
+        {
+          "n": 67,
+          "title": "Trikon Shodhana in the AshtakaVarg"
+        },
+        {
+          "n": 68,
+          "title": "Ekadhipatya Shodhana in the AshtakaVarg"
+        },
+        {
+          "n": 69,
+          "title": "Pinda Sadhana in the AshtakaVarg"
+        },
+        {
+          "n": 70,
+          "title": "Effects of the AshtakaVarg"
+        },
+        {
+          "n": 71,
+          "title": "Determination of Longevity through the"
+        },
+        {
+          "n": 72,
+          "title": "Aggregational AshtakaVargas"
+        },
+        {
+          "n": 73,
+          "title": "Effects of the Rays of the Grahas"
+        },
+        {
+          "n": 74,
+          "title": "Effects of the Sudarshana Chakr"
+        },
+        {
+          "n": 75,
+          "title": "Characteristic Features of Panchmahapurushas"
+        },
+        {
+          "n": 76,
+          "title": "Effects of the Elements"
+        },
+        {
+          "n": 77,
+          "title": "Effects of the Gunas"
+        },
+        {
+          "n": 78,
+          "title": "Lost Horoscopy"
+        },
+        {
+          "n": 79,
+          "title": "Ascetism Yogas"
+        },
+        {
+          "n": 80,
+          "title": "Female Horoscopy"
+        },
+        {
+          "n": 81,
+          "title": "Effects of Characteristic Features of Parts of"
+        },
+        {
+          "n": 82,
+          "title": "Effects of Moles, Marks, Signs etc. for Men and"
+        },
+        {
+          "n": 83,
+          "title": "Effects of Curses in the Previous Birth"
+        },
+        {
+          "n": 84,
+          "title": "Remedial Measures from the Malevolence of"
+        },
+        {
+          "n": 85,
+          "title": "Inauspicious Births"
+        },
+        {
+          "n": 86,
+          "title": "Remedies for Amavasya Birth"
+        },
+        {
+          "n": 87,
+          "title": "Remedies from Birth on Krishna Chaturdashi"
+        },
+        {
+          "n": 88,
+          "title": "Remedies from Birth in Bhadra and Inauspicious"
+        },
+        {
+          "n": 89,
+          "title": "Remedies from Nakshatr Birth"
+        },
+        {
+          "n": 90,
+          "title": "Remedies from Sankranti Birth"
+        },
+        {
+          "n": 91,
+          "title": "Remedies for Birth in Eclipses"
+        },
+        {
+          "n": 92,
+          "title": "Remedies from Gandanta Birth"
+        },
+        {
+          "n": 93,
+          "title": "Remedies for Abhukta Mula Birth"
+        },
+        {
+          "n": 94,
+          "title": "Remedies from Jyeshtha Gandanta Birth"
+        },
+        {
+          "n": 95,
+          "title": "Remedies from Birth of a Daughter after Three"
+        },
+        {
+          "n": 96,
+          "title": "Remedies from Unusual Delivery"
+        },
+        {
+          "n": 97,
+          "title": "Conclusion"
+        }
+      ]
+    },
+    "phaladeepika": {
+      "repoPath": "Classics books/Mantreswara_Phaladeeplka.pdf",
+      "bytes": 1071571,
+      "extractable": true,
+      "textChars": 517667,
+      "detector": "chapter-word",
+      "chapterCount": 28,
+      "lastChapter": 28,
+      "chapters": [
+        {
+          "n": 1,
+          "title": "Information and characteristic features"
+        },
+        {
+          "n": 2,
+          "title": "Characteristic features of the planets and the matters"
+        },
+        {
+          "n": 3,
+          "title": "Divisions of a sign"
+        },
+        {
+          "n": 4,
+          "title": "The various kinds of Strengths of Planets and Houses"
+        },
+        {
+          "n": 5,
+          "title": "Source of livelihood"
+        },
+        {
+          "n": 6,
+          "title": "Yogas"
+        },
+        {
+          "n": 7,
+          "title": "Raja yogas"
+        },
+        {
+          "n": 8,
+          "title": "Effect of the Sun and other planets In the twelve houses."
+        },
+        {
+          "n": 9,
+          "title": "Effects of different Ascendants"
+        },
+        {
+          "n": 10,
+          "title": "Matters relating to the 7th house"
+        },
+        {
+          "n": 11,
+          "title": "Female Horoscopy"
+        },
+        {
+          "n": 12,
+          "title": "Matters relating to the birth of Children"
+        },
+        {
+          "n": 13,
+          "title": "Determination of longevity Essentials at the time of birth"
+        },
+        {
+          "n": 14,
+          "title": "Diseases, death and past and future births"
+        },
+        {
+          "n": 15,
+          "title": "Assessment of houses"
+        },
+        {
+          "n": 16,
+          "title": "General effects of the twelve houses"
+        },
+        {
+          "n": 17,
+          "title": "Exit from the world"
+        },
+        {
+          "n": 18,
+          "title": "Effects of conjunction of two planets"
+        },
+        {
+          "n": 19,
+          "title": "Dasas (major periods) of planets and their effects"
+        },
+        {
+          "n": 20,
+          "title": "Effects of Dasas of the lords of houses and their Antar Dasas"
+        },
+        {
+          "n": 21,
+          "title": "Nature of Antar Dasas and Pratyantar Dasas"
+        },
+        {
+          "n": 22,
+          "title": "Kalachakra Dasa"
+        },
+        {
+          "n": 23,
+          "title": "Ashtakavarga"
+        },
+        {
+          "n": 24,
+          "title": "Effects of Ashtakavarga according to Horosara"
+        },
+        {
+          "n": 25,
+          "title": "Calculation of the positions of Gulika"
+        },
+        {
+          "n": 26,
+          "title": "Effects of transits of the various planets and constellations"
+        },
+        {
+          "n": 27,
+          "title": "Yogas leading to ascetlsm"
+        },
+        {
+          "n": 28,
+          "title": "Concluding Chapter"
+        }
+      ]
+    },
+    "saravali": {
+      "repoPath": "Classics books/Kalyana Varmas Saravali.pdf",
+      "bytes": 554171,
+      "extractable": true,
+      "textChars": 585993,
+      "detector": "colophon",
+      "chapterCount": 55,
+      "lastChapter": 55,
+      "chapters": [
+        {
+          "n": 1,
+          "title": "Birth"
+        },
+        {
+          "n": 2,
+          "title": "Meaning"
+        },
+        {
+          "n": 3,
+          "title": "Rasi Description"
+        },
+        {
+          "n": 4,
+          "title": "Planetary Characters"
+        },
+        {
+          "n": 5,
+          "title": "Miscellaneous Matters"
+        },
+        {
+          "n": 6,
+          "title": "Karakadhyaya"
+        },
+        {
+          "n": 7,
+          "title": "Karakadhyaya"
+        },
+        {
+          "n": 8,
+          "title": "Adhanadhyaya"
+        },
+        {
+          "n": 9,
+          "title": "Janma Vidhanadhyaya"
+        },
+        {
+          "n": 10,
+          "title": "Evils at Birth"
+        },
+        {
+          "n": 11,
+          "title": "Evils and the Moon"
+        },
+        {
+          "n": 12,
+          "title": "Cancellation"
+        },
+        {
+          "n": 13,
+          "title": "Yogas from the Moon"
+        },
+        {
+          "n": 14,
+          "title": "Yogas from the Sun"
+        },
+        {
+          "n": 15,
+          "title": "Conjunction"
+        },
+        {
+          "n": 16,
+          "title": "3 planets"
+        },
+        {
+          "n": 17,
+          "title": "Effects"
+        },
+        {
+          "n": 18,
+          "title": "Effects"
+        },
+        {
+          "n": 19,
+          "title": "Effects"
+        },
+        {
+          "n": 20,
+          "title": "Combinations for Renunciation"
+        },
+        {
+          "n": 21,
+          "title": "Nabhasa Yogas"
+        },
+        {
+          "n": 22,
+          "title": "Effects"
+        },
+        {
+          "n": 23,
+          "title": "in Saravali, entitled Effects arising out"
+        },
+        {
+          "n": 24,
+          "title": "in Kalyana Varmas Saravali entitled Effects arising out"
+        },
+        {
+          "n": 25,
+          "title": "Effects"
+        },
+        {
+          "n": 26,
+          "title": "Effects"
+        },
+        {
+          "n": 27,
+          "title": "Effects"
+        },
+        {
+          "n": 28,
+          "title": "Effects"
+        },
+        {
+          "n": 29,
+          "title": "Effects"
+        },
+        {
+          "n": 30,
+          "title": "Effects"
+        },
+        {
+          "n": 31,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 32,
+          "title": "NINTH HOUSE AND EFFECTS THEREOF"
+        },
+        {
+          "n": 33,
+          "title": "10th HOUSE AND EFFECTS THEREOF"
+        },
+        {
+          "n": 34,
+          "title": "DIFFERENT HOUSES AND WORLDLY AFFAIRS"
+        },
+        {
+          "n": 35,
+          "title": "RAJA YOGAS"
+        },
+        {
+          "n": 36,
+          "title": "PLANETARY RAYS"
+        },
+        {
+          "n": 37,
+          "title": "PANCHA MAHA PURUSHA YOGAS"
+        },
+        {
+          "n": 38,
+          "title": "GUNA TATWA PHALA"
+        },
+        {
+          "n": 39,
+          "title": "OBSTRUCTIONS TO RAJAYOGAS"
+        },
+        {
+          "n": 40,
+          "title": "LONGEVITY CALCULATION"
+        },
+        {
+          "n": 41,
+          "title": "MOOLA DASA"
+        },
+        {
+          "n": 42,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 43,
+          "title": "EVIL EFFECTS"
+        },
+        {
+          "n": 44,
+          "title": "ANTIDOTES FOR EVILS"
+        },
+        {
+          "n": 45,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 46,
+          "title": "FEMALE HOROSCOPY"
+        },
+        {
+          "n": 47,
+          "title": "APHORISMS"
+        },
+        {
+          "n": 48,
+          "title": "LOST HOROSCOPY (through rising Signs)"
+        },
+        {
+          "n": 49,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 50,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 51,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 52,
+          "title": "LOST HOROSCOPY"
+        },
+        {
+          "n": 53,
+          "title": "ASHTAKAVARGA"
+        },
+        {
+          "n": 54,
+          "title": "EFFECTS"
+        },
+        {
+          "n": 55,
+          "title": "Manifold Births"
+        }
+      ]
+    },
+    "jataka-parijata": {
+      "repoPath": "Classics books/Jataka-Parijata-Vol-1.pdf",
+      "bytes": 7275811,
+      "extractable": true,
+      "textChars": 507531,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "sarvartha-chintamani": {
+      "repoPath": "Classics books/Sarvartha-Chintamani-JN-Bhasin_compressed.pdf",
+      "bytes": 47326784,
+      "extractable": true,
+      "textChars": 868571,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "jaimini": {
+      "repoPath": "Classics books/JaiminiSutrasCompleteEng.pdf",
+      "bytes": 383558,
+      "extractable": true,
+      "textChars": 265864,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "satya-jataka": {
+      "repoPath": "Classics books/Satya Jataka.pdf",
+      "bytes": 52142,
+      "extractable": true,
+      "textChars": 27935,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "prasna-marga": {
+      "repoPath": "Classics books/PRASNA MARGA.doc",
+      "bytes": 1489408,
+      "extractable": true,
+      "textChars": 584046,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "strijataka": {
+      "repoPath": "Classics books/STRIJATAKA.pdf",
+      "bytes": 164260,
+      "extractable": true,
+      "textChars": 157424,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "lal-kitab": {
+      "repoPath": "Classics books/Lal kitabh/lal-kitab-vol-1-1952.pdf",
+      "bytes": 11778133,
+      "extractable": true,
+      "textChars": 25676,
+      "detector": null,
+      "chapterCount": 0,
+      "lastChapter": null,
+      "chapters": []
+    },
+    "deva-keralam": {
+      "repoPath": "Classics books/Deva-keralam.pdf",
+      "bytes": 54440241,
+      "extractable": false,
+      "chapters": []
+    },
+    "jatak-nirnay": {
+      "repoPath": "Classics books/Jatak Nirnay 1.pdf",
+      "bytes": 18189972,
+      "extractable": false,
+      "chapters": []
+    }
+  }
+}
