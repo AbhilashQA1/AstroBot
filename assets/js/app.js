@@ -3,7 +3,7 @@
 import { ALL_BODY_KEYS, Chart, OUTER_KEYS, PLANET_KEYS, decodeChart, emptyChart, encodeChart } from './model.js';
 import { loadKnowledge } from './kb.js';
 import { compose, ordinal } from './engine.js';
-import { dashaFor } from './astro/dasha.js';
+import { antardashas, dashaFor } from './astro/dasha.js';
 import { renderChart } from './chartview.js';
 import { renderBirthView } from './birth.js';
 import {
@@ -38,6 +38,11 @@ const state = {
   reading: null,
   readingView: null,
   viewingReading: null,
+  // How many years of periods the reading is showing ahead, or null for none.
+  // Held here rather than in the DOM so the panel survives a re-render.
+  yearsAhead: null,
+  // Which rule family the knowledge screen is filtered to, or null for all.
+  kbFamily: null,
 };
 
 function el(tag, attrs = {}, children = []) {
@@ -814,6 +819,137 @@ function dashaContext() {
   return { dasha: dashaFor(state.chart, state.raw.birth || {}, Date.now()) };
 }
 
+/**
+ * The sub-periods that overlap a window of time, each with the dates it runs.
+ *
+ * Mahadashas are too coarse to answer a question about a year - a Saturn period
+ * runs nineteen of them - so the timeline is built from antardashas, which run
+ * months to about three years. A period is included when it overlaps the window
+ * at all, so the one running now appears first even though it began earlier.
+ */
+function periodsAhead(years) {
+  const dasha = dashaFor(state.chart, state.raw.birth || {}, Date.now());
+  if (!dasha.available) return { available: false, reason: dasha.reason };
+
+  const from = Date.now();
+  const to = from + years * 365.2425 * 86400000;
+  const periods = [];
+
+  for (const maha of dasha.sequence) {
+    if (maha.to < from || maha.from > to) continue;
+    for (const antar of antardashas(maha)) {
+      if (antar.to < from || antar.from > to) continue;
+      periods.push({ maha, antar });
+    }
+  }
+
+  return { available: true, periods, from, to, nakshatra: dasha.nakshatra };
+}
+
+/**
+ * Run the engine once per sub-period and keep what it says about each.
+ *
+ * Deliberately a fresh evaluation per period rather than a filter over one
+ * reading: almost every rule in the base describes the chart permanently and
+ * would say the same thing for every year, so the only honest way to show what
+ * changes is to ask the engine again with the clock moved.
+ */
+function readingsAhead(years) {
+  const found = periodsAhead(years);
+  if (!found.available) return found;
+
+  const dated = found.periods.map(({ maha, antar }) => {
+    const at = antar.from + (antar.to - antar.from) / 2;
+    const ctx = { dasha: dashaFor(state.chart, state.raw.birth || {}, at) };
+    const reading = compose(state.chart, state.kb, ctx);
+    return {
+      maha: maha.lord,
+      antar: antar.lord,
+      from: antar.from,
+      to: antar.to,
+      running: Date.now() >= antar.from && Date.now() < antar.to,
+      findings: (reading.sections.find((s) => s.key === 'period')?.findings || [])
+        // The mahadasha statements repeat on every row of a long period, which
+        // reads as padding. Keep what is specific to this sub-period, and let
+        // the mahadasha be stated once in the reading above.
+        .filter((f) => f.rule.when?.all?.some((c) => c.antardashaLord)),
+    };
+  });
+
+  return { available: true, periods: dated, nakshatra: found.nakshatra };
+}
+
+/** The reading's "years ahead" panel: a button, and what it found when pressed. */
+function yearsAheadNodes() {
+  const out = [];
+  const years = state.yearsAhead;
+
+  const bar = el('div', { class: 'ahead-bar' }, [
+    el('button', {
+      type: 'button',
+      class: years ? 'btn btn-quiet' : 'btn btn-primary',
+      onclick: () => { state.yearsAhead = years ? null : 5; renderReading(); },
+    }, years ? 'Hide the years ahead' : 'Predictions for this year and ahead'),
+  ]);
+
+  if (years) {
+    for (const n of [3, 5, 10]) {
+      bar.append(el('button', {
+        type: 'button',
+        class: `btn btn-quiet nudge${n === years ? ' is-active' : ''}`,
+        onclick: () => { state.yearsAhead = n; renderReading(); },
+      }, `${n}y`));
+    }
+  }
+  out.push(bar);
+
+  if (!years) return out;
+
+  const result = readingsAhead(years);
+  if (!result.available) {
+    out.push(el('div', { class: 'callout', text:
+      result.reason === 'no-degrees'
+        ? 'This chart was entered by hand, so there is no birth moment to date periods from. Calculating it from birth details would give dated predictions.'
+        : 'No birth details are stored for this chart, so its periods cannot be dated. Calculating it from birth details would fix that.' }));
+    return out;
+  }
+
+  if (!result.periods.length) {
+    out.push(el('div', { class: 'callout', text: `No sub-period boundary falls in the next ${years} years, so the reading above covers the whole stretch.` }));
+    return out;
+  }
+
+  const fmt = (ms) => new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  const yearSpan = (a, b) => {
+    const ya = new Date(a).getFullYear();
+    const yb = new Date(b).getFullYear();
+    return ya === yb ? `${ya}` : `${ya}–${yb}`;
+  };
+
+  const list = el('div', { class: 'ahead-list' });
+  for (const p of result.periods) {
+    const planet = (k) => state.chart.planet(k).en;
+    list.append(el('div', { class: `ahead-period${p.running ? ' is-running' : ''}` }, [
+      el('div', { class: 'ahead-head' }, [
+        el('span', { class: 'ahead-years', text: yearSpan(p.from, p.to) }),
+        el('span', { class: 'ahead-pair', text: `${planet(p.maha)} / ${planet(p.antar)}` }),
+        p.running ? el('span', { class: 'tag tag-ownSign', text: 'running now' }) : null,
+      ]),
+      el('p', { class: 'hint small', text: `${fmt(p.from)} to ${fmt(p.to)}` }),
+      ...(p.findings.length
+        ? p.findings.map((f) => el('p', { class: 'ahead-says', text: f.rule.says }))
+        : [el('p', { class: 'hint small', text: 'No rule is written for this pair yet, so the reading has nothing specific to say about it.' })]),
+      ...p.findings.flatMap((f) => [el('div', { class: 'finding-meta' }, f.citations.map(citeChip))]),
+    ]));
+  }
+  out.push(list);
+
+  out.push(el('p', { class: 'hint small', text:
+    `Dated from the Moon in ${result.nakshatra.name}. Only what the sub-period changes is shown; everything the chart says permanently is in the reading below.` }));
+
+  return out;
+}
+
 function currentView() {
   if (!state.readingView) {
     state.reading = state.reading || compose(state.chart, state.kb, dashaContext());
@@ -857,6 +993,10 @@ function renderReading() {
   ]));
   host.append(el('p', { id: 'reading-status', class: 'status' }));
 
+  // Before the reading proper: the reading describes the chart, and this says
+  // which part of it is live now and next.
+  for (const node of yearsAheadNodes()) host.append(node);
+
   for (const node of readingNodes(view)) host.append(node);
 }
 
@@ -897,9 +1037,32 @@ function renderLibrary() {
   stats.textContent = '';
   const counts = {};
   for (const r of state.kb.rules) counts[r.family] = (counts[r.family] || 0) + 1;
-  stats.append(el('span', { class: 'pill', text: `${state.kb.rules.length} rules` }));
+  // The counts double as the filter: a click narrows the list to that family,
+  // and clicking the same one again clears it, so a double click clears too.
+  //
+  // Done as a toggle rather than with a dblclick handler, which looks like the
+  // obvious way and does not work. Selecting a family re-renders these pills, so
+  // the node the gesture started on is gone before the second click lands; the
+  // browser then dispatches dblclick on the nearest common ancestor rather than
+  // on the button, and a handler on the button never runs. A toggle needs no
+  // dblclick at all - two clicks are set-then-clear - so it cannot be broken by
+  // a re-render.
+  stats.append(el('button', {
+    type: 'button',
+    class: `pill pill-btn${state.kbFamily ? '' : ' is-active'}`,
+    title: 'Show every rule',
+    onclick: () => { state.kbFamily = null; renderLibrary(); },
+  }, `${state.kb.rules.length} rules`));
+
   for (const [family, n] of Object.entries(counts).sort()) {
-    stats.append(el('span', { class: 'pill', text: `${family.replace(/-/g, ' ')}: ${n}` }));
+    const active = state.kbFamily === family;
+    stats.append(el('button', {
+      type: 'button',
+      class: `pill pill-btn${active ? ' is-active' : ''}`,
+      'aria-pressed': active ? 'true' : 'false',
+      title: active ? 'Click again to show every rule' : `Show only ${family.replace(/-/g, ' ')} rules`,
+      onclick: () => { state.kbFamily = active ? null : family; renderLibrary(); },
+    }, `${family.replace(/-/g, ' ')}: ${n}`));
   }
 
   renderKbResults($('#kb-search').value);
@@ -927,6 +1090,7 @@ function renderKbResults(query) {
   const q = (query || '').trim().toLowerCase();
 
   let rules = state.kb.rules;
+  if (state.kbFamily) rules = rules.filter((r) => r.family === state.kbFamily);
   if (q) {
     rules = rules.filter((r) =>
       r.says.toLowerCase().includes(q) ||
@@ -938,11 +1102,15 @@ function renderKbResults(query) {
   }
 
   if (!rules.length) {
-    host.append(el('div', { class: 'empty', text: 'Nothing matches that. Try a planet, a theme, or a yoga name.' }));
+    host.append(el('div', { class: 'empty', text: state.kbFamily
+      ? `Nothing matches that within ${state.kbFamily.replace(/-/g, ' ')}. Click the family again to search everything.`
+      : 'Nothing matches that. Try a planet, a theme, or a yoga name.' }));
     return;
   }
 
-  const shown = rules.slice(0, q ? 80 : 30);
+  // A chosen family is as deliberate as a typed query, so it gets the same
+  // allowance. Otherwise picking "planet in house: 109" would show thirty.
+  const shown = rules.slice(0, q || state.kbFamily ? 120 : 30);
   for (const r of shown) {
     host.append(el('div', { class: 'kb-rule' }, [
       el('div', { class: 'kb-rule-head' }, [
@@ -960,7 +1128,7 @@ function renderKbResults(query) {
   }
 
   if (rules.length > shown.length) {
-    host.append(el('p', { class: 'hint small', text: `${rules.length - shown.length} more. Narrow the search to see them.` }));
+    host.append(el('p', { class: 'hint small', text: `${rules.length - shown.length} more. ${state.kbFamily ? 'Search within this family to see them.' : 'Narrow the search to see them.'}` }));
   }
 }
 

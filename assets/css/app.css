@@ -536,6 +536,24 @@ details > *:not(summary) { padding: 0 14px 14px; }
 .kb-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .kb-results { display: grid; gap: 10px; }
 
+/* The family counts are also the filter, so they have to look pressable. */
+.pill-btn {
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 32px;
+}
+
+.pill-btn:hover { border-color: var(--accent); color: var(--ink); }
+
+.pill-btn.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .kb-rule { padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-raised); }
 .kb-rule p { margin: 0 0 6px; font-family: var(--font-read); font-size: 0.95rem; line-height: 1.55; }
 .kb-rule-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 5px; }
@@ -696,6 +714,29 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .rectify-note { margin: 8px 0 0; flex: 1 1 100%; }
 .rectify-caution { margin: 6px 0 0; color: var(--mixed); }
+
+/* --- the years ahead ---------------------------------------------------- */
+
+.ahead-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 12px; }
+.btn.nudge.is-active { border-color: var(--accent); color: var(--ink); font-weight: 600; }
+
+.ahead-list { display: grid; gap: 10px; margin-bottom: 14px; }
+
+.ahead-period {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+}
+
+/* The period running now is the one the reader came for. */
+.ahead-period.is-running { border-left-color: var(--accent); }
+
+.ahead-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.ahead-years { font-variant-numeric: tabular-nums; font-weight: 640; font-size: 0.95rem; }
+.ahead-pair { color: var(--ink-dim); font-size: 0.85rem; }
+.ahead-says { margin: 7px 0 6px; font-family: var(--font-read); font-size: 0.95rem; line-height: 1.55; }
 
 .tag-edited { background: color-mix(in srgb, var(--mixed) 24%, transparent); color: var(--mixed); }
 .callout.is-edited { border-left-color: var(--mixed); }
