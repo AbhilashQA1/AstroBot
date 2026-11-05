@@ -1,0 +1,147 @@
+{
+  "schema": "astrobot/rules@1",
+  "family": "dasha",
+  "about": "Antardasha: the sub-period inside the running mahadasha, and the pair the two lords make. This is the granularity a question about a particular year actually needs. A Saturn mahadasha runs nineteen years and says almost nothing about next March; the sub-period inside it runs months to about three years, and the pair is what the classical texts give results for. Each rule fires only when both lords match, so exactly one of these can be true at a time. Reasoned from the natural friendship of the two lords and from what each signifies, and cited to `antardasha-tradition`, which is unverified on purpose - see that entry in sources.json before promoting any of these.",
+  "defaults": {
+    "tradition": "parashari",
+    "status": "active",
+    "added": "2026-11-05",
+    "sources": [{ "key": "antardasha-tradition", "locus": "on the results of the antardasha lords" }]
+  },
+  "rules": [
+    { "id": "adsa.sa.sa", "name": "Saturn in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "sa" }] },
+      "says": "About three years in which the period shows its own face undiluted: work is the whole of life, results come only in proportion to time served, and the body registers the cost before the mind admits it. What is built now lasts, and nothing is built quickly.",
+      "themes": ["period", "work", "health"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "adsa.sa.me", "name": "Mercury in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "me" }] },
+      "says": "Nearly three years, and one of the easier stretches of a Saturn period: Mercury is Saturn's friend, so the work turns to paper, negotiation and system rather than sheer endurance. Agreements signed now hold. A good sub-period for qualifying, for trade, and for being paid for competence rather than for presence.",
+      "themes": ["period", "work", "intellect"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.sa.ke", "name": "Ketu in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "ke" }] },
+      "says": "A little over a year in which something is let go of rather than gained. Work that no longer fits is left, often without a replacement arranged, and the interest simply drains out of an occupation. Health complaints of this sub-period tend to be vague and hard to name.",
+      "themes": ["period", "loss", "health"], "polarity": "difficult", "confidence": 0.65 },
+
+    { "id": "adsa.sa.ve", "name": "Venus in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "ve" }] },
+      "says": "The longest sub-period of a Saturn period, about three years and two months, and the kindest: Venus is Saturn's friend. Marriage, partnership and comfort become possible inside an otherwise austere stretch, and relationships formed here are steady rather than romantic. Money improves through someone else as much as through the work.",
+      "themes": ["period", "partnership", "comfort"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.sa.su", "name": "Sun in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "su" }] },
+      "says": "Under a year, and the sharpest friction of the period: the Sun is Saturn's enemy, and the two quarrel over authority. Expect trouble with a superior, a father, or an institution - a position contested, recognition withheld, or a rule applied to you that others escape. Short, and best not forced.",
+      "themes": ["period", "status", "father"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "adsa.sa.mo", "name": "Moon in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "mo" }] },
+      "says": "About a year and seven months in which the cost of the Saturn period is paid emotionally. The Moon is Saturn's enemy, and the combination is the classical signature of low spirits under sustained pressure: sleep, appetite and the state of the mother are the places it shows. The work continues; the willingness thins.",
+      "themes": ["period", "mind", "health"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "adsa.sa.ma", "name": "Mars in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "ma" }] },
+      "says": "A little over a year, and the one to watch for the body. Mars is Saturn's enemy and the pair is read for accident, surgery, inflammation and the kind of dispute that goes legal - over property, boundaries or a contract. Patience, which the Saturn period has been teaching, is exactly what this sub-period removes.",
+      "themes": ["period", "health", "adversity"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "adsa.sa.ra", "name": "Rahu in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "ra" }] },
+      "says": "About two years and ten months of movement in an otherwise static period: a foreign connection, an unorthodox route into the work, or advancement by a means that would not bear close inspection. Rahu and Saturn agree well enough to be effective together, which is not the same as safe.",
+      "themes": ["period", "work", "foreign"], "polarity": "mixed", "confidence": 0.65 },
+
+    { "id": "adsa.sa.ju", "name": "Jupiter in Saturn",
+      "when": { "all": [{ "dashaLord": "sa" }, { "antardashaLord": "ju" }] },
+      "says": "Two and a half years of relief, and usually where a Saturn period finally pays out. Jupiter is neutral to Saturn rather than hostile, so the long labour is recognised: promotion, a teacher or counsellor who helps, a child, or simply the return of perspective. Gains here are moderate and keep their value.",
+      "themes": ["period", "fortune", "work"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.ve.ve", "name": "Venus in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "ve" }] },
+      "says": "Over three years in which the period's own significations run strongest: marriage, attraction, comfort, and spending on both. Relationships begun here are the defining ones of the period. The risk is not scarcity but excess - of ease, of indulgence, of putting pleasantness ahead of what needs saying.",
+      "themes": ["period", "partnership", "romance"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.ve.su", "name": "Sun in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "su" }] },
+      "says": "One year, and an awkward one for relationships: the Sun is Venus's enemy, and the self asserts itself where accommodation was keeping the peace. Pride enters a partnership, or a partner's standing becomes the issue. Marriages contracted in this sub-period are commonly read as made for position.",
+      "themes": ["period", "partnership", "status"], "polarity": "difficult", "confidence": 0.65 },
+
+    { "id": "adsa.ve.mo", "name": "Moon in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "mo" }] },
+      "says": "About a year and eight months of strong feeling. The Moon is no friend of Venus, but the two together are frankly emotional rather than hostile: attachment forms fast, is felt deeply, and is not examined closely. Good for intimacy and for the home; poor for judging whether a person is suitable.",
+      "themes": ["period", "romance", "home"], "polarity": "mixed", "confidence": 0.65 },
+
+    { "id": "adsa.ve.ma", "name": "Mars in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "ma" }] },
+      "says": "About fourteen months of heat in the relationship. Mars and Venus are neutral by friendship and opposite in temperament, which reads as desire and quarrel in the same breath: a partnership either consummated or broken here, rarely left as it was. The classical warning about haste in marriage belongs to this sub-period.",
+      "themes": ["period", "romance", "rupture"], "polarity": "mixed", "confidence": 0.65 },
+
+    { "id": "adsa.ve.ra", "name": "Rahu in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "ra" }] },
+      "says": "Three years of the unconventional in matters of attachment: a relationship across a line the family recognises - caste, country, religion, age or marital status - and appetite running ahead of discretion. Rahu magnifies what Venus wants without supplying any sense of when to stop.",
+      "themes": ["period", "romance", "foreign"], "polarity": "mixed", "confidence": 0.65 },
+
+    { "id": "adsa.ve.ju", "name": "Jupiter in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "ju" }] },
+      "says": "Two years and eight months, and the most wholesome sub-period of a Venus period. The two benefics are neutral to each other but pull the same way here: marriage with the family's blessing, children, teaching, and money that arrives without a story attached. Where a Venus period produces a settled life, it is usually in this stretch.",
+      "themes": ["period", "partnership", "children"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.ve.sa", "name": "Saturn in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "sa" }] },
+      "says": "Three years and two months in which a relationship is tested by time rather than by passion. Saturn is Venus's friend, so this is not rupture - it is duty, distance, and the discovery of what the attachment is worth when it stops being enjoyable. Marriages often happen here, later than wanted and to someone older or more serious.",
+      "themes": ["period", "partnership", "effort"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "adsa.ve.me", "name": "Mercury in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "me" }] },
+      "says": "Two years and ten months of articulate, sociable ease: Mercury is Venus's friend, and the pair favours anything where charm and words earn a living - trade, performance, design, negotiation. In relationships it is the talking stage, and it suits courtship better than commitment.",
+      "themes": ["period", "speech", "art"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.ve.ke", "name": "Ketu in Venus",
+      "when": { "all": [{ "dashaLord": "ve" }, { "antardashaLord": "ke" }] },
+      "says": "About fourteen months in which the appetite the period lives on quietly fails. Interest leaves a relationship without a quarrel to explain it, or physical intimacy stops mattering. Ketu gives detachment where Venus wants contact, and the usual report of this sub-period is not pain but flatness.",
+      "themes": ["period", "rupture", "loss"], "polarity": "difficult", "confidence": 0.65 },
+
+    { "id": "adsa.ma.ma", "name": "Mars in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "ma" }] },
+      "says": "Only about five months, and the most concentrated of the period: energy, temper and physical risk all at full strength. Read for cuts, burns, fevers and fights, and equally for the courage to begin something that needed force to start. Short enough to be survived, sharp enough to leave a mark.",
+      "themes": ["period", "courage", "health"], "polarity": "mixed", "confidence": 0.7 },
+
+    { "id": "adsa.ma.ra", "name": "Rahu in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "ra" }] },
+      "says": "About a year of recklessness with consequences. Rahu removes Mars's remaining caution: speed, machinery, weapons, poison and bad company are the classical readings, and the modern version is a risk taken for gain that the taker knows is a risk. The most pointed sub-period of a short period.",
+      "themes": ["period", "adversity", "health"], "polarity": "difficult", "confidence": 0.65 },
+
+    { "id": "adsa.ma.ju", "name": "Jupiter in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "ju" }] },
+      "says": "Eleven months in which force is given a direction worth having. Jupiter is Mars's friend, and the pair is read for success through decisive action taken on principle - a promotion earned by stepping forward, a cause taken up, property acquired. The best stretch of a Mars period.",
+      "themes": ["period", "work", "fortune"], "polarity": "favourable", "confidence": 0.7 },
+
+    { "id": "adsa.ma.sa", "name": "Saturn in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "sa" }] },
+      "says": "A little over a year of drive meeting obstruction. Mars wants to act and Saturn will not let the thing move, which the body takes as strain and the temper as frustration; chronic complaints that began earlier harden here. Disputes over land or inheritance belong to this pair, and they grind rather than resolve.",
+      "themes": ["period", "adversity", "health"], "polarity": "difficult", "confidence": 0.7 },
+
+    { "id": "adsa.ma.me", "name": "Mercury in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "me" }] },
+      "says": "About a year of sharp words. Mercury is Mars's enemy, and the combination argues: an agreement disputed, a message that causes the damage, litigation, or a quarrel conducted in writing. Competence is not the issue, and restraint in what is said is the whole of the advice.",
+      "themes": ["period", "speech", "adversity"], "polarity": "difficult", "confidence": 0.65 },
+
+    { "id": "adsa.ma.ke", "name": "Ketu in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "ke" }] },
+      "says": "Five months, and both significators are fiery and abrupt. Read for sudden exits - from a job, a place, a dispute - and for injury that arrives without warning. Whatever ends in this sub-period was usually already finished; Ketu only removes the pretence that it was not.",
+      "themes": ["period", "loss", "health"], "polarity": "difficult", "confidence": 0.6 },
+
+    { "id": "adsa.ma.ve", "name": "Venus in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "ve" }] },
+      "says": "About fourteen months, the longest stretch of a Mars period and much the most comfortable. Venus is neutral to Mars and softens it: attraction, marriage, vehicles and pleasant spending, with enough of Mars left that the pursuit is direct rather than patient.",
+      "themes": ["period", "romance", "comfort"], "polarity": "favourable", "confidence": 0.65 },
+
+    { "id": "adsa.ma.su", "name": "Sun in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "su" }] },
+      "says": "Four months of heat and visibility together. The Sun is Mars's friend, so courage is noticed rather than wasted: a confrontation that improves standing, recognition from authority, or a government matter settled. Brief, and the inflammation and blood-heat readings of this pair are brief with it.",
+      "themes": ["period", "status", "courage"], "polarity": "mixed", "confidence": 0.65 },
+
+    { "id": "adsa.ma.mo", "name": "Moon in Mars",
+      "when": { "all": [{ "dashaLord": "ma" }, { "antardashaLord": "mo" }] },
+      "says": "About seven months in which action is driven by feeling. The Moon is Mars's friend and the pair is the classical signature of money made through boldness and friction made at home in the same stretch. The mother's health and the condition of the blood are both read here.",
+      "themes": ["period", "wealth", "home"], "polarity": "mixed", "confidence": 0.65 }
+  ]
+}

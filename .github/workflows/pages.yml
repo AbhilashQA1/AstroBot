@@ -58,6 +58,9 @@ jobs:
       - name: Check birth-time rectification
         run: node scripts/test-rectify.mjs
 
+      - name: Check the antardasha rules
+        run: node scripts/test-antardasha.mjs
+
       - name: Check the markup against the scripts
         run: node scripts/test-dom.mjs
 

@@ -73,6 +73,16 @@
       "title": "Community and social-media submissions", "author": "various", "era": "contemporary", "authority": "unverified",
       "note": "Knowledge added through the app. Never promoted above `secondary` without a classical citation being attached by review."
     },
+    "antardasha-tradition": {
+      "title": "Common Parashari antardasha doctrine", "author": "various commentators", "era": "traditional", "authority": "unverified",
+      "note": "Deliberately unverified, and weighted accordingly. These are the sub-period results as the Parashari commentarial tradition commonly states them, reasoned from the natural friendship between the two lords and from what each signifies. No single text has been read line by line to place them, so citing bphs or any other named work here would assert a check that has not been made. Any rule on this key should be re-cited to a named text and locus once someone has verified it, which raises its weight from 0.35 to that text's authority.",
+      "verifyAgainst": [
+        "Classics books/BPHS-Santhanam-Vol-2.pdf",
+        "Classics books/Book. Encyclopedia of vedic astro - dasha systems.pdf",
+        "Good books/vimsottari-and-udu-dasas.pdf",
+        "Good books/(I)Timing-of-EventsCrux-of-Vedic-Astrology-1 .pdf"
+      ]
+    },
     "astrobot": {
       "title": "AstroBot derived", "author": "AstroBot engine", "era": "contemporary", "authority": "derived",
       "note": "Statements the engine composes from reference data (lordship, dignity, aspect geometry) rather than from a cited rule."
