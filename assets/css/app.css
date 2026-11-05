@@ -665,6 +665,38 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 .nudge-row .hint { margin: 0; flex: 1 1 100%; }
 .btn.nudge { min-width: 52px; padding: 7px 10px; font-variant-numeric: tabular-nums; }
 
+/* Solving the birth time from a stated Lagna. Same shape as the nudge row, so
+   the two read as the coarse and the exact version of one idea. */
+.rectify-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.rectify-row .hint { margin: 0; flex: 1 1 100%; }
+
+.rectify-row select,
+.rectify-row input {
+  min-height: 36px;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.rectify-rashi { flex: 1 1 110px; }
+.rectify-degree { flex: 0 1 84px; width: 84px; font-variant-numeric: tabular-nums; }
+
+.rectify-note { margin: 8px 0 0; flex: 1 1 100%; }
+.rectify-caution { margin: 6px 0 0; color: var(--mixed); }
+
 .tag-edited { background: color-mix(in srgb, var(--mixed) 24%, transparent); color: var(--mixed); }
 .callout.is-edited { border-left-color: var(--mixed); }
 .callout p { margin: 0 0 6px; }

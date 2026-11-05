@@ -59,6 +59,13 @@ If you change a file and the browser keeps serving the old one, the service work
 is holding a cached copy — open DevTools → Application → Service Workers →
 Unregister, or hard-reload twice.
 
+Unregistering is sometimes not enough. A module already loaded in a tab can be
+served from that tab's own memory cache afterwards, so the page goes on running
+the old code in a tab with no service worker and an empty cache storage. The
+symptom is a fix that appears to do nothing; `performance.getEntriesByName(url)`
+reporting `transferSize: 0` is the tell. Opening a new tab is the quickest way
+out, and worth remembering before concluding that a correct change is wrong.
+
 ## Computing a kundali from birth details
 
 AstroBot calculates charts itself. No API, no key, no network — the whole
@@ -103,13 +110,71 @@ data it describes.
 | Change the Lagna | All twelve houses rotate, as before. |
 | Undo my changes | Puts every body and the Lagna back to the calculation. |
 | Move the birth time | Recalculates. The chart stays *calculated*, because nothing was edited. |
+| Solve from the rising degree | Finds the birth time whose Lagna matches, then recalculates from it. Also leaves the chart *calculated*. |
 
 Edited bodies are badged on the confirmation screen and named above the roster,
 so an edited chart can never be read as though it were computed.
 
 The birth-time nudge is there because rectification is the real reason anyone
 edits a calculated chart: birth times get rounded to five minutes or misremembered,
-and the Lagna moves about a degree every four minutes.
+and the Lagna moves about a degree every four minutes. Where the rising degree is
+actually known, the next section does it exactly instead of by hand.
+
+### Solving the birth time from the Lagna
+
+An inherited horoscope usually states the rising degree precisely and the clock
+time vaguely. That asymmetry runs backwards: **Know the rising degree?** on the
+Chart screen takes a rashi and a degree, finds the birth time whose Lagna lands
+there, and recalculates the whole chart from it. The chart stays *calculated*,
+because the birth time moved and no placement was edited.
+
+The Lagna is the only anchor worth having. Measured at Pune on 2 April 1990, one
+degree of movement costs:
+
+| Anchor | One degree of movement |
+| --- | --- |
+| **Lagna** | **3.2 minutes** |
+| Moon | 1 hour 44 minutes |
+| Mercury | 13 hours |
+| Sun | about a day |
+| Mars | about 1.3 days |
+| Jupiter | 9 days |
+| Saturn | 19 days |
+
+A stated Lagna therefore pins the birth time to a few minutes, while "Saturn was
+at 12 degrees" constrains it to about three weeks and is worth nothing here. That
+is why this asks for the Lagna and not for a planet.
+
+What it reports, and why each part is there:
+
+- **The minute it chose, and how far that moved the time.** Birth times are
+  stored to the minute, so the nearest minute is as close as the Lagna can be put
+  to what was asked for.
+- **What that minute actually gives**, which is usually not quite the degree you
+  typed. Saying so is the difference between rectification and false precision.
+- **The local rate** — 3.1 minutes per degree at Pune, 2.6 at Srinagar. It varies
+  with the rising sign as well as the latitude, so the same feature is tighter for
+  some births than for others. The figures in the table above are averaged over an
+  hour; the app reports the instantaneous rate, which is why the two differ
+  slightly.
+- **A caution past three hours.** A shift that large means the rising degree and
+  the recorded time disagree about more than rounding, which usually means the
+  rashi is wrong.
+- **A second solution where one exists.** A degree rises once per sidereal day, so
+  any window wider than 23h56m holds two. The nearer is taken and the other is
+  named rather than quietly dropped.
+
+An unknown birth time is the strongest case for it: there is nothing to centre on,
+so the search runs from noon across the whole day.
+
+The solver evaluates only the ascendant, which needs sidereal time, latitude and
+the obliquity and never touches the planetary ephemeris. A search is a few hundred
+of those, which is why it is quick enough to run on a phone.
+
+`node scripts/test-rectify.mjs` does the round trip — compute a chart, keep only
+its Lagna, throw the time away, and check the solver gets the time back — across
+seven dates and latitudes from 8°N to 60°N, and asserts that every house placement
+comes back identical.
 
 The place list is fetched the first time that screen is opened, not at start-up,
 so anyone who only enters charts by hand never downloads it. Rebuild it with:

@@ -11,6 +11,7 @@ import {
   setDegree, shiftBirthMinutes, snapshot,
 } from './edits.js';
 import { computeKundali, toChartPlacements } from './astro/compute.js';
+import { solveLagna, targetFromRashi } from './astro/rectify.js';
 import {
   chartOf, deleteChart, deleteReading, exportAll, getReading, importAll, listCharts,
   listReadings, readingsForChart, renameChart, saveChart, saveReading, store, toView,
@@ -169,23 +170,155 @@ function renderComputedPanel() {
     }
     host.append(nudge);
   }
+
+  renderRectifyRow(host, birth);
+}
+
+/**
+ * Solving the birth time from a stated Lagna.
+ *
+ * This is the one direction that works. An inherited horoscope states the
+ * rising degree exactly and the clock time vaguely, and the Lagna crosses the
+ * whole zodiac in a sidereal day - about three minutes per degree - so the
+ * stated degree pins the time, and every other degree then follows from the
+ * ephemeris. Running it the other way is hopeless: Saturn moves a degree in
+ * nineteen days, so its degree says nothing about the time of day.
+ */
+function renderRectifyRow(host, birth) {
+  const current = state.lastComputation?.lagna;
+  const row = el('div', { class: 'rectify-row' }, [
+    el('p', { class: 'hint small', text: 'Know the rising degree? Work the birth time back from it.' }),
+  ]);
+
+  const rashiSelect = el('select', { class: 'rectify-rashi', 'aria-label': 'Lagna rashi' },
+    Array.from({ length: 12 }, (_, i) => el('option', {
+      value: i + 1,
+      selected: (current?.rashi ?? state.chart.signOfHouse(1)) === i + 1,
+      text: state.chart.rashi(i + 1).en,
+    })));
+
+  const degreeInput = el('input', {
+    class: 'rectify-degree',
+    type: 'number', min: '0', max: '29.9999', step: '0.01',
+    inputmode: 'decimal',
+    placeholder: 'deg',
+    'aria-label': 'Lagna degree within the rashi',
+    value: current ? current.degree.toFixed(2) : '',
+  });
+
+  row.append(rashiSelect, degreeInput, el('button', {
+    type: 'button', class: 'btn btn-quiet',
+    onclick: () => runRectify(birth, Number(rashiSelect.value), degreeInput.value),
+  }, 'Find the time'));
+
+  host.append(row);
+
+  // What a previous solve concluded, kept on the strip rather than flashed in a
+  // banner: how this chart got its birth time is provenance, and belongs next to
+  // the rest of it. Shown only while the birth time is still the solved one, so
+  // a nudge or a fresh calculation drops it without any bookkeeping.
+  const r = state.lastRectify;
+  if (r && r.date === birth.date && r.time === birth.time) {
+    host.append(el('p', { class: 'hint small rectify-note', text: r.summary }));
+    if (r.caution) host.append(el('p', { class: 'hint small rectify-caution', text: r.caution }));
+  }
+}
+
+/** Solve for the birth time, recompute from it, and record what was concluded. */
+function runRectify(birth, rashi, degreeRaw) {
+  if (degreeRaw === '' || degreeRaw === null) {
+    banner('Enter the degree of the Lagna within its rashi.', 'bad');
+    return;
+  }
+
+  let target;
+  try {
+    target = targetFromRashi(rashi, Number(degreeRaw));
+  } catch (err) {
+    banner(err.message, 'bad');
+    return;
+  }
+
+  let solved;
+  try {
+    solved = solveLagna(astroBirth(birth), target);
+  } catch (err) {
+    banner(`Could not solve for the Lagna: ${err.message}`, 'bad');
+    return;
+  }
+
+  if (!solved.ok) {
+    banner(`Could not find that Lagna: ${solved.reason}`, 'bad');
+    return;
+  }
+
+  const { shiftMinutes, residual, rate, lagna } = solved.best;
+  const moved = shiftBirthMinutes(birth, shiftMinutes);
+  const asked = `${state.chart.rashi(rashi).en} ${Number(degreeRaw).toFixed(2)}°`;
+  const minutesPerDegree = rate > 0 ? 1 / rate : Infinity;
+
+  // The honest part. The chart records birth times to the minute, so the nearest
+  // minute is as close as the Lagna can be put to what was asked for, and the
+  // reader is told the gap rather than left to assume it is zero.
+  const landed = `${state.chart.rashi(Math.floor(lagna / 30) + 1).en} ${(lagna % 30).toFixed(2)}°`;
+  const parts = [
+    `Solved from a Lagna of ${asked}: birth time ${moved.time} on ${moved.date}`,
+    shiftMinutes === 0 ? ' (unchanged)' : `, ${Math.abs(shiftMinutes)} minute${Math.abs(shiftMinutes) === 1 ? '' : 's'} ${shiftMinutes > 0 ? 'later' : 'earlier'}`,
+    `. That minute gives ${landed}`,
+    Math.abs(residual) < 0.005 ? '.' : `, ${Math.abs(residual).toFixed(2)}° ${residual > 0 ? 'past' : 'short of'} what you entered.`,
+    ` The Lagna is moving ${minutesPerDegree.toFixed(1)} minutes per degree here, so that is the limit of what the birth time can say.`,
+  ];
+
+  let caution = null;
+  if (Math.abs(shiftMinutes) > 180) {
+    caution = `This moved the birth time by ${(Math.abs(shiftMinutes) / 60).toFixed(1)} hours. A shift that large usually means the rising degree and the recorded time disagree about more than rounding - check the rashi before trusting it.`;
+  } else if (solved.solutions.length > 1) {
+    const other = solved.solutions[1];
+    caution = `${state.chart.rashi(rashi).en} also rises ${Math.abs(other.shiftMinutes - shiftMinutes)} minutes away, on the next sidereal day. The nearer time was taken.`;
+  }
+
+  state.lastRectify = { date: moved.date, time: moved.time, summary: parts.join(''), caution };
+  if (recomputeWithBirth(moved)) {
+    banner(`Birth time solved: ${moved.time}. The whole chart has been recalculated from it.`, 'good');
+  } else {
+    // The recompute reported why. Do not leave a conclusion on the strip for a
+    // chart that was never rebuilt from it.
+    state.lastRectify = null;
+  }
+}
+
+/**
+ * A stored birth record as computeKundali wants it.
+ *
+ * One function for every caller on purpose. The Lagna solver and the recompute
+ * path both have to resolve the same wall clock to the same instant, and if they
+ * ever differed the solver would be answering a question the chart screen never
+ * asked. The discrepancy would be a few minutes - small enough to pass for
+ * rounding and hard to find.
+ *
+ * An unknown birth time resolves to noon, which is what shiftBirthMinutes
+ * already assumes, so a solved shift lands where the solver expected.
+ */
+function astroBirth(birth) {
+  const timeKnown = birth.timeKnown !== false;
+  return {
+    year: Number(birth.date.slice(0, 4)),
+    month: Number(birth.date.slice(5, 7)),
+    day: Number(birth.date.slice(8, 10)),
+    hour: timeKnown ? Number(birth.time.slice(0, 2)) : 12,
+    minute: timeKnown ? Number(birth.time.slice(3, 5)) : 0,
+    latitude: birth.place.latitude,
+    longitude: birth.place.longitude,
+    zone: 'Asia/Kolkata',
+    ayanamsa: birth.ayanamsa,
+    ...(Number.isFinite(birth.offsetMinutes) ? { offsetMinutes: birth.offsetMinutes } : {}),
+  };
 }
 
 /** Recompute from a birth record and replace the chart, keeping it calculated. */
 function recomputeWithBirth(birth) {
   try {
-    const result = computeKundali({
-      year: Number(birth.date.slice(0, 4)),
-      month: Number(birth.date.slice(5, 7)),
-      day: Number(birth.date.slice(8, 10)),
-      hour: Number(birth.time.slice(0, 2)),
-      minute: Number(birth.time.slice(3, 5)),
-      latitude: birth.place.latitude,
-      longitude: birth.place.longitude,
-      zone: 'Asia/Kolkata',
-      ayanamsa: birth.ayanamsa,
-      ...(birth.offsetMinutes === null || birth.offsetMinutes === undefined ? {} : { offsetMinutes: birth.offsetMinutes }),
-    });
+    const result = computeKundali(astroBirth(birth));
     const { lagna, placements } = toChartPlacements(result);
     state.raw.lagna = lagna;
     state.raw.placements = placements;
@@ -193,8 +326,10 @@ function recomputeWithBirth(birth) {
     state.raw.computed = snapshot(lagna, placements);
     state.lastComputation = result;
     rebuild();
+    return true;
   } catch (err) {
     banner(`Could not recalculate: ${err.message}`, 'bad');
+    return false;
   }
 }
 
@@ -218,12 +353,18 @@ function renderBirth() {
       state.raw.computed = snapshot(lagna, placements);
       if (birth.name?.trim()) state.raw.name = birth.name.trim();
 
+      // Before rebuild, not after. The chart itself records the Lagna only as a
+      // rashi, so the one place its exact degree survives is this result, and
+      // the provenance strip reads it while rendering. Setting it afterwards
+      // left the rectify degree blank on every first calculation - present,
+      // and quietly not doing its job.
+      state.lastComputation = result;
+
       rebuild();
 
       // Straight to confirmation: a calculated chart still has to be approved
       // before it is read, exactly as a hand-entered one does. The arithmetic
       // can be right while the birth time on the certificate is wrong.
-      state.lastComputation = result;
       show('confirm');
     },
   });
