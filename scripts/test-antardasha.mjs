@@ -84,19 +84,32 @@ check('and no other mahadasha is half-covered',
   pairs.every((p) => COVERED.includes(p.maha)),
   [...new Set(pairs.filter((p) => !COVERED.includes(p.maha)).map((p) => p.maha))].join(', '));
 
-console.log('the citation is honest about being unverified');
-// These were reasoned from the tradition, not read out of a named text. If the
-// key ever claims otherwise without someone doing the reading, that is a quiet
-// promotion of unchecked material.
-const keyed = new Set(antardashaRules.flatMap((r) => r.sources.map((s) => s.key)));
-check('every rule cites antardasha-tradition', keyed.size === 1 && keyed.has('antardasha-tradition'),
-  [...keyed].join(', '));
-check('and that key is registered as unverified',
-  kb.base.sources.sources['antardasha-tradition']?.authority === 'unverified',
-  kb.base.sources.sources['antardasha-tradition']?.authority);
-check('so it weighs least of all the authorities',
-  kb.base.sources.authorityWeight.unverified
-    === Math.min(...Object.values(kb.base.sources.authorityWeight)));
+console.log('every pair cites the chapter for its own mahadasha');
+// BPHS gives one chapter per mahadasha lord. Each pair must cite the chapter
+// belonging to its own mahadasha and name a verse in it - a rule citing the
+// right book but the wrong lord's chapter would read plausibly and be wrong,
+// which is the failure this file exists to prevent.
+const byMaha = (m) => antardashaRules.filter((r) => r.when.all.some((c) => c.dashaLord === m));
+const keysOf = (rules) => new Set(rules.flatMap((r) => r.sources.map((s) => s.key)));
+const CHAPTER = { sa: 57, ve: 60, ma: 54 };
+
+check('every pair cites BPHS', [...keysOf(antardashaRules)].join(',') === 'bphs',
+  [...keysOf(antardashaRules)].join(','));
+
+for (const [maha, ch] of Object.entries(CHAPTER)) {
+  const rules = byMaha(maha);
+  check(`the ${maha} pairs all cite ch. ${ch} with a verse`,
+    rules.length === 9 && rules.every((r) => new RegExp(`^ch\\. ${ch}, \\d`).test(r.sources[0].locus)),
+    rules.map((r) => r.sources[0].locus).join(' | '));
+}
+
+check('no two pairs claim the same verse',
+  new Set(antardashaRules.map((r) => r.sources[0].locus)).size === antardashaRules.length);
+
+// The key those rules used to sit on is now cited by nothing. Keeping it
+// registered is fine; letting a rule drift back onto it unnoticed is not.
+check('the old unverified key backs no rule any more',
+  !antardashaRules.some((r) => r.sources.some((s) => s.key === 'antardasha-tradition')));
 
 console.log('exactly one pair can be true at a time');
 // Walk a whole life and assert it at every sub-period boundary rather than at one
@@ -149,8 +162,17 @@ check('fewer than nine per period only at the start',
   expectedSamples === 81 - (9 - antardashas(sequence[0]).length),
   `${expectedSamples}`);
 check('never two rules at once', multiple === 0, `${multiple} sub-period(s) matched more than one`);
-check('and exactly one fired for every covered sub-period',
-  everFired === expectedFires, `${everFired} of ${expectedFires}`);
+
+// Not "exactly one for every covered sub-period". BPHS states nearly every pair
+// conditionally on where the sub-lord sits, so a badly placed sub-lord has no
+// rule for this chart - the adverse verses are not yet written.
+check('no more than one per sub-period', everFired <= expectedFires,
+  `${everFired} of at most ${expectedFires}`);
+check('the conditions genuinely gate on placement',
+  everFired < expectedFires,
+  `all ${everFired} fired, so no condition excluded anything - the gate may not be working`);
+check('but a fair share still fire', everFired > expectedFires / 3,
+  `only ${everFired} of ${expectedFires}, which suggests the conditions are too tight`);
 
 console.log('the reading carries it, and dates it');
 // A date inside the Saturn mahadasha, Moon antardasha for this chart.
@@ -170,9 +192,30 @@ check('it lands in the dated section rather than a permanent one',
   section ? section.findings.map((f) => f.rule.id).join(', ') : 'no period section');
 
 const finding = reading.findings.find((f) => f.rule.id === 'adsa.sa.mo');
-check('and it is weighted down for being unverified',
-  finding && finding.weight < 0.35,
+check('and it carries a primary weight now that BPHS is cited',
+  finding && finding.weight > 0.35,
   `weight ${finding?.weight}`);
+
+// Every pair now rests on a primary text, so none should sit at the weight an
+// unverified key would give it.
+const weights = [];
+for (const maha of sequence) {
+  for (const a of antardashas(maha)) {
+    const c = { dasha: dashaFor(chart, birth, a.from + (a.to - a.from) / 2) };
+    const f = compose(chart, kb, c).findings.find((x) => x.rule.id.startsWith('adsa.'));
+    if (f) weights.push(f.weight);
+  }
+}
+check('no pair is left at an unverified weight',
+  weights.length > 0 && weights.every((w) => w > kb.base.sources.authorityWeight.unverified),
+  weights.filter((w) => w <= kb.base.sources.authorityWeight.unverified).join(', '));
+
+// Sun in Venus rests on a verse its own translator calls into question, so it
+// is deliberately the least confident rule in the file.
+const suInVe = kb.byId.get('adsa.ve.su');
+check('the doubtful verse is the least confident pair',
+  antardashaRules.every((r) => r.confidence >= suInVe.confidence),
+  `${suInVe.confidence} vs min ${Math.min(...antardashaRules.map((r) => r.confidence))}`);
 
 console.log('a chart that cannot support a dasha gets none of this');
 const bare = emptyChart();

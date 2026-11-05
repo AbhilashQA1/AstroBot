@@ -31,7 +31,22 @@ for (const rule of kb.rules) {
   if (!rule.sources?.length) errors.push(`${at}: no sources`);
 
   for (const ref of rule.sources || []) {
-    if (!kb.base.sources.sources[ref.key]) errors.push(`${at}: unknown source key "${ref.key}"`);
+    const source = kb.base.sources.sources[ref.key];
+    if (!source) errors.push(`${at}: unknown source key "${ref.key}"`);
+
+    // A locus past the end of the cited work is a citation nobody can check.
+    // `chapters` records how many chapters the referenced copy actually has, and
+    // is set only for copies someone has counted.
+    //
+    // Worth being clear about what this does not catch. Five rules were found
+    // citing Saravali ch. 10 - a chapter on evils at birth - for same-house
+    // conjunctions, and this check would have passed every one of them, because
+    // ch. 10 exists. Only reading the chapter finds that kind of error. This
+    // catches the cruder one.
+    const chapter = Number(/\bch\.?\s*(\d+)/i.exec(ref.locus || '')?.[1]);
+    if (source?.chapters && Number.isFinite(chapter) && chapter > source.chapters) {
+      errors.push(`${at}: cites ${ref.key} "${ref.locus}", but that copy has only ${source.chapters} chapters`);
+    }
   }
 
   if (!rule.themes.length) warnings.push(`${at}: no themes, so it will not appear in any section`);

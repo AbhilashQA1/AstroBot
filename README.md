@@ -270,11 +270,20 @@ citation keys.
 
 A citation is a claim that someone checked the text. Where a doctrine has been written
 from the tradition as it is commonly stated, but no named work has actually been read to
-place it, it cites a key whose `authority` is `unverified` — currently
-`antardasha-tradition` — and weighs 0.35 instead of a primary text's 1.0. That entry
-carries a `verifyAgainst` list naming the books in the reference collection that would
+place it, it cites a key whose `authority` is `unverified` — `parashari-modern`, or
+`antardasha-tradition` — and weighs 0.35 instead of a primary text's 1.0. Those entries
+carry a `verifyAgainst` list naming the books in the reference collection that would
 settle it. Re-cite such a rule to a named text and locus once it has been verified; the
 weight rises on its own, because weight is derived from the authority of the key.
+
+That route has been travelled once already. The twenty-seven antardasha rules began on
+`antardasha-tradition` and were later read out of BPHS, which devotes a chapter to each
+mahadasha lord — Mars in ch. 54, Saturn in ch. 57, Venus in ch. 60 — so they now cite it
+by verse. Reading them changed more than the citation: BPHS states almost every
+sub-period result conditionally on where the sub-period lord sits, so flat statements
+became conditional ones, and they are silent where the condition fails. A rule that is
+rewritten to match its source usually stops saying quite what it said before, which is
+the point of checking.
 
 Citing a classical work for something unread would be indistinguishable, in the data,
 from a genuine citation — so it is worth more than the small embarrassment of admitting

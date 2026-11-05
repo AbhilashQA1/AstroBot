@@ -93,6 +93,7 @@
     { "id": "asp.su.mo", "when": { "aspect": { "from": "su", "to": "mo" } },
       "says": "The Sun and Moon face each other across the chart: purpose and feeling are in open dialogue, which gives self-knowledge and a certain restlessness. Born near a full moon.",
       "themes": ["self", "mind"], "polarity": "mixed", "confidence": 0.75,
-      "sources": [{ "key": "saravali", "locus": "ch. 10" }] }
+      "sources": [{ "key": "parashari-modern" }],
+      "note": "Re-cited rather than rewritten. It claimed Saravali ch. 10, which is a chapter on evils at birth; searching that copy found no chapter on graha drishti and no statement about the Sun and Moon in opposition, and the same search of the BPHS copy found none either. The reading is left as it stands because it may well be sound, but it is now on an unverified key rather than borrowing a classical authority it does not have." }
   ]
 }
