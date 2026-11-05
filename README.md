@@ -268,6 +268,18 @@ Jataka Parijata and others — by chapter. The wording of every rule in this rep
 original; no book text is reproduced here. See `knowledge/base/sources.json` for the
 citation keys.
 
+A citation is a claim that someone checked the text. Where a doctrine has been written
+from the tradition as it is commonly stated, but no named work has actually been read to
+place it, it cites a key whose `authority` is `unverified` — currently
+`antardasha-tradition` — and weighs 0.35 instead of a primary text's 1.0. That entry
+carries a `verifyAgainst` list naming the books in the reference collection that would
+settle it. Re-cite such a rule to a named text and locus once it has been verified; the
+weight rises on its own, because weight is derived from the authority of the key.
+
+Citing a classical work for something unread would be indistinguishable, in the data,
+from a genuine citation — so it is worth more than the small embarrassment of admitting
+which rules are unchecked.
+
 Place names and coordinates in `assets/data/places-in.json` come from
 [GeoNames](https://www.geonames.org/), licensed
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The attribution is a
