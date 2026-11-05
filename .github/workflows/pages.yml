@@ -7,12 +7,17 @@ name: Deploy to GitHub Pages
 # would mean a reviewer sees no evidence at the moment they are deciding, and
 # the first time anything is verified is after it has already been merged.
 # Deployment stays on main: a pull request has nowhere to publish to.
+#
+# No base-branch filter on pull_request, deliberately. Filtering to main left a
+# pull request stacked on another feature branch with no checks at all, which is
+# the same blind spot one branch further out - and the reviewer of the stacked
+# change needs the evidence just as much. The deploy job is guarded on the event
+# instead, so widening this cannot publish from a pull request.
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -49,6 +54,9 @@ jobs:
 
       - name: Check the dasha calendar
         run: node scripts/test-dasha.mjs
+
+      - name: Check birth-time rectification
+        run: node scripts/test-rectify.mjs
 
       - name: Check the markup against the scripts
         run: node scripts/test-dom.mjs
