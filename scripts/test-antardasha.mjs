@@ -30,7 +30,11 @@ const check = (name, cond, extra = '') => {
 };
 
 const LORDS = ['su', 'mo', 'ma', 'me', 'ju', 've', 'sa', 'ra', 'ke'];
-const COVERED = ['sa', 've', 'ma']; // the mahadashas this file claims to cover
+// Every mahadasha is covered now, so this is all nine rather than a subset.
+// It was three for a while, and the gap was found by a reader looking for a
+// Rahu sub-period and getting nothing - which is why the whole-grid check
+// below exists rather than a count.
+const COVERED = LORDS;
 
 /** A calculated chart, and the app-level birth record the dasha needs. */
 function chartFor(year, month, day, hour, minute) {
@@ -80,9 +84,13 @@ for (const maha of COVERED) {
   check(`the ${maha} mahadasha covers all nine sub-lords`, missing.length === 0,
     `missing ${missing.join(', ')}`);
 }
-check('and no other mahadasha is half-covered',
-  pairs.every((p) => COVERED.includes(p.maha)),
-  [...new Set(pairs.filter((p) => !COVERED.includes(p.maha)).map((p) => p.maha))].join(', '));
+// The whole 9x9 grid, named cell by cell. A count of 81 would also pass with a
+// duplicate and a hole in it, and a hole is exactly what a reader hits: they
+// look up one sub-period, find nothing, and have no way to tell a gap from a
+// condition that did not match.
+const gaps = [];
+for (const m of LORDS) for (const s of LORDS) if (!keys.includes(`${m}/${s}`)) gaps.push(`${m}/${s}`);
+check('every one of the 81 pairs is written', gaps.length === 0, `missing ${gaps.join(', ')}`);
 
 console.log('every pair cites the chapter for its own mahadasha');
 // BPHS gives one chapter per mahadasha lord. Each pair must cite the chapter
@@ -91,7 +99,11 @@ console.log('every pair cites the chapter for its own mahadasha');
 // which is the failure this file exists to prevent.
 const byMaha = (m) => antardashaRules.filter((r) => r.when.all.some((c) => c.dashaLord === m));
 const keysOf = (rules) => new Set(rules.flatMap((r) => r.sources.map((s) => s.key)));
-const CHAPTER = { sa: 57, ve: 60, ma: 54 };
+// BPHS ch. 52 to ch. 60, one per mahadasha lord in Vimshottari order of the
+// grahas rather than of the dasha sequence. Citing the right book but a
+// neighbouring lord's chapter would read perfectly and be wrong, so the mapping
+// is pinned here rather than trusted.
+const CHAPTER = { su: 52, mo: 53, ma: 54, ra: 55, ju: 56, sa: 57, me: 58, ke: 59, ve: 60 };
 
 check('every pair cites BPHS', [...keysOf(antardashaRules)].join(',') === 'bphs',
   [...keysOf(antardashaRules)].join(','));
@@ -110,6 +122,63 @@ check('no two pairs claim the same verse',
 // registered is fine; letting a rule drift back onto it unnoticed is not.
 check('the old unverified key backs no rule any more',
   !antardashaRules.some((r) => r.sources.some((s) => s.key === 'antardasha-tradition')));
+
+console.log('the rules say what they claim to say');
+
+/** Every planet a condition actually tests, ignoring the two lord selectors. */
+function planetsTested(cond, out = new Set()) {
+  if (!cond || typeof cond !== 'object') return out;
+  for (const [k, v] of Object.entries(cond)) {
+    if (k === 'all' || k === 'any') v.forEach((c) => planetsTested(c, out));
+    else if (k === 'not') planetsTested(v, out);
+    else if (k === 'dashaLord' || k === 'antardashaLord') continue;
+    else if (k === 'conjunct') v.forEach((pl) => out.add(pl));
+    else if (k === 'relativeHouse') {
+      if (v.from !== 'lagna') out.add(v.from);
+      out.add(v.to);
+    } else if (v && typeof v === 'object' && v.planet) out.add(v.planet);
+  }
+  return out;
+}
+
+// A condition about the wrong graha is the defect this file is most exposed to.
+// These rules were generated in bulk from a table, and a condition copied from
+// the row above would still validate, still fire, and still read plausibly.
+for (const r of antardashaRules) {
+  const [, maha, sub] = r.id.split('.');
+  const stray = [...planetsTested(r.when)].filter((pl) => pl !== maha && pl !== sub);
+  if (stray.length) check(`${r.id} tests only its own pair`, false, `also tests ${stray.join(', ')}`);
+}
+check('no condition tests a graha outside its own pair',
+  antardashaRules.every((r) => {
+    const [, maha, sub] = r.id.split('.');
+    return [...planetsTested(r.when)].every((pl) => pl === maha || pl === sub);
+  }));
+
+// Bulk generation also invites duplicated prose - one pair's text pasted under
+// another's id, which no other check would notice.
+const openings = antardashaRules.map((r) => r.says.slice(0, 60));
+check('no two pairs open with the same sentence',
+  new Set(openings).size === openings.length,
+  openings.filter((s, i) => openings.indexOf(s) !== i).join(' | '));
+
+// The strongest structural check available. BPHS works through the sub-lords in
+// the order their sub-periods run, so within a chapter the verse numbers must
+// ascend in that order. A sub-lord assigned to the wrong verse - the likeliest
+// transcription error - lands out of sequence and is caught here.
+const VIM = ['ke', 've', 'su', 'mo', 'ma', 'ra', 'ju', 'sa', 'me'];
+const firstVerse = (locus) => Number(/ch\. \d+, (\d+)/.exec(locus)?.[1]);
+for (const maha of LORDS) {
+  const start = VIM.indexOf(maha);
+  const seq = Array.from({ length: 9 }, (_, i) => VIM[(start + i) % 9]);
+  const verses = seq.map((sub) => {
+    const r = kb.byId.get(`adsa.${maha}.${sub}`);
+    return { sub, v: r ? firstVerse(r.sources[0].locus) : NaN };
+  });
+  const ascends = verses.every((x, i) => i === 0 || (x.v > verses[i - 1].v));
+  check(`${maha}: verses ascend in the order the sub-periods run`, ascends,
+    verses.map((x) => `${x.sub}:${x.v}`).join(' '));
+}
 
 console.log('exactly one pair can be true at a time');
 // Walk a whole life and assert it at every sub-period boundary rather than at one
