@@ -44,3 +44,11 @@ scratch/
 
 # Worktrees the desktop app creates for other sessions.
 .claude/worktrees/
+
+# --- the book corpus ---------------------------------------------------------
+# Third-party copyrighted books, fetched locally so Claude can read them when
+# answering a question about a chart. NEVER committed: this repository is public
+# and the Pages deploy publishes everything in it, so a commit here would be
+# redistribution. corpus/index.json, which records only chapter structure, IS
+# committed - see scripts/corpus-index.mjs.
+corpus/books/

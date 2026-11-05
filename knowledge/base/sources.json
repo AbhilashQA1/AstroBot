@@ -15,7 +15,7 @@
     "bphs": {
       "title": "Brihat Parashara Hora Shastra", "author": "attributed to Parashara",
       "translator": "R. Santhanam", "era": "classical", "authority": "primary",
-      "repoPath": "Classics books/BPHS-Santhanam-Vol-1.pdf", "chapters": 97,
+      "repoPath": "Classics books/BPHS 1.HTM", "chapters": 97,
       "note": "The base text for house, sign and planet doctrine used throughout AstroBot."
     },
     "phaladeepika": {
