@@ -44,6 +44,8 @@ const state = {
   yearsAhead: null,
   // Which rule family the knowledge screen is filtered to, or null for all.
   kbFamily: null,
+  // Whether the reading is showing the house-by-house walkthrough.
+  byHouse: false,
 };
 
 function el(tag, attrs = {}, children = []) {
@@ -828,15 +830,52 @@ function dashaContext() {
  * months to about three years. A period is included when it overlaps the window
  * at all, so the one running now appears first even though it began earlier.
  */
-/** The horizons offered, in the order they are shown. */
+/**
+ * The views offered over the sub-periods.
+ *
+ * The fixed three- and five-year windows are gone. They answered "what happens
+ * between now and then", which is rarely the question: a run of consecutive
+ * sub-periods is mostly ordinary, and listing them in date order buries the few
+ * that matter. "Imp periods" answers the question actually asked - when is a
+ * good time to do this particular thing - by ranking instead of listing.
+ */
 const HORIZONS = [
   { key: 'current', label: 'Current', title: 'Only the sub-period running now' },
   { key: 'next', label: 'Next', title: 'Only the sub-period after this one' },
-  { key: '3y', label: '3y', years: 3, title: 'Every sub-period in the next three years' },
-  { key: '5y', label: '5y', years: 5, title: 'Every sub-period in the next five years' },
+  { key: 'important', label: 'Imp periods', important: true,
+    title: 'The periods that stand out, by what they are good for' },
 ];
 
 const DEFAULT_HORIZON = 'current';
+
+/**
+ * Readings are produced only for births from this year onwards.
+ *
+ * A product limit, not a doctrinal one, and worth labelling as such wherever it
+ * shows: nothing in the classical texts restricts a rule to a period of
+ * history, and the engine, the ephemeris and the dasha arithmetic are all as
+ * correct for 1890 as for 1990.
+ *
+ * There is a real limit nearby, and it is not this one. The dasha calendar is
+ * built for a single 120-year Vimshottari cycle, so a chart older than that has
+ * no period to report at all - which bites at about 1906 today and moves
+ * forward every year.
+ */
+const EARLIEST_BIRTH_YEAR = 1980;
+
+/**
+ * The birth year when it is known and earlier than `limit`, otherwise null.
+ *
+ * A chart entered by hand carries no birth details, so there is no year to test
+ * and nothing to withhold - it is let through rather than blocked on a fact
+ * nobody supplied. Blocking it would also be unenforceable: the same chart can
+ * be typed in square by square whatever year it belongs to.
+ */
+function birthYearBefore(birth, limit) {
+  const year = Number(String(birth?.date || '').slice(0, 4));
+  if (!Number.isFinite(year) || year === 0) return null;
+  return year < limit ? year : null;
+}
 
 function periodsAhead(horizon) {
   const dasha = dashaFor(state.chart, state.raw.birth || {}, Date.now());
@@ -900,6 +939,370 @@ function readingsAhead(horizon) {
   return { available: true, periods: dated, nakshatra: found.nakshatra, horizon: found.horizon };
 }
 
+/**
+ * Questions of the form "when should I do X", answered from the sub-periods.
+ *
+ * Themes rather than keywords, because that is what the rules carry. `property`
+ * and `romance` exist in the vocabulary but no period rule uses them, so the
+ * house and marriage events lean on what BPHS actually talks about.
+ */
+const LIFE_EVENTS = [
+  { key: 'marriage', label: 'Marriage', themes: ['partnership', 'romance'],
+    caveat: 'Two kinds of verse are counted here: those naming a marriage as an event, and those '
+      + 'describing contentment with a wife and children during the period. The second kind is '
+      + 'about married life rather than a wedding, and is included because restricting this to '
+      + 'weddings alone left a third of charts with nothing to show.' },
+  { key: 'house', label: 'A house or a vehicle', themes: ['home', 'comfort', 'property'],
+    caveat: 'BPHS says "conveyances" constantly and the phrase is tagged across several themes, '
+      + 'so this list is indicative rather than exhaustive.' },
+  { key: 'job', label: 'Changing or moving work', themes: ['work', 'status', 'ambition'] },
+  { key: 'wealth', label: 'Money and gain', themes: ['wealth', 'gain', 'fortune'] },
+  // Not a subject at all: the periods that say the most about anything. Scored
+  // over every statement the period carries, mahadasha included, so a stretch
+  // where several things point the same way rises above one good sub-period.
+  { key: 'standout', label: 'Strongest overall', themes: null },
+];
+
+/**
+ * How far ahead a subject is worth listing.
+ *
+ * Ten rather than twenty-five, because a window three decades out is not a
+ * thing anyone can act on, and listing it crowds out the ones they can. A
+ * subject with nothing inside this window is dropped from the panel entirely
+ * rather than shown empty: a heading over an apology is worse than no heading.
+ */
+const EVENT_YEARS = 10;
+
+/** Favourable counts for, difficult against, mixed barely either way. */
+const POLARITY_SIGN = { favourable: 1, mixed: 0.3, difficult: -1, neutral: 0 };
+
+/**
+ * Rank the sub-periods of the next few decades for one kind of undertaking.
+ *
+ * What this ranks is worth being exact about. Seventy of the eighty-one period
+ * rules are favourable, because that is how BPHS states them - each one says
+ * what the sub-period gives when its lord is well placed. So sorting by
+ * good-against-bad would call almost every period good and mean nothing. The
+ * score is weighted by how specifically a period speaks to the matter asked
+ * about: a rule naming partnership counts towards marriage, one naming wealth
+ * does not, however favourable it is.
+ *
+ * A sub-period with no rule scores nothing at all rather than zero. Zero would
+ * sort it among the mediocre, when what is true is that the chart says nothing
+ * about it - the condition on its verse was not met and the adverse branch is
+ * not written. Those are counted and reported rather than ranked.
+ */
+function scanPeriods() {
+  const dasha = dashaFor(state.chart, state.raw.birth || {}, Date.now());
+  if (!dasha.available) return { available: false, reason: dasha.reason };
+
+  const now = Date.now();
+  const until = now + EVENT_YEARS * 365.2425 * 86400000;
+  const periods = [];
+  let silent = 0;
+
+  for (const maha of dasha.sequence) {
+    for (const antar of antardashas(maha)) {
+      if (antar.to < now || antar.from > until) continue;
+      // The middle of the sub-period, so a boundary cannot decide which lords
+      // the engine reports.
+      const at = antar.from + (antar.to - antar.from) / 2;
+      const ctx = { dasha: dashaFor(state.chart, state.raw.birth || {}, at) };
+      const dated = compose(state.chart, state.kb, ctx).sections
+        .find((s) => s.key === 'period')?.findings || [];
+      // Split them: the pair statement is what distinguishes this sub-period,
+      // while the mahadasha statements are shared by every sub-period under the
+      // same lord. Subject rankings want the first; "strongest overall" wants
+      // both, because a combination is the point of it.
+      const findings = dated.filter((f) => f.rule.when?.all?.some((c) => c.antardashaLord));
+
+      if (!findings.length) { silent += 1; continue; }
+
+      periods.push({
+        maha: maha.lord, antar: antar.lord, from: antar.from, to: antar.to,
+        findings, all: dated,
+        running: now >= antar.from && now < antar.to,
+      });
+    }
+  }
+
+  return { available: true, periods, silent, years: EVENT_YEARS };
+}
+
+/** Score one already-scanned set of periods against one kind of undertaking. */
+function rankPeriodsFor(event, scan) {
+  const scored = [];
+  for (const p of scan.periods) {
+    // A null theme list means "no subject": score everything the period says.
+    const relevant = event.themes
+      ? p.findings.filter((f) => f.rule.themes.some((t) => event.themes.includes(t)))
+      : p.all;
+    if (!relevant.length) continue;
+    scored.push({
+      ...p,
+      score: relevant.reduce((n, f) => n + f.weight * (POLARITY_SIGN[f.rule.polarity] ?? 0), 0),
+      says: (event.themes ? relevant[0] : p.findings[0]).rule.says,
+      citations: (event.themes ? relevant[0] : p.findings[0]).citations,
+      strands: event.themes ? null : relevant.length,
+    });
+  }
+  scored.sort((a, b) => b.score - a.score || a.from - b.from);
+  return scored;
+}
+
+/** The "when is a good time to" panel. */
+function importantPeriodNodes() {
+  const out = [];
+  const fmt = (ms) => new Date(ms).toLocaleDateString(undefined, { year: 'numeric', month: 'short' });
+
+  // Scanned once and scored per subject. Each scan evaluates the whole rule base
+  // for every sub-period of the window, so doing it per subject was several
+  // times the work for the same answer.
+  const scan = scanPeriods();
+  if (!scan.available) {
+    out.push(el('div', { class: 'callout', text:
+      'This chart has no birth moment to date periods from, so nothing here can be timed. '
+      + 'Calculating it from birth details would fix that.' }));
+    return out;
+  }
+
+  const absent = [];
+
+  for (const event of LIFE_EVENTS) {
+    const scored = rankPeriodsFor(event, scan);
+    const result = { scored, silent: scan.silent, years: scan.years };
+    const block = el('div', { class: 'event-block' }, [
+      el('h4', { class: 'event-title', text: event.label }),
+    ]);
+
+    const top = result.scored.filter((s) => s.score > 0).slice(0, 3);
+
+    // Nothing inside the window means no heading. Showing "Marriage" above a
+    // line explaining there is no marriage window reads as a verdict on the
+    // subject, which it is not - it is the chart being quiet for ten years.
+    // Which subjects are absent is itself the answer, and the note under the
+    // panel says so rather than leaving it to be guessed.
+    if (!top.length) { absent.push(event.label); continue; }
+
+    {
+      for (const s of top) {
+        block.append(el('div', { class: `event-window${s.running ? ' is-running' : ''}` }, [
+          el('p', { class: 'event-when' }, [
+            el('strong', { text: `${fmt(s.from)} – ${fmt(s.to)}` }),
+            el('span', { class: 'ahead-pair', text: ` ${state.chart.planet(s.maha).en} / ${state.chart.planet(s.antar).en}` }),
+            s.running ? el('span', { class: 'tag tag-ownSign', text: 'running now' }) : null,
+          ]),
+          el('p', { class: 'ahead-says', text: s.says }),
+          s.strands > 1
+            ? el('p', { class: 'hint small', text: `${s.strands} statements point at this stretch.` })
+            : null,
+          el('div', { class: 'finding-meta' }, s.citations.map(citeChip)),
+        ]));
+      }
+    }
+
+    const n = result.scored.length;
+    block.append(el('p', { class: 'hint small', text: event.themes
+      ? `${n} of the sub-periods in the next ${result.years} years ${n === 1 ? 'speaks' : 'speak'} to `
+        + `this; ${result.silent} ${result.silent === 1 ? 'carries' : 'carry'} no rule at all.`
+      : 'Ranked over every statement each period carries, not one subject. The mahadasha '
+        + 'statements are shared by every sub-period under the same lord, so this tends to find '
+        + `the strongest mahadasha first and the best sub-periods inside it. ${result.silent} `
+        + `${result.silent === 1 ? 'period carries' : 'periods carry'} no rule at all.` }));
+    if (event.caveat) block.append(el('p', { class: 'hint small', text: event.caveat }));
+    out.push(block);
+  }
+
+  if (absent.length === LIFE_EVENTS.length) {
+    out.push(el('div', { class: 'callout', text:
+      `No sub-period in the next ${scan.years} years carries a rule on any of these subjects. `
+      + 'Current and Next will still say what the running periods bring.' }));
+  } else if (absent.length) {
+    // Naming what is missing matters as much as listing what is not. A reader
+    // who came for marriage needs to know the subject was looked for and found
+    // nothing, rather than wondering whether it was considered at all.
+    out.push(el('p', { class: 'hint small', text:
+      `Nothing within ${scan.years} years for ${absent.join(', ').toLowerCase()}, so `
+      + `${absent.length === 1 ? 'it is' : 'they are'} left out above.` }));
+  }
+
+  // The caveat belongs on the screen, not only in the commit message.
+  out.push(el('div', { class: 'callout', text:
+    'These are the periods whose rules speak most directly to each matter, not a ranking of '
+    + 'fortune. BPHS states nearly every sub-period favourably - each verse says what the period '
+    + 'gives when its lord is well placed - so a period missing here is usually one the text is '
+    + 'silent about rather than one it warns against. Nothing here is advice about when to act.' }));
+
+  return out;
+}
+
+/**
+ * The reading, taken a house at a time rather than a theme at a time.
+ *
+ * The sectioned reading answers "what does this chart say about money", which
+ * is the right shape for most questions and the wrong one for learning a chart.
+ * This answers "what is going on in the fourth", which is how a chart is
+ * actually read aloud: the rashi there, the graha that rules it and where that
+ * graha went, and whatever is sitting in the house - each with what the sign
+ * makes of it.
+ *
+ * Everything here is pulled from the reading already composed, not computed
+ * again, so the two can never disagree about the same chart.
+ */
+function houseByHouseNodes() {
+  const out = [];
+  const open = state.byHouse;
+
+  out.push(el('div', { class: 'ahead-bar' }, [
+    el('button', {
+      type: 'button',
+      class: open ? 'btn btn-quiet' : 'btn btn-primary',
+      onclick: () => { state.byHouse = !open; renderReading(); },
+    }, open ? 'Hide the houses' : 'Read house by house'),
+  ]));
+
+  if (!open) return out;
+
+  const chart = state.chart;
+  const findings = state.reading?.findings || [];
+  const planet = (k) => chart.planet(k).en;
+
+  /** Pull a condition out of a rule whether it stands alone or inside an all/any. */
+  const findCond = (cond, key) => {
+    if (!cond || typeof cond !== 'object') return null;
+    if (cond[key]) return cond[key];
+    for (const branch of [cond.all, cond.any]) {
+      for (const c of branch || []) {
+        const hit = findCond(c, key);
+        if (hit) return hit;
+      }
+    }
+    return null;
+  };
+
+  // Index the findings by the house each one speaks about, and by which resident
+  // graha it is about, so a house can be read as its occupants rather than as a
+  // flat list. A statement about two grahas sharing the house belongs to the
+  // house but to neither of them alone, so it is filed under "together".
+  const forHouse = new Map();
+  const add = (h, who, f) => {
+    if (h === null || h === undefined) return;
+    if (!forHouse.has(h)) forHouse.set(h, { by: new Map(), together: [], house: [], aspect: [] });
+    const slot = forHouse.get(h);
+    if (who === 'together') slot.together.push(f);
+    else if (who === 'house') slot.house.push(f);
+    else if (who === 'aspect') slot.aspect.push(f);
+    else {
+      if (!slot.by.has(who)) slot.by.set(who, []);
+      slot.by.get(who).push(f);
+    }
+  };
+
+  for (const f of findings) {
+    const c = f.rule.when || {};
+
+    const pih = findCond(c, 'planetInHouse');
+    if (pih) { add(pih.house, pih.planet, f); continue; }
+
+    const pis = findCond(c, 'planetInSign');
+    if (pis) { add(chart.houseOf(pis.planet), pis.planet, f); continue; }
+
+    // Two or more grahas named together are about a house only when they
+    // actually share one; a yoga measured between houses is not.
+    const conj = findCond(c, 'conjunct');
+    if (conj && conj.length) {
+      const houses = [...new Set(conj.map((p) => chart.houseOf(p)))];
+      if (houses.length === 1 && houses[0] !== null) { add(houses[0], 'together', f); continue; }
+    }
+
+    const burnt = findCond(c, 'combust') || findCond(c, 'notCombust');
+    if (typeof burnt === 'string') { add(chart.houseOf(burnt), burnt, f); continue; }
+
+    const retro = findCond(c, 'retrograde');
+    if (typeof retro === 'string') { add(chart.houseOf(retro), retro, f); continue; }
+
+    const lih = findCond(c, 'lordInHouse');
+    if (lih) { add(lih.lordOf, 'house', f); continue; }
+
+    // An aspect onto the house is not a resident, and is labelled separately
+    // rather than folded in with them. Yogas and graha-to-graha aspects are
+    // left out of this view entirely: they are measured between houses and
+    // belong to the themed reading, not to any one house.
+    const ah = findCond(c, 'aspectsHouse');
+    if (ah) { add(ah.house, 'aspect', f); }
+  }
+
+  const list = el('div', { class: 'house-list' });
+  for (let h = 1; h <= 12; h += 1) {
+    const sign = chart.signOfHouse(h);
+    const rashi = chart.rashi(sign);
+    const lord = chart.lordOfHouse(h);
+    const lordAt = chart.houseOf(lord);
+    const bhava = chart.house(h);
+    const here = chart.occupants(h);
+
+    const block = el('div', { class: 'house-block' }, [
+      el('div', { class: 'house-head' }, [
+        el('span', { class: 'house-n', text: String(h) }),
+        el('strong', { text: bhava.label }),
+        el('span', { class: 'ref-sa', text: rashi.en }),
+      ]),
+      el('p', { class: 'hint small', text: bhava.significations.join(', ') }),
+      el('p', { class: 'house-line', text:
+        `${rashi.en} stands here, so ${planet(lord)} rules it`
+        + (lordAt === null
+          ? ', and is not on the chart.'
+          : lordAt === h
+            ? ', and sits in this house itself.'
+            : `, and sits in the ${ordinal(lordAt)}.`)
+        + (here.length
+          ? ` ${here.map(planet).join(', ')} ${here.length === 1 ? 'is' : 'are'} here.`
+          : ' No graha is here.') }),
+    ]);
+
+    const slot = forHouse.get(h) || { by: new Map(), together: [], house: [], aspect: [] };
+
+    const group = (label, items) => {
+      if (!items.length) return;
+      block.append(el('p', { class: 'house-who', text: label }));
+      for (const f of items) {
+        block.append(el('div', { class: 'house-finding' }, [
+          el('p', { text: f.rule.says }),
+          el('div', { class: 'finding-meta' }, f.citations.map(citeChip)),
+        ]));
+      }
+    };
+
+    // Residents first, in the order they stand in the house, then what they do
+    // as a pair, then what is said about the house through its lord.
+    for (const p of here) group(`${planet(p)} here`, slot.by.get(p) || []);
+    for (const [p, items] of slot.by) {
+      if (!here.includes(p)) group(`${planet(p)} (not in this house)`, items);
+    }
+    group(here.length > 2 ? 'Together in this house' : 'Together', slot.together);
+    group('The house and its lord', slot.house);
+    group('Aspected from elsewhere', slot.aspect);
+
+    const anything = slot.by.size || slot.together.length || slot.house.length
+      || slot.aspect.length;
+    if (!anything) {
+      block.append(el('p', { class: 'hint small', text:
+        'No rule in the base speaks to this house in this chart. An empty house with a well-placed '
+        + 'lord often reads that way.' }));
+    }
+
+    list.append(block);
+  }
+  out.push(list);
+
+  out.push(el('p', { class: 'hint small', text:
+    'Each house gathers what the base says about the graha standing in it, the rashi it stands in, '
+    + 'and the lord of the house. The same statements appear under their themes above; this is the '
+    + 'same reading rearranged, not a second opinion.' }));
+
+  return out;
+}
+
 /** The reading's period panel: a button, and what it found when pressed. */
 function yearsAheadNodes() {
   const out = [];
@@ -910,7 +1313,7 @@ function yearsAheadNodes() {
       type: 'button',
       class: horizon ? 'btn btn-quiet' : 'btn btn-primary',
       onclick: () => { state.yearsAhead = horizon ? null : DEFAULT_HORIZON; renderReading(); },
-    }, horizon ? 'Hide the periods' : 'Predictions for this year and ahead'),
+    }, horizon ? 'Hide predictions' : 'Predictions'),
   ]);
 
   if (horizon) {
@@ -926,6 +1329,13 @@ function yearsAheadNodes() {
   out.push(bar);
 
   if (!horizon) return out;
+
+  // The ranked view is a different shape from the dated list, so it renders
+  // itself rather than being squeezed into the same rows.
+  if (HORIZONS.find((h) => h.key === horizon)?.important) {
+    for (const node of importantPeriodNodes()) out.push(node);
+    return out;
+  }
 
   const result = readingsAhead(horizon);
   if (!result.available) {
@@ -1009,6 +1419,21 @@ function renderReading() {
     return;
   }
 
+  const tooEarly = birthYearBefore(state.raw.birth, EARLIEST_BIRTH_YEAR);
+  if (tooEarly !== null) {
+    host.append(el('div', { class: 'callout' }, [
+      el('p', { text:
+        `This chart is for a birth in ${tooEarly}, and readings here are limited to births from `
+        + `${EARLIEST_BIRTH_YEAR} onwards. The chart itself is calculated and can still be viewed, `
+        + 'saved and edited; only the interpretation is withheld.' }),
+      el('p', { class: 'hint small', text:
+        'The limit is a setting, not a judgement from the texts: the classical rules carry no date '
+        + 'of validity and apply to any birth. Raise or remove EARLIEST_BIRTH_YEAR in app.js to '
+        + 'change it.' }),
+    ]));
+    return;
+  }
+
   const view = currentView();
   const code = view.chartCode;
   const earlier = readingsForChart(code);
@@ -1025,6 +1450,7 @@ function renderReading() {
   // Before the reading proper: the reading describes the chart, and this says
   // which part of it is live now and next.
   for (const node of yearsAheadNodes()) host.append(node);
+  for (const node of houseByHouseNodes()) host.append(node);
 
   for (const node of readingNodes(view)) host.append(node);
 }
@@ -1095,6 +1521,7 @@ function renderLibrary() {
   }
 
   renderKbResults($('#kb-search').value);
+  renderReference();
 
   const host = $('#kb-sources');
   if (!host.childElementCount) {
@@ -1111,6 +1538,114 @@ function renderLibrary() {
       ]),
     ]));
   }
+}
+
+/**
+ * The reference tables: what each bhava stands for, and what each graha is.
+ *
+ * Built from knowledge/base rather than written out again, so it cannot drift
+ * from what the engine actually reasons over. If a rule says Mars aspects the
+ * fourth, this table says the same thing because both read one file.
+ */
+function renderReference() {
+  const host = $('#kb-reference');
+  if (!host) return;
+
+  // Rebuilt rather than built once, because the lord column depends on the
+  // chart on the board and a chart can be loaded after this screen is first
+  // seen. Which sections were open is carried across, so rebuilding does not
+  // shut them under the reader.
+  const wasOpen = new Set(
+    [...host.querySelectorAll('details')].filter((d) => d.open)
+      .map((d) => d.querySelector('summary')?.textContent),
+  );
+  host.textContent = '';
+
+  const base = state.kb.base;
+  const rashis = base.rashis.rashis;
+  const planets = base.planets.planets;
+  const houses = base.houses.houses;
+  const classes = base.houses.classes;
+  const name = (k) => planets[k]?.en || k;
+
+  // A bhava has no lord of its own. The lord people mean is whichever graha
+  // rules the rashi sitting in it, which is a fact about a chart and not about
+  // the bhava. What can be stated unconditionally is the natural lord - the
+  // ruler of the matching sign of the zodiac, Aries to the first and so on -
+  // so both are shown, and the chart's own only when there is a chart.
+  const chart = state.chart && state.chart.placed.length ? state.chart : null;
+
+  const houseRows = houses.map((h, i) => {
+    const n = i + 1;
+    const naturalLord = rashis[i].lord;
+    const inThis = Object.entries(classes)
+      .filter(([, c]) => c.houses.includes(n))
+      .map(([, c]) => c.label);
+    return el('tr', {}, [
+      el('td', { class: 'ref-n', text: String(n) }),
+      el('td', {}, [
+        el('strong', { text: h.label }),
+        el('span', { class: 'ref-sa', text: ` ${h.sa}` }),
+        el('span', { class: 'ref-sig', text: h.significations.join(', ') }),
+      ]),
+      el('td', {}, [
+        el('span', { text: name(naturalLord) }),
+        chart && chart.lordOfHouse(n) !== naturalLord
+          ? el('span', { class: 'ref-chart', text: `${name(chart.lordOfHouse(n))} here` })
+          : null,
+      ]),
+      el('td', { class: 'ref-class', text: inThis.join(', ') }),
+    ]);
+  });
+
+  const dign = (d) => (d ? `${rashis[d.sign - 1].en}${d.degree != null ? ` ${d.degree}°` : ''}` : '—');
+
+  const planetRows = base.planets.order.map((k) => {
+    const p = planets[k];
+    return el('tr', {}, [
+      el('td', {}, [
+        el('strong', { text: p.en }),
+        el('span', { class: 'ref-sa', text: ` ${p.sa}` }),
+        el('span', { class: 'ref-sig', text: p.karaka.join(', ') }),
+      ]),
+      el('td', { class: 'ref-class', text: p.nature }),
+      el('td', { text: p.owns?.length ? p.owns.map((s) => rashis[s - 1].en).join(', ') : '—' }),
+      el('td', {}, [
+        el('span', { text: `exalted ${dign(p.exalted)}` }),
+        el('span', { class: 'ref-chart', text: `debilitated ${dign(p.debilitated)}` }),
+      ]),
+      el('td', { class: 'ref-class', text: (p.aspects || []).map((a) => ordinal(a)).join(', ') }),
+    ]);
+  });
+
+  const table = (head, rows) => el('table', { class: 'ref-table' }, [
+    el('thead', {}, el('tr', {}, head.map((t) => el('th', { text: t })))),
+    el('tbody', {}, rows),
+  ]);
+
+  const section = (summary, intro, head, rows) => {
+    const d = el('details', {}, [
+      el('summary', { text: summary }),
+      el('div', {}, [
+        intro ? el('p', { class: 'hint small', text: intro }) : null,
+        table(head, rows),
+      ]),
+    ]);
+    if (wasOpen.has(summary)) d.open = true;
+    host.append(d);
+  };
+
+  section('What each house stands for',
+    'The lord column gives the natural lord - the ruler of the matching sign, Aries to the first '
+    + 'and round from there.'
+    + (chart
+      ? ' A bhava has no lord of its own, so where the chart on the board puts a different graha '
+        + 'in charge, that one is named beneath.'
+      : ' Load or calculate a chart and this column also names the lord each bhava has in it.'),
+    ['', 'Bhava and what it covers', 'Lord', 'Classes'], houseRows);
+
+  section('What each graha stands for', base.planets.outerNote || '',
+    ['Graha and what it signifies', 'Nature', 'Owns', 'Dignity', 'Aspects'], planetRows);
 }
 
 function renderKbResults(query) {

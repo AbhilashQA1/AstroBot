@@ -559,6 +559,65 @@ details > *:not(summary) { padding: 0 14px 14px; }
 .kb-rule-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 5px; }
 .kb-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.68rem; color: var(--ink-faint); }
 
+/* --- the house-by-house reading ----------------------------------------- */
+
+.house-list { display: grid; gap: 10px; margin-bottom: 14px; }
+
+.house-block {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+}
+
+.house-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.house-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.house-line { margin: 6px 0 0; font-size: 0.85rem; }
+.house-who {
+  margin: 11px 0 0;
+  font-size: 0.72rem;
+  font-weight: 640;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.house-finding { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line); }
+.house-finding p { margin: 0 0 5px; font-family: var(--font-read); font-size: 0.93rem; line-height: 1.55; }
+
+/* --- the house and graha reference tables ------------------------------- */
+
+.ref-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.ref-table th {
+  text-align: left;
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-weight: 640;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ref-table td { padding: 8px 8px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ref-table tr:last-child td { border-bottom: 0; }
+
+.ref-n { font-variant-numeric: tabular-nums; color: var(--ink-faint); width: 1.6rem; }
+.ref-sa { color: var(--ink-faint); font-size: 0.74rem; }
+.ref-sig { display: block; margin-top: 2px; color: var(--ink-dim); line-height: 1.45; }
+.ref-class { color: var(--ink-dim); font-size: 0.74rem; }
+.ref-chart { display: block; margin-top: 2px; color: var(--ink-faint); font-size: 0.74rem; }
+
 .source-item { margin: 0 0 12px; font-size: 0.82rem; }
 .source-item strong { display: block; font-size: 0.86rem; }
 .source-item span { color: var(--ink-dim); }
@@ -737,6 +796,30 @@ input:disabled { opacity: 0.5; cursor: not-allowed; }
 .ahead-years { font-variant-numeric: tabular-nums; font-weight: 640; font-size: 0.95rem; }
 .ahead-pair { color: var(--ink-dim); font-size: 0.85rem; }
 .ahead-says { margin: 7px 0 6px; font-family: var(--font-read); font-size: 0.95rem; line-height: 1.55; }
+
+/* --- when the periods favour a move ------------------------------------- */
+
+.event-block { margin: 0 0 16px; }
+
+.event-title {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 640;
+  letter-spacing: 0.01em;
+}
+
+.event-window {
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-raised);
+}
+
+.event-window.is-running { border-left-color: var(--accent); }
+.event-when { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; margin: 0; }
+.event-when strong { font-variant-numeric: tabular-nums; }
 
 .tag-edited { background: color-mix(in srgb, var(--mixed) 24%, transparent); color: var(--mixed); }
 .callout.is-edited { border-left-color: var(--mixed); }
