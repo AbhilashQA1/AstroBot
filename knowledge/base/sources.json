@@ -15,7 +15,7 @@
     "bphs": {
       "title": "Brihat Parashara Hora Shastra", "author": "attributed to Parashara",
       "translator": "R. Santhanam", "era": "classical", "authority": "primary",
-      "repoPath": "Classics books/BPHS-Santhanam-Vol-1.pdf",
+      "repoPath": "Classics books/BPHS-Santhanam-Vol-1.pdf", "chapters": 97,
       "note": "The base text for house, sign and planet doctrine used throughout AstroBot."
     },
     "phaladeepika": {
@@ -25,7 +25,7 @@
     },
     "saravali": {
       "title": "Saravali", "author": "Kalyana Varma", "era": "classical", "authority": "primary",
-      "repoPath": "Classics books/Kalyana Varmas Saravali.pdf",
+      "repoPath": "Classics books/Kalyana Varmas Saravali.pdf", "chapters": 55,
       "note": "Detailed on planets in signs and in houses."
     },
     "jataka-parijata": {
@@ -72,6 +72,15 @@
     "community": {
       "title": "Community and social-media submissions", "author": "various", "era": "contemporary", "authority": "unverified",
       "note": "Knowledge added through the app. Never promoted above `secondary` without a classical citation being attached by review."
+    },
+    "parashari-modern": {
+      "title": "Modern Parashari reading", "author": "various commentators", "era": "modern", "authority": "unverified",
+      "note": "A sibling of antardasha-tradition and unverified for the same reason. These are readings in common modern circulation that no classical text in the reference collection was found to state. A rule lands here when it was found citing a text that does not support it: the statement may still be sound, but the citation was the thing that was wrong, and removing the false citation matters more than keeping the authority. Re-cite to a named text and locus if one is ever found.",
+      "verifyAgainst": [
+        "Classics books/BPHS-Santhanam-Vol-2.pdf",
+        "Classics books/Mantreswara_Phaladeeplka.pdf",
+        "Classics books/Jataka-Parijata-Vol-1.pdf"
+      ]
     },
     "antardasha-tradition": {
       "title": "Common Parashari antardasha doctrine", "author": "various commentators", "era": "traditional", "authority": "unverified",

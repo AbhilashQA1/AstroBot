@@ -38,8 +38,9 @@ const state = {
   reading: null,
   readingView: null,
   viewingReading: null,
-  // How many years of periods the reading is showing ahead, or null for none.
-  // Held here rather than in the DOM so the panel survives a re-render.
+  // Which horizon the period panel is showing - a HORIZONS key - or null when
+  // the panel is closed. Held here rather than in the DOM so it survives a
+  // re-render.
   yearsAhead: null,
   // Which rule family the knowledge screen is filtered to, or null for all.
   kbFamily: null,
@@ -827,23 +828,43 @@ function dashaContext() {
  * months to about three years. A period is included when it overlaps the window
  * at all, so the one running now appears first even though it began earlier.
  */
-function periodsAhead(years) {
+/** The horizons offered, in the order they are shown. */
+const HORIZONS = [
+  { key: 'current', label: 'Current', title: 'Only the sub-period running now' },
+  { key: 'next', label: 'Next', title: 'Only the sub-period after this one' },
+  { key: '3y', label: '3y', years: 3, title: 'Every sub-period in the next three years' },
+  { key: '5y', label: '5y', years: 5, title: 'Every sub-period in the next five years' },
+];
+
+const DEFAULT_HORIZON = 'current';
+
+function periodsAhead(horizon) {
   const dasha = dashaFor(state.chart, state.raw.birth || {}, Date.now());
   if (!dasha.available) return { available: false, reason: dasha.reason };
 
-  const from = Date.now();
-  const to = from + years * 365.2425 * 86400000;
-  const periods = [];
+  const now = Date.now();
+  const spec = HORIZONS.find((h) => h.key === horizon) || HORIZONS[0];
 
+  // Every sub-period of the cycle in order, so "current" and "next" are picked
+  // by position rather than by a date window. A window cannot express "the one
+  // after this one": sub-periods run anywhere from months to three years, so no
+  // fixed span lands on exactly two of them.
+  const all = [];
   for (const maha of dasha.sequence) {
-    if (maha.to < from || maha.from > to) continue;
-    for (const antar of antardashas(maha)) {
-      if (antar.to < from || antar.from > to) continue;
-      periods.push({ maha, antar });
-    }
+    for (const antar of antardashas(maha)) all.push({ maha, antar });
   }
 
-  return { available: true, periods, from, to, nakshatra: dasha.nakshatra };
+  let periods;
+  if (spec.years) {
+    const to = now + spec.years * 365.2425 * 86400000;
+    periods = all.filter((p) => p.antar.to >= now && p.antar.from <= to);
+  } else {
+    const i = all.findIndex((p) => now >= p.antar.from && now < p.antar.to);
+    if (i === -1) periods = [];
+    else periods = spec.key === 'current' ? all.slice(i, i + 1) : all.slice(i + 1, i + 2);
+  }
+
+  return { available: true, periods, nakshatra: dasha.nakshatra, horizon: spec };
 }
 
 /**
@@ -854,8 +875,8 @@ function periodsAhead(years) {
  * would say the same thing for every year, so the only honest way to show what
  * changes is to ask the engine again with the clock moved.
  */
-function readingsAhead(years) {
-  const found = periodsAhead(years);
+function readingsAhead(horizon) {
+  const found = periodsAhead(horizon);
   if (!found.available) return found;
 
   const dated = found.periods.map(({ maha, antar }) => {
@@ -876,36 +897,37 @@ function readingsAhead(years) {
     };
   });
 
-  return { available: true, periods: dated, nakshatra: found.nakshatra };
+  return { available: true, periods: dated, nakshatra: found.nakshatra, horizon: found.horizon };
 }
 
-/** The reading's "years ahead" panel: a button, and what it found when pressed. */
+/** The reading's period panel: a button, and what it found when pressed. */
 function yearsAheadNodes() {
   const out = [];
-  const years = state.yearsAhead;
+  const horizon = state.yearsAhead;
 
   const bar = el('div', { class: 'ahead-bar' }, [
     el('button', {
       type: 'button',
-      class: years ? 'btn btn-quiet' : 'btn btn-primary',
-      onclick: () => { state.yearsAhead = years ? null : 5; renderReading(); },
-    }, years ? 'Hide the years ahead' : 'Predictions for this year and ahead'),
+      class: horizon ? 'btn btn-quiet' : 'btn btn-primary',
+      onclick: () => { state.yearsAhead = horizon ? null : DEFAULT_HORIZON; renderReading(); },
+    }, horizon ? 'Hide the periods' : 'Predictions for this year and ahead'),
   ]);
 
-  if (years) {
-    for (const n of [3, 5, 10]) {
+  if (horizon) {
+    for (const h of HORIZONS) {
       bar.append(el('button', {
         type: 'button',
-        class: `btn btn-quiet nudge${n === years ? ' is-active' : ''}`,
-        onclick: () => { state.yearsAhead = n; renderReading(); },
-      }, `${n}y`));
+        class: `btn btn-quiet nudge${h.key === horizon ? ' is-active' : ''}`,
+        title: h.title,
+        onclick: () => { state.yearsAhead = h.key; renderReading(); },
+      }, h.label));
     }
   }
   out.push(bar);
 
-  if (!years) return out;
+  if (!horizon) return out;
 
-  const result = readingsAhead(years);
+  const result = readingsAhead(horizon);
   if (!result.available) {
     out.push(el('div', { class: 'callout', text:
       result.reason === 'no-degrees'
@@ -915,7 +937,9 @@ function yearsAheadNodes() {
   }
 
   if (!result.periods.length) {
-    out.push(el('div', { class: 'callout', text: `No sub-period boundary falls in the next ${years} years, so the reading above covers the whole stretch.` }));
+    out.push(el('div', { class: 'callout', text: result.horizon?.years
+      ? `No sub-period falls in the next ${result.horizon.years} years, so the reading above covers the whole stretch.`
+      : 'The birth moment falls outside the cycle this chart can date, so there is no period to show.' }));
     return out;
   }
 
@@ -938,7 +962,12 @@ function yearsAheadNodes() {
       el('p', { class: 'hint small', text: `${fmt(p.from)} to ${fmt(p.to)}` }),
       ...(p.findings.length
         ? p.findings.map((f) => el('p', { class: 'ahead-says', text: f.rule.says }))
-        : [el('p', { class: 'hint small', text: 'No rule is written for this pair yet, so the reading has nothing specific to say about it.' })]),
+        // Silence here has two quite different causes and it is worth not
+        // pretending otherwise: either no rule exists for the pair, or one
+        // exists and its condition is unmet, because BPHS states most
+        // sub-period results only for a well-placed sub-lord and the adverse
+        // verses are not yet encoded.
+        : [el('p', { class: 'hint small', text: 'Nothing specific for this pair: either no rule is written for it, or the one that is applies only where the sub-period lord is strongly placed, and in this chart it is not.' })]),
       ...p.findings.flatMap((f) => [el('div', { class: 'finding-meta' }, f.citations.map(citeChip))]),
     ]));
   }

@@ -123,14 +123,34 @@ check('Mercury is burnt', c2.combustion('me').state === 'combust');
 const reading = compose(c2, kb);
 const ids = new Set(reading.findings.map((f) => f.rule.id));
 check('the combustion rule fires', ids.has('cmb.me'));
-check('Budha-Aditya still fires', ids.has('yog.budha-aditya'));
-check('and so does the reading that contests it', ids.has('yog.budha-aditya.burnt'));
+check('the burnt reading fires', ids.has('yog.budha-aditya.burnt'));
 
-const pair = reading.conflicts.pairs.find(
-  (p) => [p.a.rule.id, p.b.rule.id].sort().join('|') === 'yog.budha-aditya|yog.budha-aditya.burnt',
+// yog.budha-aditya was retired on review, so the favourable reading is gone and
+// the two are no longer presented as a disagreement.
+check('the retired favourable reading does not fire', !ids.has('yog.budha-aditya'));
+check('it is still in the base, so the id stays resolvable', kb.byId.has('yog.budha-aditya'));
+check('and it is retired rather than deleted',
+  kb.byId.get('yog.budha-aditya')?.status === 'retired');
+
+// The replacement, cnj.su.me, must not reinstate the contradiction: where
+// Mercury is burnt the burnt reading stands alone.
+check('the replacement stays quiet while Mercury is burnt', !ids.has('cnj.su.me'));
+
+const stranded = reading.conflicts.pairs.some(
+  (p) => [p.a.rule.id, p.b.rule.id].includes('yog.budha-aditya'),
 );
-check('the two are shown as a conflict rather than one winning', !!pair);
-check('and it is a stated conflict', pair?.reason === 'stated');
+check('no conflict pair names the retired rule', !stranded);
+
+// A lone disputed finding would render under "Both readings are shown with
+// their sources" with only one reading beneath it, so the burnt rule had to stop
+// being disputed when its counterpart went.
+check('the burnt reading is no longer marked disputed',
+  kb.byId.get('yog.budha-aditya.burnt')?.status !== 'disputed',
+  kb.byId.get('yog.budha-aditya.burnt')?.status);
+check('and it claims no conflict with anything',
+  !(kb.byId.get('yog.budha-aditya.burnt')?.conflictsWith || []).length);
+check('so it is not stranded alone in the disagreements section',
+  !reading.conflicts.disputed.some((f) => f.rule.id === 'yog.budha-aditya.burnt'));
 
 const burntRule = reading.findings.find((f) => f.rule.id === `pih.me.${c2.houseOf('me')}`);
 check('a rule about the burnt graha is weighted down', burntRule?.combustion?.state === 'combust');
